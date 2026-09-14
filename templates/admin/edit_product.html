@@ -1,0 +1,426 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Product | Levetor Hub
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+    <!-- HEADER -->
+
+    <div class="mb-4">
+
+        <a
+            href="{{ url_for('admin') }}"
+            class="text-decoration-none"
+        >
+            ← Back to Dashboard
+        </a>
+
+        <h1 class="fw-bold mt-3">
+            Edit Product
+        </h1>
+
+        <p class="text-muted">
+            Update product information and inventory.
+        </p>
+
+    </div>
+
+
+    <!-- FORM -->
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body p-4 p-md-5">
+
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                <div class="row g-4">
+
+
+                    <!-- PRODUCT NAME -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            Product Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            value="{{ product['name'] }}"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- CATEGORY -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            Category *
+                        </label>
+
+                        <select
+                            name="category"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="">
+                                Select Category
+                            </option>
+
+                            <option
+                                value="Computers"
+                                {% if product['category'] == 'Computers' %}selected{% endif %}
+                            >
+                                Computers
+                            </option>
+
+                            <option
+                                value="Phones"
+                                {% if product['category'] == 'Phones' %}selected{% endif %}
+                            >
+                                Phones
+                            </option>
+
+                            <option
+                                value="Tablets"
+                                {% if product['category'] == 'Tablets' %}selected{% endif %}
+                            >
+                                Tablets
+                            </option>
+
+                            <option
+                                value="Accessories"
+                                {% if product['category'] == 'Accessories' %}selected{% endif %}
+                            >
+                                Accessories
+                            </option>
+
+                            <option
+                                value="Home Appliances"
+                                {% if product['category'] == 'Home Appliances' %}selected{% endif %}
+                            >
+                                Home Appliances
+                            </option>
+
+                            <option
+                                value="Audio & Visual"
+                                {% if product['category'] == 'Audio & Visual' %}selected{% endif %}
+                            >
+                                Audio & Visual
+                            </option>
+
+                            <option
+                                value="Gaming"
+                                {% if product['category'] == 'Gaming' %}selected{% endif %}
+                            >
+                                Gaming
+                            </option>
+
+                            <option
+                                value="MP3"
+                                {% if product['category'] == 'MP3' %}selected{% endif %}
+                            >
+                                MP3
+                            </option>
+
+                            <option
+                                value="Others"
+                                {% if product['category'] == 'Others' %}selected{% endif %}
+                            >
+                                Others
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- BRAND -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            Brand
+                        </label>
+
+                        <input
+                            type="text"
+                            name="brand"
+                            class="form-control"
+                            value="{{ product['brand'] or '' }}"
+                        >
+
+                    </div>
+
+
+                    <!-- MODEL -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            Model
+                        </label>
+
+                        <input
+                            type="text"
+                            name="model"
+                            class="form-control"
+                            value="{{ product['model'] or '' }}"
+                        >
+
+                    </div>
+
+
+                    <!-- PRICE -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            Price (₦) *
+                        </label>
+
+                        <input
+                            type="number"
+                            name="price"
+                            class="form-control"
+                            value="{{ product['price'] }}"
+                            min="0"
+                            step="0.01"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- STOCK -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            Stock Quantity
+                        </label>
+
+                        <input
+                            type="number"
+                            name="stock"
+                            class="form-control"
+                            value="{{ product['stock'] }}"
+                            min="0"
+                        >
+
+                    </div>
+
+
+                    <!-- CONDITION -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            Condition
+                        </label>
+
+                        <select
+                            name="condition"
+                            class="form-select"
+                        >
+
+                            <option
+                                value="New"
+                                {% if product['condition'] == 'New' %}selected{% endif %}
+                            >
+                                New
+                            </option>
+
+                            <option
+                                value="Foreign Used"
+                                {% if product['condition'] == 'Foreign Used' %}selected{% endif %}
+                            >
+                                Foreign Used
+                            </option>
+
+                            <option
+                                value="UK Used"
+                                {% if product['condition'] == 'UK Used' %}selected{% endif %}
+                            >
+                                UK Used
+                            </option>
+
+                            <option
+                                value="Refurbished"
+                                {% if product['condition'] == 'Refurbished' %}selected{% endif %}
+                            >
+                                Refurbished
+                            </option>
+
+                            <option
+                                value="Open Box"
+                                {% if product['condition'] == 'Open Box' %}selected{% endif %}
+                            >
+                                Open Box
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- WARRANTY -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            Warranty
+                        </label>
+
+                        <input
+                            type="text"
+                            name="warranty"
+                            class="form-control"
+                            value="{{ product['warranty'] or '' }}"
+                        >
+
+                    </div>
+
+
+                    <!-- DESCRIPTION -->
+
+                    <div class="col-12">
+
+                        <label class="form-label fw-semibold">
+                            Description
+                        </label>
+
+                        <textarea
+                            name="description"
+                            class="form-control"
+                            rows="5"
+                        >{{ product['description'] or '' }}</textarea>
+
+                    </div>
+
+
+                    <!-- CURRENT IMAGE -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            Current Image
+                        </label>
+
+                        {% if product['image'] %}
+
+                            <div class="mt-2">
+
+                                <img
+                                    src="{{ url_for(
+                                        'static',
+                                        filename='uploads/' + product['image']
+                                    ) }}"
+                                    alt="{{ product['name'] }}"
+                                    style="
+                                        width:150px;
+                                        height:150px;
+                                        object-fit:cover;
+                                        border-radius:12px;
+                                    "
+                                >
+
+                            </div>
+
+                        {% else %}
+
+                            <div
+                                class="mt-2"
+                                style="
+                                    width:150px;
+                                    height:150px;
+                                    background:#f1f3f5;
+                                    border-radius:12px;
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    font-size:40px;
+                                "
+                            >
+                                📦
+                            </div>
+
+                            <small class="text-muted">
+                                No image uploaded.
+                            </small>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- NEW IMAGE -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            Replace Image
+                        </label>
+
+                        <input
+                            type="file"
+                            name="image"
+                            class="form-control"
+                            accept=".png,.jpg,.jpeg,.webp"
+                        >
+
+                        <div class="form-text">
+                            Leave empty to keep the current image.
+                        </div>
+
+                    </div>
+
+
+                    <!-- BUTTONS -->
+
+                    <div class="col-12">
+
+                        <hr>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary px-4"
+                        >
+                            Save Changes
+                        </button>
+
+                        <a
+                            href="{{ url_for('admin') }}"
+                            class="btn btn-outline-secondary"
+                        >
+                            Cancel
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

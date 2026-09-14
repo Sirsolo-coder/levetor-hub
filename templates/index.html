@@ -1,0 +1,582 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+
+Levetor Hub | Every Gadget You Love, One Hub
+
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero-section">
+
+    <div class="container">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-7">
+
+                <span class="hero-badge">
+
+                    🚀 YOUR DIGITAL GADGET HUB
+
+                </span>
+
+
+                <h1>
+
+                    Every Gadget You Love,
+
+                    <span>One Hub.</span>
+
+                </h1>
+
+
+                <p class="hero-description">
+
+                    Discover quality laptops, phones,
+                    tablets, accessories and other
+                    electronics — all in one place.
+
+                </p>
+
+
+                <div class="hero-buttons">
+
+                    <a href="#categories"
+                       class="btn-primary-custom">
+
+                        Explore Products →
+
+                    </a>
+
+
+                    <a
+                        href="https://wa.me/2349131542208"
+                        target="_blank"
+                        class="btn-outline-custom">
+
+                        💬 Chat With Us
+
+                    </a>
+
+                </div>
+
+
+                <div class="hero-features">
+
+                    <div>
+                        <strong>✓</strong>
+                        Quality Products
+                    </div>
+
+                    <div>
+                        <strong>✓</strong>
+                        Great Prices
+                    </div>
+
+                    <div>
+                        <strong>✓</strong>
+                        Customer Support
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-5">
+
+                <div class="hero-product">
+
+                    <div class="floating-card card-one">
+
+                        💻
+                        <span>Laptops</span>
+
+                    </div>
+
+
+                    <div class="floating-card card-two">
+
+                        📱
+                        <span>Phones</span>
+
+                    </div>
+
+
+                    <div class="hero-circle">
+
+                        <img
+                            src="{{ url_for(
+                                'static',
+                                filename='images/logo.png'
+                            ) }}"
+                            alt="Levetor Hub">
+
+                    </div>
+
+
+                    <div class="floating-card card-three">
+
+                        🎧
+                        <span>Accessories</span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= TRUST BAR ================= -->
+
+<section class="trust-section">
+
+    <div class="container">
+
+        <div class="row text-center">
+
+            <div class="col-md-3">
+
+                <div class="trust-item">
+
+                    <span>🚚</span>
+
+                    <div>
+                        <strong>Fast Delivery</strong>
+                        <small>Across Nigeria</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="trust-item">
+
+                    <span>🛡️</span>
+
+                    <div>
+                        <strong>Quality Products</strong>
+                        <small>Trusted Gadgets</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="trust-item">
+
+                    <span>💳</span>
+
+                    <div>
+                        <strong>Secure Payment</strong>
+                        <small>Safe Transactions</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="trust-item">
+
+                    <span>💬</span>
+
+                    <div>
+                        <strong>Customer Support</strong>
+                        <small>We're Here To Help</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= CATEGORIES ================= -->
+
+<section
+    class="categories-section"
+    id="categories">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <span>EXPLORE</span>
+
+            <h2>Shop By Category</h2>
+
+            <p>
+                Find the right technology for your needs.
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+
+            <!-- COMPUTERS -->
+
+            <div class="col-6 col-lg-4">
+
+                <a
+                    href="{{ url_for('shop', category='Computers') }}"
+                    class="category-box"
+                >
+
+                    <div class="category-icon">
+                        💻
+                    </div>
+
+                    <h4>Computers</h4>
+
+                    <p>
+                        Laptops & Desktops
+                    </p>
+
+                </a>
+
+            </div>
+
+
+            <!-- PHONES -->
+
+            <div class="col-6 col-lg-4">
+
+                <a
+                    href="{{ url_for('shop', category='Phones') }}"
+                    class="category-box"
+                >
+
+                    <div class="category-icon">
+                        📱
+                    </div>
+
+                    <h4>Phones</h4>
+
+                    <p>
+                        Smartphones & More
+                    </p>
+
+                </a>
+
+            </div>
+
+
+            <!-- TABLETS -->
+
+            <div class="col-6 col-lg-4">
+
+                <a
+                    href="{{ url_for('shop', category='Tablets') }}"
+                    class="category-box"
+                >
+
+                    <div class="category-icon">
+                        📲
+                    </div>
+
+                    <h4>Tablets</h4>
+
+                    <p>
+                        Tablets & Accessories
+                    </p>
+
+                </a>
+
+            </div>
+
+
+            <!-- ACCESSORIES -->
+
+            <div class="col-6 col-lg-4">
+
+                <a
+                    href="{{ url_for('shop', category='Accessories') }}"
+                    class="category-box"
+                >
+
+                    <div class="category-icon">
+                        🎧
+                    </div>
+
+                    <h4>Accessories</h4>
+
+                    <p>
+                        Audio & Computer Accessories
+                    </p>
+
+                </a>
+
+            </div>
+
+
+            <!-- HOME APPLIANCES -->
+
+            <div class="col-6 col-lg-4">
+
+                <a
+                    href="{{ url_for('shop', category='Home Appliances') }}"
+                    class="category-box"
+                >
+
+                    <div class="category-icon">
+                        🏠
+                    </div>
+
+                    <h4>Home Appliances</h4>
+
+                    <p>
+                        Smart Home Electronics
+                    </p>
+
+                </a>
+
+            </div>
+
+
+            <!-- AUDIO & VISUAL -->
+
+            <div class="col-6 col-lg-4">
+
+                <a
+                    href="{{ url_for('shop', category='Audio & Visual') }}"
+                    class="category-box"
+                >
+
+                    <div class="category-icon">
+                        📷
+                    </div>
+
+                    <h4>Audio & Visual</h4>
+
+                    <p>
+                        Cameras, Speakers & More
+                    </p>
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= FEATURED PRODUCTS ================= -->
+
+<section class="products-section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <span>LEVETOR HUB</span>
+
+            <h2>Featured Gadgets</h2>
+
+            <p>
+                Our latest products and best deals.
+            </p>
+
+        </div>
+
+
+        <!-- DYNAMIC PRODUCTS -->
+
+        <div class="row g-4">
+
+            {% if products %}
+
+                {% for product in products[:8] %}
+
+                    <div class="col-6 col-lg-3">
+
+                        <div class="product-card">
+
+                            <!-- PRODUCT IMAGE -->
+
+                            <div class="product-placeholder">
+
+                                {% if product["image"] %}
+
+                                    <img
+                                        src="{{ url_for(
+                                            'static',
+                                            filename='uploads/' + product['image']
+                                        ) }}"
+                                        alt="{{ product['name'] }}"
+                                        class="img-fluid"
+                                    >
+
+                                {% else %}
+
+                                    <div class="no-product-image">
+                                        📦
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- PRODUCT INFORMATION -->
+
+                            <div class="product-info">
+
+                                <small>
+                                    {{ product["category"] }}
+                                </small>
+
+                                <h5>
+                                    {{ product["name"] }}
+                                </h5>
+
+                                <h4>
+                                    ₦{{ "{:,.0f}".format(product["price"]) }}
+                                </h4>
+
+
+                                <a
+                                    href="{{ url_for(
+                                        'product_details',
+                                        product_id=product['id']
+                                    ) }}"
+                                    class="product-btn"
+                                >
+                                    View Product
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+
+            {% else %}
+
+                <!-- NO PRODUCTS -->
+
+                <div class="col-12">
+
+                    <div class="text-center py-5">
+
+                        <div style="font-size: 60px;">
+                            📦
+                        </div>
+
+                        <h4 class="mt-3">
+                            No products available yet
+                        </h4>
+
+                        <p>
+                            Our latest gadgets will appear here soon.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- VIEW ALL PRODUCTS -->
+
+        <div class="text-center mt-5">
+
+            <a
+                href="{{ url_for('shop') }}"
+                class="btn-primary-custom"
+            >
+                View All Products →
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= CTA ================= -->
+
+<section class="cta-section">
+
+    <div class="container">
+
+        <div class="cta-box">
+
+            <div>
+
+                <span>
+                    NEED HELP CHOOSING A GADGET?
+                </span>
+
+                <h2>
+                    Let's Help You Find The Right One.
+                </h2>
+
+                <p>
+                    Talk to our team and get expert
+                    recommendations based on your
+                    budget and needs.
+                </p>
+
+            </div>
+
+
+            <a
+                href="https://wa.me/2349131542208"
+                target="_blank"
+                class="btn-white">
+
+                💬 Chat With Levetor Hub
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+{% endblock %}

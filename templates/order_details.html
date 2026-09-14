@@ -1,0 +1,808 @@
+{% extends "base.html" %}
+
+{% block title %}
+Order #{{ order["id"] }} | Levetor Hub
+{% endblock %}
+
+{% block content %}
+
+<section class="order-details-section">
+
+```
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="order-header">
+
+        <a
+            href="{{ url_for('customer_account') }}"
+            class="back-link"
+        >
+            ← Back to My Account
+        </a>
+
+        <span class="order-label">
+            LEVETOR HUB
+        </span>
+
+        <h1>
+            Order #{{ order["id"] }}
+        </h1>
+
+        <p>
+            Placed on {{ order["created_at"] }}
+        </p>
+
+    </div>
+
+
+    <!-- ORDER SUMMARY -->
+
+    <div class="order-status-card">
+
+        <!-- ORDER STATUS -->
+
+        <div>
+
+            <small>
+                ORDER STATUS
+            </small>
+
+            {% if order["order_status"] == "Delivered" %}
+
+                <strong class="status-delivered">
+                    Delivered
+                </strong>
+
+            {% elif order["order_status"] == "Processing" %}
+
+                <strong class="status-processing">
+                    Processing
+                </strong>
+
+            {% elif order["order_status"] == "Cancelled" %}
+
+                <strong class="status-cancelled">
+                    Cancelled
+                </strong>
+
+            {% else %}
+
+                <strong class="status-pending">
+                    {{ order["order_status"] or "Pending" }}
+                </strong>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- PAYMENT STATUS -->
+
+        <div>
+
+            <small>
+                PAYMENT STATUS
+            </small>
+
+            {% if order["payment_status"] == "Paid" %}
+
+                <strong class="payment-paid">
+                    Paid
+                </strong>
+
+            {% elif order["payment_status"] == "Failed" %}
+
+                <strong class="payment-failed">
+                    Failed
+                </strong>
+
+            {% elif order["payment_status"] == "Refunded" %}
+
+                <strong class="payment-refunded">
+                    Refunded
+                </strong>
+
+            {% else %}
+
+                <strong class="payment-pending">
+                    {{ order["payment_status"] or "Pending" }}
+                </strong>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- ORDER TOTAL -->
+
+        <div>
+
+            <small>
+                ORDER TOTAL
+            </small>
+
+            <strong>
+                ₦{{ "{:,.0f}".format(order["total_amount"] or 0) }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- ORDER ITEMS -->
+
+        <div class="col-lg-8">
+
+            <div class="details-card">
+
+                <div class="card-heading">
+
+                    <h2>
+                        Items Ordered
+                    </h2>
+
+                </div>
+
+
+                {% if order_items %}
+
+                    {% for item in order_items %}
+
+                    <div class="order-item">
+
+                        <div class="item-image">
+
+                            {% if item["image"] %}
+
+                                <img
+                                    src="{{ url_for(
+                                        'static',
+                                        filename='uploads/' + item['image']
+                                    ) }}"
+                                    alt="{{ item['name'] }}"
+                                >
+
+                            {% else %}
+
+                                <span>
+                                    📦
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="item-info">
+
+                            <h3>
+                                {{ item["name"] or "Product unavailable" }}
+                            </h3>
+
+                            <p>
+                                Quantity:
+                                {{ item["quantity"] }}
+                            </p>
+
+                        </div>
+
+
+                        <div class="item-price">
+
+                            ₦{{ "{:,.0f}".format(
+                                (item["price"] or 0)
+                                * (item["quantity"] or 0)
+                            ) }}
+
+                            <small>
+                                ₦{{ "{:,.0f}".format(
+                                    item["price"] or 0
+                                ) }}
+                                each
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="empty-order">
+
+                        <div>
+                            📦
+                        </div>
+
+                        <p>
+                            No items were found for this order.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- TOTAL -->
+
+                <div class="order-total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <strong>
+                        ₦{{ "{:,.0f}".format(
+                            order["total_amount"] or 0
+                        ) }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CUSTOMER INFORMATION -->
+
+        <div class="col-lg-4">
+
+            <div class="details-card">
+
+                <div class="card-heading">
+
+                    <h2>
+                        Customer Information
+                    </h2>
+
+                </div>
+
+
+                <div class="customer-detail">
+
+                    <small>
+                        Name
+                    </small>
+
+                    <strong>
+                        {{ customer["fullname"] or "Guest Customer" }}
+                    </strong>
+
+                </div>
+
+
+                <div class="customer-detail">
+
+                    <small>
+                        Email
+                    </small>
+
+                    <strong>
+                        {{ customer["email"] or "Not provided" }}
+                    </strong>
+
+                </div>
+
+
+                <div class="customer-detail">
+
+                    <small>
+                        Phone
+                    </small>
+
+                    <strong>
+                        {{ customer["phone"] or "Not provided" }}
+                    </strong>
+
+                </div>
+
+
+                <div class="customer-detail">
+
+                    <small>
+                        Address
+                    </small>
+
+                    <strong>
+                        {{ customer["address"] or "Not provided" }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- ORDER STATUS -->
+
+            <div class="details-card status-card">
+
+                <h2>
+                    Order Status
+                </h2>
+
+                <div class="status-line">
+
+                    <span
+                        class="status-dot
+                        {% if order["order_status"] == "Delivered" %}
+                            delivered
+                        {% elif order["order_status"] == "Processing" %}
+                            processing
+                        {% elif order["order_status"] == "Cancelled" %}
+                            cancelled
+                        {% else %}
+                            pending
+                        {% endif %}"
+                    ></span>
+
+                    <div>
+
+                        <strong>
+                            {{ order["order_status"] or "Pending" }}
+                        </strong>
+
+                        <small>
+                            Current order status
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PAYMENT STATUS -->
+
+            <div class="details-card payment-card">
+
+                <h2>
+                    Payment Status
+                </h2>
+
+                <div class="status-line">
+
+                    <span
+                        class="payment-dot
+                        {% if order["payment_status"] == "Paid" %}
+                            paid
+                        {% elif order["payment_status"] == "Failed" %}
+                            failed
+                        {% elif order["payment_status"] == "Refunded" %}
+                            refunded
+                        {% else %}
+                            pending
+                        {% endif %}"
+                    ></span>
+
+                    <div>
+
+                        <strong>
+                            {{ order["payment_status"] or "Pending" }}
+                        </strong>
+
+                        <small>
+                            Current payment status
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+<style>
+
+.order-details-section {
+    padding: 60px 20px 100px;
+    background: #f7f9fc;
+    min-height: 70vh;
+}
+
+.order-header {
+    margin-bottom: 30px;
+}
+
+.back-link {
+    display: inline-block;
+    color: #0878c9;
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.order-label {
+    display: block;
+    color: #0878c9;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.order-header h1 {
+    color: #07133d;
+    font-size: 42px;
+    margin: 8px 0;
+}
+
+.order-header p {
+    color: #687386;
+}
+
+
+/* =========================================================
+   ORDER SUMMARY
+========================================================= */
+
+.order-status-card {
+    background: white;
+    border: 1px solid #e5e9ef;
+    border-radius: 14px;
+    padding: 25px;
+    margin-bottom: 25px;
+
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.order-status-card > div {
+    flex: 1;
+}
+
+.order-status-card small {
+    display: block;
+    color: #687386;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+.order-status-card strong {
+    color: #17203a;
+    font-size: 18px;
+}
+
+
+/* ORDER STATUS COLORS */
+
+.status-delivered {
+    color: #198754 !important;
+}
+
+.status-processing {
+    color: #0d6efd !important;
+}
+
+.status-cancelled {
+    color: #dc3545 !important;
+}
+
+.status-pending {
+    color: #d69e00 !important;
+}
+
+
+/* PAYMENT STATUS COLORS */
+
+.payment-paid {
+    color: #198754 !important;
+}
+
+.payment-failed {
+    color: #dc3545 !important;
+}
+
+.payment-refunded {
+    color: #6c757d !important;
+}
+
+.payment-pending {
+    color: #d69e00 !important;
+}
+
+
+/* =========================================================
+   DETAILS CARDS
+========================================================= */
+
+.details-card {
+    background: white;
+    border: 1px solid #e5e9ef;
+    border-radius: 14px;
+    padding: 28px;
+    height: 100%;
+}
+
+.card-heading {
+    border-bottom: 1px solid #edf0f4;
+    padding-bottom: 18px;
+    margin-bottom: 10px;
+}
+
+.card-heading h2,
+.details-card h2 {
+    color: #17203a;
+    font-size: 21px;
+    margin: 0;
+}
+
+
+/* =========================================================
+   ORDER ITEMS
+========================================================= */
+
+.order-item {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 0;
+    border-bottom: 1px solid #edf0f4;
+}
+
+.item-image {
+    width: 75px;
+    height: 75px;
+    border-radius: 10px;
+    background: #f4f6f8;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.item-image span {
+    font-size: 30px;
+}
+
+.item-info {
+    flex: 1;
+}
+
+.item-info h3 {
+    color: #17203a;
+    font-size: 17px;
+    margin: 0 0 6px;
+}
+
+.item-info p {
+    color: #687386;
+    margin: 0;
+    font-size: 14px;
+}
+
+.item-price {
+    color: #17203a;
+    font-weight: 700;
+    text-align: right;
+}
+
+.item-price small {
+    display: block;
+    color: #687386;
+    font-weight: 400;
+    margin-top: 5px;
+}
+
+
+/* =========================================================
+   TOTAL
+========================================================= */
+
+.order-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 25px;
+    font-size: 18px;
+}
+
+.order-total strong {
+    color: #063f9e;
+    font-size: 24px;
+}
+
+
+/* =========================================================
+   CUSTOMER INFORMATION
+========================================================= */
+
+.customer-detail {
+    padding: 15px 0;
+    border-bottom: 1px solid #edf0f4;
+}
+
+.customer-detail:last-child {
+    border-bottom: none;
+}
+
+.customer-detail small {
+    display: block;
+    color: #687386;
+    margin-bottom: 5px;
+}
+
+.customer-detail strong {
+    display: block;
+    color: #17203a;
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   ORDER STATUS CARD
+========================================================= */
+
+.status-card {
+    height: auto;
+    margin-top: 20px;
+}
+
+.status-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.status-line strong {
+    display: block;
+    color: #17203a;
+}
+
+.status-line small {
+    display: block;
+    color: #687386;
+    margin-top: 3px;
+}
+
+
+/* ORDER STATUS DOT */
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #f0ad00;
+}
+
+.status-dot.delivered {
+    background: #198754;
+}
+
+.status-dot.processing {
+    background: #0d6efd;
+}
+
+.status-dot.cancelled {
+    background: #dc3545;
+}
+
+.status-dot.pending {
+    background: #f0ad00;
+}
+
+
+/* =========================================================
+   PAYMENT CARD
+========================================================= */
+
+.payment-card {
+    height: auto;
+    margin-top: 20px;
+}
+
+.payment-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #f0ad00;
+}
+
+.payment-dot.paid {
+    background: #198754;
+}
+
+.payment-dot.failed {
+    background: #dc3545;
+}
+
+.payment-dot.refunded {
+    background: #6c757d;
+}
+
+.payment-dot.pending {
+    background: #f0ad00;
+}
+
+
+/* =========================================================
+   EMPTY ORDER
+========================================================= */
+
+.empty-order {
+    text-align: center;
+    padding: 40px 10px;
+    color: #687386;
+}
+
+.empty-order div {
+    font-size: 50px;
+    margin-bottom: 10px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .order-details-section {
+        padding: 40px 15px 70px;
+    }
+
+    .order-header h1 {
+        font-size: 34px;
+    }
+
+    .order-status-card {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .order-item {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .item-info {
+        min-width: 0;
+    }
+
+    .item-price {
+        width: 100%;
+        text-align: left;
+        padding-left: 93px;
+    }
+
+    .details-card {
+        padding: 22px;
+    }
+
+}
+
+</style>
+
+{% endblock %}

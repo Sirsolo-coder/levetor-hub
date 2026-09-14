@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}
+Checkout | Levetor Hub
+{% endblock %}
+
+
+{% block content %}
+
+<section class="py-5">
+
+    <div class="container">
+
+        <!-- HEADER -->
+
+        <div class="mb-5">
+
+            <h1 class="fw-bold">
+                Checkout
+            </h1>
+
+            <p class="text-muted">
+                Complete your details to place your order.
+            </p>
+
+        </div>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('checkout') }}"
+        >
+
+            <div class="row g-4">
+
+                <!-- =================================================
+                     CUSTOMER INFORMATION
+                ================================================= -->
+
+                <div class="col-lg-7">
+
+                    <div class="card border-0 shadow-sm">
+
+                        <div class="card-body p-4">
+
+                            <h4 class="fw-bold mb-4">
+                                Customer Information
+                            </h4>
+
+
+                            <!-- FULL NAME -->
+
+                            <div class="mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    Full Name *
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="fullname"
+                                    class="form-control"
+                                    placeholder="Enter your full name"
+                                    value="{{ fullname|default('') }}"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <!-- PHONE -->
+
+                            <div class="mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    Phone Number *
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    class="form-control"
+                                    placeholder="e.g. 09131542208"
+                                    value="{{ phone|default('') }}"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <!-- EMAIL -->
+
+                            <div class="mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    Email Address
+                                </label>
+
+                                <input
+                                    type="email"
+                                    name="email"
+                                    class="form-control"
+                                    placeholder="you@example.com"
+                                    value="{{ email|default('') }}"
+                                >
+
+                            </div>
+
+
+                            <!-- ADDRESS -->
+
+                            <div class="mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    Delivery Address *
+                                </label>
+
+                                <textarea
+                                    name="address"
+                                    class="form-control"
+                                    rows="4"
+                                    placeholder="Enter your delivery address"
+                                    required
+                                >{{ address|default('') }}</textarea>
+
+                            </div>
+
+
+                            <div class="alert alert-info mb-0">
+
+                                <strong>Delivery:</strong>
+
+                                Delivery charges will be confirmed
+                                based on your location.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     ORDER SUMMARY
+                ================================================= -->
+
+                <div class="col-lg-5">
+
+                    <div
+                        class="card border-0 shadow-sm"
+                        style="position: sticky; top: 20px;"
+                    >
+
+                        <div class="card-body p-4">
+
+                            <h4 class="fw-bold mb-4">
+                                Your Order
+                            </h4>
+
+
+                            {% for item in cart_items %}
+
+                                <div
+                                    class="d-flex justify-content-between
+                                           align-items-start mb-3"
+                                >
+
+                                    <div>
+
+                                        <strong>
+                                            {{ item.product["name"] }}
+                                        </strong>
+
+                                        <small class="text-muted d-block">
+
+                                            {{ item.quantity }} ×
+                                            ₦{{ "{:,.0f}".format(
+                                                item.product["price"]
+                                            ) }}
+
+                                        </small>
+
+                                    </div>
+
+
+                                    <strong>
+
+                                        ₦{{ "{:,.0f}".format(
+                                            item.subtotal
+                                        ) }}
+
+                                    </strong>
+
+                                </div>
+
+                            {% endfor %}
+
+
+                            <hr>
+
+
+                            <!-- TOTAL -->
+
+                            <div
+                                class="d-flex justify-content-between mb-4"
+                            >
+
+                                <strong class="fs-5">
+                                    Total
+                                </strong>
+
+                                <strong class="fs-5 text-primary">
+
+                                    ₦{{ "{:,.0f}".format(total) }}
+
+                                </strong>
+
+                            </div>
+
+
+                            <!-- PLACE ORDER -->
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary btn-lg w-100"
+                            >
+
+                                🛍️ Place Order
+
+                            </button>
+
+
+                            <a
+                                href="{{ url_for('cart') }}"
+                                class="btn btn-outline-secondary w-100 mt-3"
+                            >
+
+                                ← Back to Cart
+
+                            </a>
+
+
+                            <p
+                                class="text-muted text-center small mt-3 mb-0"
+                            >
+
+                                Your order will be saved securely
+                                in Levetor Hub.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+# Environment variables
+.env
+.env.*
+
+# Firebase / private credentials
+*.json
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.pyc
+
+# Local uploads
+static/uploads/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store

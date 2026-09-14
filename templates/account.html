@@ -1,0 +1,376 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Account | Levetor Hub
+{% endblock %}
+
+{% block content %}
+
+<section class="account-section">
+
+    <div class="container">
+
+        <div class="account-header">
+
+            <span>
+                LEVETOR HUB
+            </span>
+
+            <h1>
+                My Account
+            </h1>
+
+            <p>
+                Welcome back, {{ customer["fullname"] }}.
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <!-- PROFILE -->
+
+            <div class="col-lg-4">
+
+                <div class="account-card">
+
+                    <h3>
+                        Profile
+                    </h3>
+
+                    <p>
+                        <strong>Name:</strong><br>
+                        {{ customer["fullname"] }}
+                    </p>
+
+                    <p>
+                        <strong>Email:</strong><br>
+                        {{ customer["email"] }}
+                    </p>
+
+                    <p>
+                        <strong>Phone:</strong><br>
+                        {{ customer["phone"] }}
+                    </p>
+
+                    <p>
+                        <strong>Address:</strong><br>
+                        {{ customer["address"] or "Not provided" }}
+                    </p>
+<a
+    href="{{ url_for('edit_profile') }}"
+    class="edit-profile-btn"
+>
+    ✏️ Edit Profile
+</a>
+                    <a
+                        href="{{ url_for('logout') }}"
+                        class="logout-button"
+                    >
+                    
+                        Logout
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- ORDERS -->
+
+            <div class="col-lg-8">
+
+                <div class="account-card">
+
+                    <h3>
+                        My Orders
+                    </h3>
+
+
+                    {% if orders %}
+
+                        <div class="table-responsive">
+
+                            <table class="table">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Order
+                                        </th>
+
+                                        <th>
+                                            Amount
+                                        </th>
+
+                                        <th>
+                                            Payment
+                                        </th>
+
+                                        <th>
+                                            Status
+                                        </th>
+
+                                        <th>
+                                            Date
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <tbody>
+
+                                    {% for order in orders %}
+
+                                        <tr>
+
+                                            <td>
+    <a
+    href="{{ url_for(
+        'customer_order_details',
+        order_id=order['id']
+    ) }}"
+    class="view-order-btn"
+>
+    View Order
+</a>
+</td>
+
+                                            <td>
+                                                ₦{{ "{:,.0f}".format(order["total_amount"]) }}
+                                            </td>
+
+                                            <td>
+                                                {{ order["payment_status"] }}
+                                            </td>
+
+                                            <td>
+                                                {{ order["order_status"] }}
+                                            </td>
+
+                                            <td>
+                                                {{ order["created_at"] }}
+                                            </td>
+
+                                        </tr>
+
+                                    {% endfor %}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="empty-orders">
+
+                            <div>
+                                🛍️
+                            </div>
+
+                            <h4>
+                                No orders yet
+                            </h4>
+
+                            <p>
+                                Your orders will appear here after checkout.
+                            </p>
+
+                            <a
+                                href="{{ url_for('shop') }}"
+                                class="shop-button"
+                            >
+                                Start Shopping
+                            </a>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<style>
+
+.account-section {
+
+    padding: 70px 20px;
+
+    background: #f7f9fc;
+
+    min-height: 80vh;
+
+}
+
+
+.account-header {
+
+    margin-bottom: 35px;
+
+}
+
+
+.account-header span {
+
+    color: #0878c9;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+}
+
+
+.account-header h1 {
+
+    color: #07133d;
+
+    margin: 8px 0;
+
+}
+
+
+.account-header p {
+
+    color: #687386;
+
+}
+
+
+.account-card {
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 14px;
+
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+
+}
+
+
+.account-card h3 {
+
+    color: #07133d;
+
+    margin-bottom: 25px;
+
+}
+
+
+.account-card p {
+
+    color: #687386;
+
+    line-height: 1.7;
+
+}
+
+
+.logout-button {
+
+    display: inline-block;
+
+    margin-top: 10px;
+
+    padding: 11px 20px;
+
+    background: #dc3545;
+
+    color: white;
+
+    text-decoration: none;
+
+    border-radius: 7px;
+
+}
+
+
+.logout-button:hover {
+
+    color: white;
+
+    background: #bb2d3b;
+
+}
+
+
+.shop-button {
+
+    display: inline-block;
+
+    padding: 12px 20px;
+
+    background: #063f9e;
+
+    color: white;
+
+    text-decoration: none;
+
+    border-radius: 8px;
+
+}
+
+
+.empty-orders {
+
+    text-align: center;
+
+    padding: 40px 20px;
+
+    color: #687386;
+
+}
+
+
+.empty-orders div {
+
+    font-size: 55px;
+
+    margin-bottom: 15px;
+
+}
+
+.order-link {
+    color: #0878c9;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.order-link:hover {
+    text-decoration: underline;
+}
+.view-order-btn {
+    display: inline-block;
+    padding: 8px 14px;
+    background: #063f9e;
+    color: white;
+    text-decoration: none;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.view-order-btn:hover {
+    background: #0878c9;
+    color: white;
+}
+</style>
+
+{% endblock %}

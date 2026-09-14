@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Profile | Levetor Hub
+{% endblock %}
+
+{% block content %}
+
+<section class="edit-profile-section">
+
+    <div class="container">
+
+        <div class="edit-profile-card">
+
+            <a
+                href="{{ url_for('customer_account') }}"
+                class="back-link"
+            >
+                ← Back to My Account
+            </a>
+
+            <span class="profile-label">
+                LEVETOR HUB
+            </span>
+
+            <h1>
+                Edit Profile
+            </h1>
+
+            <p class="profile-description">
+                Update your personal information below.
+            </p>
+
+
+            <form method="POST">
+
+                <div class="form-group">
+
+                    <label>
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="fullname"
+                        value="{{ customer['fullname'] }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        value="{{ customer['email'] or '' }}"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Phone Number
+                    </label>
+
+                    <input
+                        type="text"
+                        name="phone"
+                        value="{{ customer['phone'] }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Address
+                    </label>
+
+                    <textarea
+                        name="address"
+                        rows="4"
+                    >{{ customer['address'] or '' }}</textarea>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <a
+                        href="{{ url_for('customer_account') }}"
+                        class="cancel-btn"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="save-btn"
+                    >
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<style>
+
+.edit-profile-section {
+    padding: 70px 20px 100px;
+    background: #f7f9fc;
+    min-height: 70vh;
+}
+
+.edit-profile-card {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    border: 1px solid #e5e9ef;
+}
+
+.back-link {
+    color: #0878c9;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.profile-label {
+    display: block;
+    margin-top: 30px;
+    color: #0878c9;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.edit-profile-card h1 {
+    color: #07133d;
+    margin: 8px 0;
+}
+
+.profile-description {
+    color: #687386;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+    color: #17203a;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid #dfe4eb;
+    border-radius: 8px;
+    outline: none;
+    font-size: 15px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #0878c9;
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.cancel-btn,
+.save-btn {
+    padding: 12px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.cancel-btn {
+    background: #eef1f5;
+    color: #17203a;
+}
+
+.save-btn {
+    border: none;
+    background: #063f9e;
+    color: white;
+    cursor: pointer;
+}
+
+.save-btn:hover {
+    background: #0878c9;
+}
+
+@media (max-width: 600px) {
+
+    .edit-profile-card {
+        padding: 25px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .cancel-btn,
+    .save-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+}
+
+</style>
+
+{% endblock %}

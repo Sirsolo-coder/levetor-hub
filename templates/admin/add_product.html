@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+
+{% block title %}Add Product | Levetor Hub{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+```
+<!-- HEADER -->
+
+<div class="mb-4">
+
+    <a
+        href="{{ url_for('admin') }}"
+        class="text-decoration-none"
+    >
+        ← Back to Dashboard
+    </a>
+
+    <h1 class="fw-bold mt-3">
+        Add New Product
+    </h1>
+
+    <p class="text-muted">
+        Add a product to the Levetor Hub store.
+    </p>
+
+</div>
+
+
+<!-- FORM -->
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-body p-4 p-md-5">
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+            <div class="row g-4">
+
+                <!-- PRODUCT NAME -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label fw-semibold">
+                        Product Name *
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        placeholder="e.g. Samsung Galaxy S25"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- CATEGORY -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label fw-semibold">
+                        Category *
+                    </label>
+
+                    <select
+                        name="category"
+                        class="form-select"
+                        required
+                    >
+
+                        <option value="">
+                            Select Category
+                        </option>
+
+                        <option value="Phones">
+                            Phones
+                        </option>
+
+                        <option value="Computers">
+                            Computers
+                        </option>
+
+                        <option value="Laptops">
+                            Laptops
+                        </option>
+
+                        <option value="Tablets">
+                            Tablets
+                        </option>
+
+                        <option value="Smartwatches">
+                            Smartwatches
+                        </option>
+
+                        <option value="Accessories">
+                            Accessories
+                        </option>
+
+                        <option value="Audio & Headphones">
+                            Audio & Headphones
+                        </option>
+
+                        <option value="Speakers">
+                            Speakers
+                        </option>
+
+                        <option value="TVs & Monitors">
+                            TVs & Monitors
+                        </option>
+
+                        <option value="Cameras">
+                            Cameras
+                        </option>
+
+                        <option value="Gaming">
+                            Gaming
+                        </option>
+
+                        <option value="Printers & Scanners">
+                            Printers & Scanners
+                        </option>
+
+                        <option value="Networking">
+                            Networking
+                        </option>
+
+                        <option value="Storage Devices">
+                            Storage Devices
+                        </option>
+
+                        <option value="Power Banks & Chargers">
+                            Power Banks & Chargers
+                        </option>
+
+                        <option value="Home Appliances">
+                            Home Appliances
+                        </option>
+
+                        <option value="Office Equipment">
+                            Office Equipment
+                        </option>
+
+                        <option value="Solar & Power">
+                            Solar & Power
+                        </option>
+
+                        <option value="Security & CCTV">
+                            Security & CCTV
+                        </option>
+
+                        <option value="Electronics">
+                            Electronics
+                        </option>
+
+                        <option value="Software">
+                            Software
+                        </option>
+
+                        <option value="Others">
+                            Others
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- BRAND -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label fw-semibold">
+                        Brand
+                    </label>
+
+                    <input
+                        type="text"
+                        name="brand"
+                        class="form-control"
+                        placeholder="e.g. Samsung"
+                    >
+
+                </div>
+
+
+                <!-- MODEL -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label fw-semibold">
+                        Model
+                    </label>
+
+                    <input
+                        type="text"
+                        name="model"
+                        class="form-control"
+                        placeholder="e.g. Galaxy S25 Ultra"
+                    >
+
+                </div>
+
+
+                <!-- PRICE -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label fw-semibold">
+                        Price (₦) *
+                    </label>
+
+                    <input
+                        type="number"
+                        name="price"
+                        class="form-control"
+                        placeholder="350000"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- STOCK -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label fw-semibold">
+                        Stock Quantity
+                    </label>
+
+                    <input
+                        type="number"
+                        name="stock"
+                        class="form-control"
+                        placeholder="10"
+                        min="0"
+                        value="0"
+                    >
+
+                </div>
+
+
+                <!-- CONDITION -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label fw-semibold">
+                        Condition
+                    </label>
+
+                    <select
+                        name="condition"
+                        class="form-select"
+                    >
+
+                        <option value="New">
+                            New
+                        </option>
+
+                        <option value="Foreign Used">
+                            Foreign Used
+                        </option>
+
+                        <option value="UK Used">
+                            UK Used
+                        </option>
+
+                        <option value="Refurbished">
+                            Refurbished
+                        </option>
+
+                        <option value="Open Box">
+                            Open Box
+                        </option>
+
+                        <option value="Used">
+                            Used
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- WARRANTY -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label fw-semibold">
+                        Warranty
+                    </label>
+
+                    <input
+                        type="text"
+                        name="warranty"
+                        class="form-control"
+                        placeholder="e.g. 12 Months"
+                    >
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="col-12">
+
+                    <label class="form-label fw-semibold">
+                        Product Description
+                    </label>
+
+                    <textarea
+                        name="description"
+                        class="form-control"
+                        rows="5"
+                        placeholder="Describe the product, specifications, features, etc."
+                    ></textarea>
+
+                </div>
+
+
+                <!-- IMAGE -->
+
+                <div class="col-12">
+
+                    <label class="form-label fw-semibold">
+                        Product Image
+                    </label>
+
+                    <input
+                        type="file"
+                        name="image"
+                        class="form-control"
+                        accept=".png,.jpg,.jpeg,.webp"
+                    >
+
+                    <div class="form-text">
+
+                        Image is optional.
+                        If you don't upload an image,
+                        the product will still be added.
+
+                        <br>
+
+                        Accepted formats:
+                        PNG, JPG, JPEG and WEBP.
+
+                    </div>
+
+                </div>
+
+
+                <!-- BUTTONS -->
+
+                <div class="col-12">
+
+                    <hr>
+
+                    <div class="d-flex gap-2">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary px-4"
+                        >
+                            Add Product
+                        </button>
+
+                        <a
+                            href="{{ url_for('admin') }}"
+                            class="btn btn-outline-secondary"
+                        >
+                            Cancel
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+{% endblock %}

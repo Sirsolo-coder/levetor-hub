@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}
+Password Reset Link | Levetor Hub
+{% endblock %}
+
+{% block content %}
+
+<section class="auth-section">
+
+    <div class="auth-container">
+
+        <div class="auth-header">
+
+            <span class="auth-label">
+                LEVETOR HUB
+            </span>
+
+            <h1>
+                Reset Link Generated
+            </h1>
+
+            <p>
+                For development, your password reset link
+                is shown below.
+            </p>
+
+        </div>
+
+
+        <div class="reset-box">
+
+            <a
+                href="{{ reset_link }}"
+                class="reset-link"
+            >
+                Reset My Password
+            </a>
+
+        </div>
+
+
+        <p class="expiry-note">
+
+            This link will expire in 30 minutes.
+
+        </p>
+
+
+        <div class="auth-footer">
+
+            <a href="{{ url_for('login') }}">
+                Back to Login
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<style>
+
+.auth-section {
+    min-height: 80vh;
+    padding: 70px 20px;
+    background: #f7f9fc;
+}
+
+.auth-container {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+.auth-label {
+    color: #0878c9;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.auth-header h1 {
+    color: #07133d;
+    margin: 10px 0;
+}
+
+.auth-header p {
+    color: #687386;
+}
+
+.reset-box {
+    margin: 30px 0;
+    padding: 20px;
+    background: #f1f6fb;
+    border-radius: 10px;
+}
+
+.reset-link {
+    display: inline-block;
+    padding: 14px 25px;
+    background: #063f9e;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.reset-link:hover {
+    background: #0878c9;
+    color: white;
+}
+
+.expiry-note {
+    color: #687386;
+    font-size: 14px;
+}
+
+.auth-footer {
+    margin-top: 25px;
+}
+
+.auth-footer a {
+    color: #0878c9;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+</style>
+
+{% endblock %}

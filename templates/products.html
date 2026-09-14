@@ -1,0 +1,687 @@
+{% extends "base.html" %}
+
+{% block title %}Shop | Levetor Hub{% endblock %}
+
+{% block content %}
+
+<!-- ================= SHOP HERO ================= -->
+
+<section class="shop-hero">
+
+    <div class="container text-center">
+
+        <div class="shop-label">
+            LEVETOR HUB
+        </div>
+
+        <h1>
+            Shop Our Gadgets
+        </h1>
+
+        <p>
+            Discover quality phones, computers, tablets,
+            accessories and other gadgets at great prices.
+        </p>
+
+        <!-- SEARCH -->
+
+        <form method="GET"
+              action="{{ url_for('shop') }}"
+              class="shop-search">
+
+            <input
+                type="text"
+                name="search"
+                placeholder="Search for a gadget..."
+                value="{{ request.args.get('search', '') }}"
+            >
+
+            <button type="submit">
+                🔍
+            </button>
+
+        </form>
+
+
+        <!-- CATEGORY FILTERS -->
+
+        <div class="category-filters">
+
+            <a href="{{ url_for('shop') }}"
+               class="category-link">
+                All
+            </a>
+
+            <a href="{{ url_for('shop', category='Computers') }}"
+               class="category-link">
+                Computers
+            </a>
+
+            <a href="{{ url_for('shop', category='Phones') }}"
+               class="category-link">
+                Phones
+            </a>
+
+            <a href="{{ url_for('shop', category='Tablets') }}"
+               class="category-link">
+                Tablets
+            </a>
+
+            <a href="{{ url_for('shop', category='Accessories') }}"
+               class="category-link">
+                Accessories
+            </a>
+
+            <a href="{{ url_for('shop', category='Home Appliances') }}"
+               class="category-link">
+                Home Appliances
+            </a>
+
+            <a href="{{ url_for('shop', category='Audio & Visual') }}"
+               class="category-link">
+                Audio & Visual
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= PRODUCTS ================= -->
+
+<section class="products-section">
+
+    <div class="container">
+
+        <div class="row g-4">
+
+            {% if products %}
+
+                {% for product in products %}
+
+                    <div class="col-lg-3 col-md-6">
+
+                        <div class="product-card">
+
+                            <!-- PRODUCT IMAGE -->
+
+                            <div class="product-image">
+
+                                {% if product["image"] %}
+
+                                    <img
+                                        src="{{ url_for(
+                                            'static',
+                                            filename='uploads/' + product['image']
+                                        ) }}"
+                                        alt="{{ product['name'] }}"
+                                    >
+
+                                {% else %}
+
+                                    <div class="placeholder-text">
+                                        {% if product["category"] == "Phones" %}
+                                            📱
+                                        {% elif product["category"] == "Computers" %}
+                                            💻
+                                        {% elif product["category"] == "Tablets" %}
+                                            📱
+                                        {% elif product["category"] == "Accessories" %}
+                                            🎧
+                                        {% elif product["category"] == "Audio & Visual" %}
+                                            🔊
+                                        {% else %}
+                                            🛍️
+                                        {% endif %}
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- PRODUCT INFORMATION -->
+
+                            <div class="product-info">
+
+                                <span class="product-category">
+
+                                    {{ product["category"] }}
+
+                                </span>
+
+
+                                <h3>
+
+                                    {{ product["name"] }}
+
+                                </h3>
+
+
+                                {% if product["brand"] %}
+
+                                    <p class="product-brand">
+
+                                        {{ product["brand"] }}
+
+                                    </p>
+
+                                {% endif %}
+
+
+                                <div class="product-price">
+
+                                    ₦{{ "{:,.0f}".format(product["price"]) }}
+
+                                </div>
+
+
+                                <!-- STOCK -->
+
+                                {% if product["stock"] > 0 %}
+
+                                    <small class="stock-available">
+
+                                        ✓ In Stock
+
+                                    </small>
+
+                                {% else %}
+
+                                    <small class="stock-out">
+
+                                        Out of Stock
+
+                                    </small>
+
+                                {% endif %}
+
+
+                                <!-- VIEW PRODUCT -->
+
+                                <a
+                                    href="{{ url_for(
+                                        'product_details',
+                                        product_id=product['id']
+                                    ) }}"
+                                    class="view-product-btn"
+                                >
+
+                                    View Product
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <!-- NO PRODUCTS -->
+
+                <div class="col-12">
+
+                    <div class="empty-shop">
+
+                        <div class="empty-icon">
+                            🛍️
+                        </div>
+
+                        <h2>
+                            No Products Available
+                        </h2>
+
+                        <p>
+                            There are currently no gadgets
+                            available in the store.
+                        </p>
+
+                        <a
+                            href="{{ url_for('shop') }}"
+                            class="view-product-btn"
+                        >
+                            Refresh Shop
+                        </a>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- ================= COMING SOON ================= -->
+
+        {% if products %}
+
+            <div class="coming-soon">
+
+                <h2>
+                    More Gadgets Coming Soon
+                </h2>
+
+                <p>
+                    We are constantly adding new products
+                    to Levetor Hub.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<!-- ================= SHOP PAGE CSS ================= -->
+
+<style>
+
+.shop-hero {
+    padding: 80px 20px 45px;
+    background: #f8f9fc;
+}
+
+.shop-label {
+    color: #0878c9;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 15px;
+}
+
+.shop-hero h1 {
+    font-size: 48px;
+    font-weight: 700;
+    color: #07133d;
+    margin-bottom: 15px;
+}
+
+.shop-hero p {
+    font-size: 18px;
+    color: #687386;
+    margin-bottom: 35px;
+}
+
+
+/* ================= SEARCH ================= */
+
+.shop-search {
+    max-width: 620px;
+    margin: auto;
+    display: flex;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+.shop-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 18px 20px;
+    font-size: 16px;
+}
+
+.shop-search button {
+    width: 70px;
+    border: none;
+    background: #0878c9;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+
+/* ================= CATEGORIES ================= */
+
+.category-filters {
+    margin-top: 40px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 30px;
+}
+
+.category-link {
+    color: #687386;
+
+    text-decoration: none;
+
+    font-size: 16px;
+
+    transition: 0.3s;
+}
+
+.category-link:hover {
+    color: #0878c9;
+}
+
+
+/* ================= PRODUCTS ================= */
+
+.products-section {
+    padding: 50px 20px 80px;
+
+    background: white;
+}
+
+
+/* PRODUCT CARD */
+
+.product-card {
+
+    height: 100%;
+
+    background: white;
+
+    border: 1px solid #e6eaf0;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    transition: 0.3s ease;
+
+}
+
+.product-card:hover {
+
+    transform: translateY(-6px);
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,0.10);
+
+}
+
+
+/* ================= PRODUCT IMAGE ================= */
+
+.product-image {
+
+    height: 250px;
+
+    background: #f5f6f8;
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    overflow: hidden;
+
+}
+
+.product-image img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+}
+
+
+/* PLACEHOLDER */
+
+.placeholder-text {
+
+    font-size: 65px;
+
+    color: #0878c9;
+
+}
+
+
+/* ================= PRODUCT INFO ================= */
+
+.product-info {
+
+    padding: 25px 22px;
+
+}
+
+.product-category {
+
+    color: #0878c9;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+}
+
+.product-info h3 {
+
+    font-size: 22px;
+
+    color: #17203a;
+
+    margin: 12px 0;
+
+    min-height: 52px;
+
+}
+
+.product-brand {
+
+    color: #687386;
+
+    font-size: 14px;
+
+    margin-bottom: 8px;
+
+}
+
+
+/* ================= PRICE ================= */
+
+.product-price {
+
+    color: #111827;
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+    margin-bottom: 8px;
+
+}
+
+
+/* ================= STOCK ================= */
+
+.stock-available {
+
+    display: block;
+
+    color: #198754;
+
+    font-weight: 600;
+
+    margin-bottom: 15px;
+
+}
+
+.stock-out {
+
+    display: block;
+
+    color: #dc3545;
+
+    font-weight: 600;
+
+    margin-bottom: 15px;
+
+}
+
+
+/* ================= VIEW BUTTON ================= */
+
+.view-product-btn {
+
+    display: block;
+
+    text-align: center;
+
+    background: #063f9e;
+
+    color: white;
+
+    text-decoration: none;
+
+    padding: 13px 15px;
+
+    border-radius: 8px;
+
+    font-weight: 600;
+
+    transition: 0.3s;
+
+}
+
+.view-product-btn:hover {
+
+    background: #0878c9;
+
+    color: white;
+
+}
+
+
+/* ================= EMPTY SHOP ================= */
+
+.empty-shop {
+
+    text-align: center;
+
+    padding: 80px 20px;
+
+    background: #f7f9fc;
+
+    border-radius: 12px;
+
+}
+
+.empty-icon {
+
+    font-size: 70px;
+
+    margin-bottom: 20px;
+
+}
+
+.empty-shop h2 {
+
+    color: #17203a;
+
+    margin-bottom: 12px;
+
+}
+
+.empty-shop p {
+
+    color: #687386;
+
+    margin-bottom: 25px;
+
+}
+
+
+/* ================= COMING SOON ================= */
+
+.coming-soon {
+
+    margin-top: 70px;
+
+    padding: 45px 20px;
+
+    text-align: center;
+
+    background: #f7f9fc;
+
+    border-radius: 12px;
+
+}
+
+.coming-soon h2 {
+
+    color: #17203a;
+
+    font-size: 28px;
+
+    margin-bottom: 12px;
+
+}
+
+.coming-soon p {
+
+    color: #687386;
+
+    margin: 0;
+
+}
+
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+
+    .shop-hero {
+
+        padding-top: 50px;
+
+    }
+
+    .shop-hero h1 {
+
+        font-size: 34px;
+
+    }
+
+    .shop-hero p {
+
+        font-size: 16px;
+
+    }
+
+    .category-filters {
+
+        gap: 15px 20px;
+
+    }
+
+    .product-image {
+
+        height: 220px;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}
