@@ -27,6 +27,7 @@ from werkzeug.security import ( # type: ignore
 from werkzeug.utils import secure_filename  # type: ignore
 
 from flask_cors import CORS # type: ignore
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired # type: ignore
 from google.oauth2 import id_token  # type: ignore
 from google.auth.transport import requests as google_requests  # type: ignore
 from firebase_notifications import send_customer_notification
@@ -61,7 +62,69 @@ CORS(app)
 # SECRET KEY
 # =========================================================
 
-app.secret_key = "levetor-hub-secret-key"
+app.secret_key = os.getenv("FLASK_SECRET_KEY") or "levetor-hub-secret-key"
+
+# =========================================================
+# MOBILE API TOKEN AUTHENTICATION
+# =========================================================
+
+API_TOKEN_MAX_AGE = int(os.getenv("API_TOKEN_MAX_AGE", str(60 * 60 * 24 * 30)))
+api_token_serializer = URLSafeTimedSerializer(
+    app.secret_key,
+    salt="levetor-hub-mobile-api"
+)
+
+
+def create_api_token(customer_id):
+    return api_token_serializer.dumps({"customer_id": int(customer_id)})
+
+
+def get_bearer_customer_id():
+    authorization = request.headers.get("Authorization", "").strip()
+
+    if not authorization.lower().startswith("bearer "):
+        return None
+
+    token = authorization[7:].strip()
+
+    if not token:
+        return None
+
+    try:
+        data = api_token_serializer.loads(
+            token,
+            max_age=API_TOKEN_MAX_AGE
+        )
+        return int(data["customer_id"])
+    except (BadSignature, SignatureExpired, KeyError, TypeError, ValueError):
+        return None
+
+
+def require_customer(customer_id):
+    authenticated_customer_id = get_bearer_customer_id()
+
+    if authenticated_customer_id is None:
+        return jsonify({
+            "success": False,
+            "message": "Authentication required. Please login again."
+        }), 401
+
+    try:
+        requested_customer_id = int(customer_id)
+    except (TypeError, ValueError):
+        return jsonify({
+            "success": False,
+            "message": "Invalid customer ID."
+        }), 400
+
+    if authenticated_customer_id != requested_customer_id:
+        return jsonify({
+            "success": False,
+            "message": "You are not authorized to access this account."
+        }), 403
+
+    return None
+
 
 
 # =========================================================
@@ -1156,6 +1219,7 @@ def api_register():
             "success": True,
             "message": "Account created successfully.",
             "customer_id": customer_id,
+            "token": create_api_token(customer_id),
             "fullname": fullname,
             "email": email,
             "phone": phone,
@@ -1256,6 +1320,7 @@ def api_login():
     return jsonify({
         "success": True,
         "message": "Login successful.",
+        "token": create_api_token(customer["id"]),
         "customer": {
             "id": customer["id"],
             "fullname": customer["fullname"],
@@ -1465,6 +1530,7 @@ def api_google_auth():
                 "success": True,
                 "message": "Google login successful.",
                 "is_new_customer": False,
+                "token": create_api_token(customer_id),
                 "customer": {
                     "id": updated_customer["id"],
                     "fullname": updated_customer["fullname"],
@@ -1523,6 +1589,7 @@ def api_google_auth():
             "success": True,
             "message": "Google account registered successfully.",
             "is_new_customer": True,
+            "token": create_api_token(customer_id),
             "customer": {
                 "id": new_customer["id"],
                 "fullname": new_customer["fullname"],
@@ -1658,6 +1725,11 @@ def api_forgot_password():
 )
 def api_get_customer(customer_id):
 
+    auth_error = require_customer(customer_id)
+
+    if auth_error:
+        return auth_error
+
     conn = get_db()
 
     customer = conn.execute("""
@@ -1708,6 +1780,11 @@ def api_get_customer(customer_id):
     methods=["PUT"]
 )
 def api_update_customer(customer_id):
+
+    auth_error = require_customer(customer_id)
+
+    if auth_error:
+        return auth_error
 
     data = request.get_json(
         silent=True
@@ -1867,6 +1944,11 @@ def api_update_customer(customer_id):
 )
 def api_register_fcm_token(customer_id):
 
+    auth_error = require_customer(customer_id)
+
+    if auth_error:
+        return auth_error
+
     data = request.get_json(
         silent=True
     )
@@ -1960,6 +2042,11 @@ def api_register_fcm_token(customer_id):
     methods=["GET"]
 )
 def api_get_customer_notifications(customer_id):
+
+    auth_error = require_customer(customer_id)
+
+    if auth_error:
+        return auth_error
 
     conn = get_db()
 
@@ -2073,6 +2160,11 @@ def api_mark_notification_read(
     notification_id
 ):
 
+    auth_error = require_customer(customer_id)
+
+    if auth_error:
+        return auth_error
+
     conn = get_db()
 
     notification = conn.execute("""
@@ -2125,6 +2217,11 @@ def api_mark_notification_read(
 def api_mark_all_notifications_read(
     customer_id
 ):
+
+    auth_error = require_customer(customer_id)
+
+    if auth_error:
+        return auth_error
 
     conn = get_db()
 
@@ -2230,6 +2327,16 @@ def api_create_order():
     conn = get_db()
 
     try:
+
+        # =================================================
+        # VERIFY CUSTOMER TOKEN WHEN CUSTOMER ID IS PROVIDED
+        # =================================================
+
+        if customer_id is not None:
+            auth_error = require_customer(customer_id)
+            if auth_error:
+                conn.close()
+                return auth_error
 
         # =================================================
         # VERIFY CUSTOMER IF CUSTOMER ID WAS PROVIDED
@@ -2395,28 +2502,30 @@ def api_create_order():
 
         if existing_customer is None:
 
-            cursor = conn.execute("""
-                INSERT INTO customers
-                (
-                    fullname,
-                    email,
-                    phone,
-                    address
-                )
-                VALUES (?, ?, ?, ?)
-            """, (
-                fullname,
-                email,
-                phone,
-                address
-            ))
+            # Reuse an existing customer when a matching email exists.
+            existing_by_email = None
+            if email:
+                existing_by_email = conn.execute("""
+                    SELECT * FROM customers WHERE email = ?
+                """, (email,)).fetchone()
 
-            customer_id = cursor.lastrowid
+            if existing_by_email is not None:
+                customer_id = existing_by_email["id"]
+                conn.execute("""
+                    UPDATE customers
+                    SET fullname = ?, phone = ?, address = ?
+                    WHERE id = ?
+                """, (fullname, phone, address, customer_id))
+            else:
+                cursor = conn.execute("""
+                    INSERT INTO customers
+                    (fullname, email, phone, address)
+                    VALUES (?, ?, ?, ?)
+                """, (fullname, email, phone, address))
+                customer_id = cursor.lastrowid
 
         else:
-
-            # Use existing customer information
-
+            # Use existing customer information.
             customer_id = existing_customer["id"]
 
         # =================================================
@@ -2467,8 +2576,8 @@ def api_create_order():
                 product["price"]
             ))
 
-
-            conn.commit()
+        # Commit the complete order once, after every item has been inserted.
+        conn.commit()
 
         # =================================================
         # SEND ORDER RECEIVED NOTIFICATION
@@ -2528,6 +2637,11 @@ def api_create_order():
     methods=["GET"]
 )
 def api_get_orders(customer_id):
+
+    auth_error = require_customer(customer_id)
+
+    if auth_error:
+        return auth_error
 
     conn = get_db()
 
@@ -4603,6 +4717,15 @@ def initialize_paystack_payment():
 
     conn = get_db()
 
+    # Payment initialization is an authenticated customer operation.
+    authenticated_customer_id = get_bearer_customer_id()
+    if authenticated_customer_id is None:
+        conn.close()
+        return jsonify({
+            "success": False,
+            "message": "Authentication required. Please login again."
+        }), 401
+
     order = conn.execute("""
         SELECT
             orders.id,
@@ -4629,6 +4752,12 @@ def initialize_paystack_payment():
             "success": False,
             "message": "Order not found."
         }), 404
+
+    if int(order["customer_id"]) != authenticated_customer_id:
+        return jsonify({
+            "success": False,
+            "message": "You are not authorized to pay for this order."
+        }), 403
 
     if order["payment_status"] == "Paid":
 
@@ -4823,65 +4952,44 @@ def initialize_paystack_payment():
 )
 def verify_paystack_payment(reference):
 
-    reference = str(
-        reference
-    ).strip()
+    reference = str(reference).strip()
 
     if not reference:
-
         return jsonify({
             "success": False,
             "message": "Payment reference is required."
         }), 400
 
     if not PAYSTACK_SECRET_KEY:
-
         return jsonify({
             "success": False,
             "message": "Paystack secret key is not configured."
         }), 500
 
     headers = {
-        "Authorization": (
-            f"Bearer {PAYSTACK_SECRET_KEY}"
-        ),
+        "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
         "Content-Type": "application/json"
     }
 
     try:
-
         response = requests.get(
-            (
-                f"{PAYSTACK_BASE_URL}"
-                f"/transaction/verify/"
-                f"{reference}"
-            ),
+            f"{PAYSTACK_BASE_URL}/transaction/verify/{reference}",
             headers=headers,
             timeout=30
         )
-
         response_data = response.json()
-
     except requests.RequestException as e:
-
         return jsonify({
             "success": False,
-            "message": (
-                f"Could not connect to Paystack: {str(e)}"
-            )
+            "message": f"Could not connect to Paystack: {str(e)}"
         }), 502
-
     except ValueError:
-
         return jsonify({
             "success": False,
-            "message": (
-                "Invalid response received from Paystack."
-            )
+            "message": "Invalid response received from Paystack."
         }), 502
 
     if not response_data.get("status"):
-
         return jsonify({
             "success": False,
             "message": response_data.get(
@@ -4890,21 +4998,10 @@ def verify_paystack_payment(reference):
             )
         }), 400
 
-    payment_data = response_data.get(
-        "data",
-        {}
-    )
-
-    payment_status = payment_data.get(
-        "status"
-    )
-
-    # =====================================================
-    # PAYMENT MUST ACTUALLY BE SUCCESSFUL
-    # =====================================================
+    payment_data = response_data.get("data") or {}
+    payment_status = payment_data.get("status")
 
     if payment_status != "success":
-
         return jsonify({
             "success": False,
             "message": (
@@ -4915,10 +5012,9 @@ def verify_paystack_payment(reference):
             "reference": reference
         }), 400
 
-    # =====================================================
-    # FIND ORDER USING PAYSTACK REFERENCE
-    # =====================================================
-
+    # -----------------------------------------------------
+    # Resolve order from our stored reference first.
+    # -----------------------------------------------------
     conn = get_db()
 
     order = conn.execute("""
@@ -4931,42 +5027,24 @@ def verify_paystack_payment(reference):
             paystack_reference
         FROM orders
         WHERE paystack_reference = ?
-    """, (
-        reference,
-    )).fetchone()
+    """, (reference,)).fetchone()
 
+    metadata = payment_data.get("metadata") or {}
+
+    # Fallback to Paystack metadata if our reference was not stored.
     if order is None:
-
-        # Fallback to Paystack metadata
-
-        metadata = payment_data.get(
-            "metadata",
-            {}
-        )
-
-        order_id = metadata.get(
-            "order_id"
-        )
-
         try:
+            metadata_order_id = int(metadata.get("order_id"))
+        except (ValueError, TypeError):
+            metadata_order_id = 0
 
-            order_id = int(
-                order_id
-            )
-
-        except (
-            ValueError,
-            TypeError
-        ):
-
+        if metadata_order_id <= 0:
             conn.close()
-
             return jsonify({
                 "success": False,
                 "message": (
-                    "Payment was successful, "
-                    "but the related order "
-                    "could not be found."
+                    "Payment was successful, but the related "
+                    "order could not be found."
                 ),
                 "reference": reference
             }), 404
@@ -4981,173 +5059,173 @@ def verify_paystack_payment(reference):
                 paystack_reference
             FROM orders
             WHERE id = ?
-        """, (
-            order_id,
-        )).fetchone()
+        """, (metadata_order_id,)).fetchone()
 
     if order is None:
-
         conn.close()
-
         return jsonify({
             "success": False,
             "message": "Order not found."
         }), 404
 
-    # =====================================================
-    # VERIFY PAYMENT REFERENCE BELONGS TO THIS ORDER
-    # =====================================================
-
-    if (
-        order["paystack_reference"]
-        and
-        order["paystack_reference"] != reference
-    ):
-
+    # -----------------------------------------------------
+    # Strict reference and metadata validation.
+    # -----------------------------------------------------
+    if order["paystack_reference"] and order["paystack_reference"] != reference:
         conn.close()
-
         return jsonify({
             "success": False,
-            "message": (
-                "Payment reference does not match "
-                "the order."
-            )
+            "message": "Payment reference does not match the order."
         }), 400
 
-    # =====================================================
-    # VERIFY PAYMENT AMOUNT
-    # =====================================================
+    try:
+        metadata_order_id = int(metadata.get("order_id"))
+    except (ValueError, TypeError):
+        metadata_order_id = None
+
+    if metadata_order_id is not None and metadata_order_id != int(order["id"]):
+        conn.close()
+        return jsonify({
+            "success": False,
+            "message": "Paystack order metadata does not match the order."
+        }), 400
 
     try:
+        metadata_customer_id = int(metadata.get("customer_id"))
+    except (ValueError, TypeError):
+        metadata_customer_id = None
 
-        expected_amount = int(
-            round(
-                float(
-                    order["total_amount"]
-                ) * 100
-            )
-        )
-
-        paid_amount = int(
-            payment_data.get(
-                "amount",
-                0
-            )
-        )
-
-    except (
-        ValueError,
-        TypeError
+    if (
+        metadata_customer_id is not None
+        and metadata_customer_id != int(order["customer_id"])
     ):
-
         conn.close()
+        return jsonify({
+            "success": False,
+            "message": "Paystack customer metadata does not match the order."
+        }), 400
 
+    # Paystack should report the same reference that we initialized.
+    returned_reference = str(payment_data.get("reference", "")).strip()
+    if returned_reference and returned_reference != reference:
+        conn.close()
+        return jsonify({
+            "success": False,
+            "message": "Paystack returned a different payment reference."
+        }), 400
+
+    # -----------------------------------------------------
+    # Verify exact payment amount and currency.
+    # -----------------------------------------------------
+    try:
+        expected_amount = int(round(float(order["total_amount"]) * 100))
+        paid_amount = int(payment_data.get("amount", 0))
+    except (ValueError, TypeError):
+        conn.close()
         return jsonify({
             "success": False,
             "message": "Invalid payment amount."
         }), 400
 
     if paid_amount != expected_amount:
-
         conn.close()
-
         return jsonify({
             "success": False,
-            "message": (
-                "Payment amount does not match "
-                "the order amount."
-            ),
+            "message": "Payment amount does not match the order amount.",
             "expected_amount": expected_amount,
             "paid_amount": paid_amount
         }), 400
 
-    # =====================================================
-    # PREVENT DUPLICATE STOCK DEDUCTION
-    # =====================================================
-
-    if order["payment_status"] == "Paid":
-
+    payment_currency = str(payment_data.get("currency", "NGN")).upper()
+    if payment_currency != "NGN":
         conn.close()
-
-        return jsonify({
-            "success": True,
-            "message": (
-                "Payment was already verified."
-            ),
-            "order_id": order["id"],
-            "reference": reference,
-            "payment_status": "Paid",
-            "order_status": order["order_status"],
-            "amount": order["total_amount"],
-            "currency": "NGN"
-        }), 200
-
-    # =====================================================
-    # GET ORDER ITEMS
-    # =====================================================
-
-    order_items = conn.execute("""
-        SELECT
-            order_items.product_id,
-            order_items.quantity,
-            order_items.price,
-            products.name,
-            products.stock
-        FROM order_items
-        INNER JOIN products
-        ON order_items.product_id = products.id
-        WHERE order_items.order_id = ?
-    """, (
-        order["id"],
-    )).fetchall()
-
-    if not order_items:
-
-        conn.close()
-
         return jsonify({
             "success": False,
-            "message": (
-                "The order contains no items."
-            )
+            "message": "Payment currency is not supported for this order.",
+            "currency": payment_currency
         }), 400
 
-    # =====================================================
-    # CHECK STOCK AGAIN BEFORE FINALIZING PAYMENT
-    # =====================================================
+    # -----------------------------------------------------
+    # Idempotency + atomic stock deduction.
+    # BEGIN IMMEDIATE prevents two verification requests from
+    # checking the same stock and both deducting it.
+    # -----------------------------------------------------
+    try:
+        conn.execute("BEGIN IMMEDIATE")
 
-    for item in order_items:
+        locked_order = conn.execute("""
+            SELECT
+                id,
+                customer_id,
+                total_amount,
+                payment_status,
+                order_status,
+                paystack_reference
+            FROM orders
+            WHERE id = ?
+        """, (order["id"],)).fetchone()
 
-        if item["stock"] < item["quantity"]:
-
+        if locked_order is None:
+            conn.rollback()
             conn.close()
-
             return jsonify({
                 "success": False,
-                "message": (
-                    f"Insufficient stock for "
-                    f"{item['name']}. "
-                    f"Available stock: "
-                    f"{item['stock']}"
-                )
-            }), 409
+                "message": "Order not found."
+            }), 404
 
-    # =====================================================
-    # FINALIZE PAYMENT + REDUCE STOCK
-    # =====================================================
+        if locked_order["payment_status"] == "Paid":
+            conn.rollback()
+            conn.close()
+            return jsonify({
+                "success": True,
+                "message": "Payment was already verified.",
+                "order_id": locked_order["id"],
+                "reference": reference,
+                "payment_status": "Paid",
+                "order_status": locked_order["order_status"],
+                "amount": locked_order["total_amount"],
+                "currency": payment_currency
+            }), 200
 
-    try:
+        order_items = conn.execute("""
+            SELECT
+                order_items.product_id,
+                order_items.quantity,
+                order_items.price,
+                products.name,
+                products.stock
+            FROM order_items
+            INNER JOIN products
+                ON order_items.product_id = products.id
+            WHERE order_items.order_id = ?
+        """, (locked_order["id"],)).fetchall()
+
+        if not order_items:
+            conn.rollback()
+            conn.close()
+            return jsonify({
+                "success": False,
+                "message": "The order contains no items."
+            }), 400
 
         for item in order_items:
+            if item["stock"] < item["quantity"]:
+                conn.rollback()
+                conn.close()
+                return jsonify({
+                    "success": False,
+                    "message": (
+                        f"Insufficient stock for {item['name']}. "
+                        f"Available stock: {item['stock']}"
+                    )
+                }), 409
 
+        for item in order_items:
             conn.execute("""
                 UPDATE products
                 SET stock = stock - ?
                 WHERE id = ?
-            """, (
-                item["quantity"],
-                item["product_id"]
-            ))
+            """, (item["quantity"], item["product_id"]))
 
         conn.execute("""
             UPDATE orders
@@ -5155,77 +5233,55 @@ def verify_paystack_payment(reference):
                 payment_status = ?,
                 paystack_reference = ?
             WHERE id = ?
-        """, (
-            "Paid",
-            reference,
-            order["id"]
-        ))
+              AND payment_status != 'Paid'
+        """, ("Paid", reference, locked_order["id"]))
 
         conn.commit()
 
-        # =================================================
-        # SEND PAYMENT SUCCESS NOTIFICATION
-        # =================================================
-
+        # Notification is intentionally after the transaction commits.
         try:
             send_customer_notification(
                 conn,
-                order["customer_id"],
+                locked_order["customer_id"],
                 "Payment Successful",
                 (
-                    f"Your payment of "
-                    f"â‚¦{order['total_amount']:,.0f} "
-                    f"for order #{order['id']} "
-                    f"has been confirmed."
+                    f"Your payment of ₦{locked_order['total_amount']:,.0f} "
+                    f"for order #{locked_order['id']} has been confirmed."
                 ),
                 {
                     "type": "payment_success",
-                    "order_id": str(order["id"]),
-                    "customer_id": str(
-                        order["customer_id"]
-                    ),
+                    "order_id": str(locked_order["id"]),
+                    "customer_id": str(locked_order["customer_id"]),
                     "reference": reference,
                 }
             )
         except Exception as notification_error:
-            print(
-                "Payment notification failed:",
-                notification_error
-            )
+            print("Payment notification failed:", notification_error)
 
-    except Exception as e:
-
-        conn.rollback()
         conn.close()
 
         return jsonify({
+            "success": True,
+            "message": "Payment verified and order confirmed successfully.",
+            "order_id": locked_order["id"],
+            "reference": reference,
+            "payment_status": "Paid",
+            "order_status": locked_order["order_status"],
+            "amount": locked_order["total_amount"],
+            "currency": payment_currency,
+            "paid_at": payment_data.get("paid_at")
+        }), 200
+
+    except Exception as e:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        conn.close()
+        return jsonify({
             "success": False,
-            "message": (
-                f"Could not finalize payment: {str(e)}"
-            )
+            "message": f"Could not finalize payment: {str(e)}"
         }), 500
-
-    conn.close()
-
-    return jsonify({
-        "success": True,
-        "message": (
-            "Payment verified and order "
-            "confirmed successfully."
-        ),
-        "order_id": order["id"],
-        "reference": reference,
-        "payment_status": "Paid",
-        "order_status": order["order_status"],
-        "amount": order["total_amount"],
-        "currency": payment_data.get(
-            "currency",
-            "NGN"
-        ),
-        "paid_at": payment_data.get(
-            "paid_at"
-        )
-    }), 200
 
 # =========================================================
 # RUN APPLICATION
@@ -5236,6 +5292,5 @@ if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=5000,
-        debug=True
+        debug=os.getenv("FLASK_DEBUG", "false").lower() == "true"
     )
-

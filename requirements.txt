@@ -5,3 +5,4 @@ Flask-CORS
 google-auth
 firebase-admin
 Werkzeug
+itsdangerous
