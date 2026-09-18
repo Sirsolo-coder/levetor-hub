@@ -59,10 +59,7 @@ Shopping Cart | Levetor Hub
                                 {% if item.product["image"] %}
 
                                 <img
-                                    src="{{ url_for(
-                                        'static',
-                                        filename='uploads/' + item.product['image']
-                                    ) }}"
+                                    src="{% if item.product['image'].startswith('http://') or item.product['image'].startswith('https://') %}{{ item.product['image'] }}{% else %}{{ url_for('static', filename='uploads/' + item.product['image']) }}{% endif %}"
                                     alt="{{ item.product['name'] }}"
                                     class="img-fluid rounded"
                                     style="

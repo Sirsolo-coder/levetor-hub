@@ -273,10 +273,7 @@ Levetor Hub | Admin Dashboard
                                             {% if product["image"] %}
 
                                                 <img
-                                                    src="{{ url_for(
-                                                        'static',
-                                                        filename='uploads/' + product['image']
-                                                    ) }}"
+                                                    src="{% if product['image'].startswith('http://') or product['image'].startswith('https://') %}{{ product['image'] }}{% else %}{{ url_for('static', filename='uploads/' + product['image']) }}{% endif %}""
                                                     alt="{{ product['name'] }}"
                                                     style="
                                                         width:70px;
@@ -562,3 +559,4 @@ Levetor Hub | Admin Dashboard
 </section>
 
 {% endblock %}
+
