@@ -7,3 +7,5 @@ firebase-admin
 Werkzeug
 itsdangerous
 gunicorn
+
+psycopg[binary]
