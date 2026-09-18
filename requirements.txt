@@ -6,3 +6,4 @@ google-auth
 firebase-admin
 Werkzeug
 itsdangerous
+gunicorn
