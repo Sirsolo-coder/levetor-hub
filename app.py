@@ -42,6 +42,39 @@ PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY")
 
 PAYSTACK_BASE_URL = "https://api.paystack.co"
 # =========================================================
+# SUPABASE STORAGE CONFIGURATION
+# =========================================================
+
+from supabase import create_client, Client  # type: ignore
+
+
+SUPABASE_URL = os.getenv(
+    "SUPABASE_URL"
+)
+
+SUPABASE_SERVICE_ROLE_KEY = os.getenv(
+    "SUPABASE_SERVICE_ROLE_KEY"
+)
+
+SUPABASE_STORAGE_BUCKET = os.getenv(
+    "SUPABASE_STORAGE_BUCKET",
+    "product-images"
+)
+
+
+supabase: Client | None = None
+
+
+if (
+    SUPABASE_URL
+    and SUPABASE_SERVICE_ROLE_KEY
+):
+
+    supabase = create_client(
+        SUPABASE_URL,
+        SUPABASE_SERVICE_ROLE_KEY
+    )
+# =========================================================
 # GOOGLE AUTHENTICATION CONFIGURATION
 # =========================================================
 
@@ -159,7 +192,125 @@ def allowed_file(filename):
         and filename.rsplit(".", 1)[1].lower()
         in ALLOWED_EXTENSIONS
     )
+# =========================================================
+# SUPABASE PRODUCT IMAGE HELPERS
+# =========================================================
 
+def upload_product_image(image):
+    """
+    Upload a product image to Supabase Storage
+    and return its public URL.
+    """
+
+    if supabase is None:
+        raise RuntimeError(
+            "Supabase Storage is not configured."
+        )
+
+    original_filename = secure_filename(
+        image.filename or ""
+    )
+
+    if not original_filename:
+        raise ValueError(
+            "Invalid image filename."
+        )
+
+    extension = original_filename.rsplit(
+        ".",
+        1
+    )[1].lower()
+
+    image_filename = (
+        str(uuid.uuid4())
+        + "."
+        + extension
+    )
+
+    file_data = image.read()
+
+    content_types = {
+        "jpg": "image/jpeg",
+        "jpeg": "image/jpeg",
+        "png": "image/png",
+        "webp": "image/webp"
+    }
+
+    content_type = content_types.get(
+        extension,
+        "application/octet-stream"
+    )
+
+    supabase.storage.from_(
+        SUPABASE_STORAGE_BUCKET
+    ).upload(
+        image_filename,
+        file_data,
+        {
+            "content-type": content_type,
+            "upsert": "false"
+        }
+    )
+
+    public_url = supabase.storage.from_(
+        SUPABASE_STORAGE_BUCKET
+    ).get_public_url(
+        image_filename
+    )
+
+    return public_url
+
+
+def delete_product_image(image_value):
+    """
+    Delete a product image from Supabase Storage.
+
+    Accepts either:
+    - a full Supabase public URL
+    - an old filename
+    """
+
+    if supabase is None:
+        return
+
+    if not image_value:
+        return
+
+    image_value = str(image_value).strip()
+
+    if not image_value:
+        return
+
+    try:
+
+        if "/storage/v1/object/public/" in image_value:
+
+            path = image_value.split(
+                f"/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET}/",
+                1
+            )[1]
+
+        else:
+
+            path = image_value
+
+        path = path.lstrip("/")
+
+        if not path:
+            return
+
+        supabase.storage.from_(
+            SUPABASE_STORAGE_BUCKET
+        ).remove(
+            [path]
+        )
+
+    except Exception as exc:
+
+        print(
+            "Supabase image deletion warning:",
+            exc
+        )
 
 # =========================================================
 # ADMIN ACCESS CHECK
@@ -624,7 +775,9 @@ def add_product():
             ""
         ).strip()
 
+        # =====================================================
         # VALIDATION
+        # =====================================================
 
         if not name or not category or not price:
 
@@ -637,7 +790,9 @@ def add_product():
                 url_for("add_product")
             )
 
+        # =====================================================
         # CONVERT NUMBERS
+        # =====================================================
 
         try:
 
@@ -655,9 +810,11 @@ def add_product():
                 url_for("add_product")
             )
 
-        # IMAGE UPLOAD
+        # =====================================================
+        # IMAGE UPLOAD - SUPABASE STORAGE
+        # =====================================================
 
-        image_filename = None
+        image_url = None
 
         image = request.files.get("image")
 
@@ -676,35 +833,54 @@ def add_product():
                     url_for("add_product")
                 )
 
-            original_filename = secure_filename(
-                image.filename
-            )
+            try:
 
-            extension = original_filename.rsplit(
-                ".",
-                1
-            )[1].lower()
-
-            image_filename = (
-                str(uuid.uuid4())
-                + "."
-                + extension
-            )
-
-            image.save(
-                os.path.join(
-                    app.config["UPLOAD_FOLDER"],
-                    image_filename
+                image_url = upload_product_image(
+                    image
                 )
-            )
 
+            except Exception as exc:
+
+                print(
+                    "Supabase product image upload error:",
+                    exc
+                )
+
+                flash(
+                    "Product image upload failed. Please try again.",
+                    "danger"
+                )
+
+                return redirect(
+                    url_for("add_product")
+                )
+
+        # =====================================================
         # SAVE PRODUCT
+        # =====================================================
 
-        conn = get_db()
+        conn = None
 
-        conn.execute("""
-            INSERT INTO products
-            (
+        try:
+
+            conn = get_db()
+
+            conn.execute("""
+                INSERT INTO products
+                (
+                    name,
+                    category,
+                    brand,
+                    model,
+                    description,
+                    price,
+                    stock,
+                    image,
+                    condition,
+                    warranty
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
                 name,
                 category,
                 brand,
@@ -712,26 +888,62 @@ def add_product():
                 description,
                 price,
                 stock,
-                image,
+                image_url,
                 condition,
                 warranty
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            name,
-            category,
-            brand,
-            model,
-            description,
-            price,
-            stock,
-            image_filename,
-            condition,
-            warranty
-        ))
+            ))
 
-        conn.commit()
-        conn.close()
+            conn.commit()
+
+        except Exception as exc:
+
+            print(
+                "Product creation error:",
+                exc
+            )
+
+            if conn:
+
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+
+            # Remove uploaded image if database save failed
+            if image_url:
+
+                try:
+                    delete_product_image(
+                        image_url
+                    )
+                except Exception as cleanup_exc:
+
+                    print(
+                        "Supabase image cleanup warning:",
+                        cleanup_exc
+                    )
+
+            flash(
+                "Unable to add product. Please try again.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("add_product")
+            )
+
+        finally:
+
+            if conn:
+
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+
+        # =====================================================
+        # SUCCESS
+        # =====================================================
 
         flash(
             "Product added successfully!",
@@ -2798,6 +3010,10 @@ def edit_product(product_id):
             ""
         ).strip()
 
+        # =====================================================
+        # VALIDATION
+        # =====================================================
+
         if not name or not category or not price:
 
             conn.close()
@@ -2813,6 +3029,10 @@ def edit_product(product_id):
                     product_id=product_id
                 )
             )
+
+        # =====================================================
+        # CONVERT NUMBERS
+        # =====================================================
 
         try:
 
@@ -2835,11 +3055,21 @@ def edit_product(product_id):
                 )
             )
 
-        image_filename = product["image"]
+        # =====================================================
+        # KEEP EXISTING IMAGE
+        # =====================================================
+
+        image_url = product["image"]
 
         image = request.files.get(
             "image"
         )
+
+        uploaded_new_image = False
+
+        # =====================================================
+        # NEW IMAGE - SUPABASE STORAGE
+        # =====================================================
 
         if image and image.filename:
 
@@ -2861,83 +3091,144 @@ def edit_product(product_id):
                     )
                 )
 
-            original_filename = secure_filename(
-                image.filename
+            try:
+
+                image_url = upload_product_image(
+                    image
+                )
+
+                uploaded_new_image = True
+
+            except Exception as exc:
+
+                print(
+                    "Supabase product image upload error:",
+                    exc
+                )
+
+                conn.close()
+
+                flash(
+                    "Product image upload failed. Please try again.",
+                    "danger"
+                )
+
+                return redirect(
+                    url_for(
+                        "edit_product",
+                        product_id=product_id
+                    )
+                )
+
+        # =====================================================
+        # UPDATE PRODUCT
+        # =====================================================
+
+        try:
+
+            conn.execute("""
+                UPDATE products
+
+                SET
+                    name = ?,
+                    category = ?,
+                    brand = ?,
+                    model = ?,
+                    description = ?,
+                    price = ?,
+                    stock = ?,
+                    image = ?,
+                    condition = ?,
+                    warranty = ?
+
+                WHERE id = ?
+            """, (
+                name,
+                category,
+                brand,
+                model,
+                description,
+                price,
+                stock,
+                image_url,
+                condition,
+                warranty,
+                product_id
+            ))
+
+            conn.commit()
+
+        except Exception as exc:
+
+            print(
+                "Product update error:",
+                exc
             )
 
-            extension = original_filename.rsplit(
-                ".",
-                1
-            )[1].lower()
+            try:
+                conn.rollback()
+            except Exception:
+                pass
 
-            image_filename = (
-                str(uuid.uuid4())
-                + "."
-                + extension
+            # If a new image was uploaded but the database
+            # update failed, remove the new image.
+            if uploaded_new_image:
+
+                try:
+
+                    delete_product_image(
+                        image_url
+                    )
+
+                except Exception as cleanup_exc:
+
+                    print(
+                        "Supabase new image cleanup warning:",
+                        cleanup_exc
+                    )
+
+            conn.close()
+
+            flash(
+                "Unable to update product. Please try again.",
+                "danger"
             )
 
-            image.save(
-                os.path.join(
-                    app.config["UPLOAD_FOLDER"],
-                    image_filename
+            return redirect(
+                url_for(
+                    "edit_product",
+                    product_id=product_id
                 )
             )
+
+        conn.close()
+
+        # =====================================================
+        # DELETE OLD IMAGE AFTER SUCCESSFUL DATABASE UPDATE
+        # =====================================================
+
+        if uploaded_new_image:
 
             old_image = product["image"]
 
-            if old_image:
+            if old_image and old_image != image_url:
 
-                old_image_path = os.path.join(
-                    app.config["UPLOAD_FOLDER"],
-                    old_image
-                )
+                try:
 
-                if os.path.exists(
-                    old_image_path
-                ):
+                    delete_product_image(
+                        old_image
+                    )
 
-                    try:
+                except Exception as cleanup_exc:
 
-                        os.remove(
-                            old_image_path
-                        )
+                    print(
+                        "Supabase old image cleanup warning:",
+                        cleanup_exc
+                    )
 
-                    except OSError:
-
-                        pass
-
-        conn.execute("""
-            UPDATE products
-
-            SET
-                name = ?,
-                category = ?,
-                brand = ?,
-                model = ?,
-                description = ?,
-                price = ?,
-                stock = ?,
-                image = ?,
-                condition = ?,
-                warranty = ?
-
-            WHERE id = ?
-        """, (
-            name,
-            category,
-            brand,
-            model,
-            description,
-            price,
-            stock,
-            image_filename,
-            condition,
-            warranty,
-            product_id
-        ))
-
-        conn.commit()
-        conn.close()
+        # =====================================================
+        # SUCCESS
+        # =====================================================
 
         flash(
             "Product updated successfully!",
@@ -2997,36 +3288,68 @@ def delete_product(product_id):
 
     image = product["image"]
 
-    if image:
+    # =====================================================
+    # DELETE PRODUCT FROM DATABASE
+    # =====================================================
 
-        image_path = os.path.join(
-            app.config["UPLOAD_FOLDER"],
-            image
+    try:
+
+        conn.execute("""
+            DELETE FROM products
+            WHERE id = ?
+        """, (
+            product_id,
+        ))
+
+        conn.commit()
+
+    except Exception as exc:
+
+        print(
+            "Product deletion error:",
+            exc
         )
 
-        if os.path.exists(
-            image_path
-        ):
+        try:
+            conn.rollback()
+        except Exception:
+            pass
 
-            try:
+        conn.close()
 
-                os.remove(
-                    image_path
-                )
+        flash(
+            "Unable to delete product. Please try again.",
+            "danger"
+        )
 
-            except OSError:
+        return redirect(
+            url_for("admin")
+        )
 
-                pass
-
-    conn.execute("""
-        DELETE FROM products
-        WHERE id = ?
-    """, (
-        product_id,
-    ))
-
-    conn.commit()
     conn.close()
+
+    # =====================================================
+    # DELETE PRODUCT IMAGE FROM SUPABASE STORAGE
+    # =====================================================
+
+    if image:
+
+        try:
+
+            delete_product_image(
+                image
+            )
+
+        except Exception as cleanup_exc:
+
+            print(
+                "Supabase product image deletion warning:",
+                cleanup_exc
+            )
+
+    # =====================================================
+    # SUCCESS
+    # =====================================================
 
     flash(
         "Product deleted successfully.",

@@ -9,3 +9,4 @@ itsdangerous
 gunicorn
 
 psycopg[binary]
+supabase
