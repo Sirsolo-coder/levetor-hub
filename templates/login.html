@@ -118,6 +118,43 @@ Login | Levetor Hub
         </form>
 
 
+        <!-- GOOGLE LOGIN -->
+
+        {% if google_web_client_id %}
+
+            <div class="google-divider">
+
+                <span>OR</span>
+
+            </div>
+
+
+            <div class="google-login-container">
+
+                <div
+                    id="g_id_onload"
+                    data-client_id="{{ google_web_client_id }}"
+                    data-callback="handleGoogleCredential"
+                    data-auto_prompt="false"
+                ></div>
+
+
+                <div
+                    class="g_id_signin"
+                    data-type="standard"
+                    data-size="large"
+                    data-theme="outline"
+                    data-text="continue_with"
+                    data-shape="rectangular"
+                    data-logo_alignment="left"
+                    data-width="100%"
+                ></div>
+
+            </div>
+
+        {% endif %}
+
+
         <!-- REGISTER -->
 
         <div class="auth-footer">
@@ -134,9 +171,92 @@ Login | Levetor Hub
 
         </div>
 
+
+        <!-- CONTINUE SHOPPING -->
+
+        <div class="continue-shopping">
+
+            <a href="{{ url_for('shop') }}">
+                Continue Shopping
+            </a>
+
+        </div>
+
     </div>
 
 </section>
+
+
+<!-- GOOGLE IDENTITY SERVICES -->
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+
+<script>
+
+async function handleGoogleCredential(response) {
+
+    try {
+
+        if (!response || !response.credential) {
+
+            alert("Google did not return a valid login credential.");
+
+            return;
+        }
+
+
+        const result = await fetch(
+            "{{ url_for('customer_google_login') }}",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    id_token: response.credential
+                })
+            }
+        );
+
+
+        const data = await result.json();
+
+
+        if (data.success) {
+
+            window.location.href =
+                "{{ url_for('customer_account') }}";
+
+            return;
+        }
+
+
+        alert(
+            data.message ||
+            "Google login failed. Please try again."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Google login error:",
+            error
+        );
+
+
+        alert(
+            "Unable to complete Google login. Please try again."
+        );
+
+    }
+
+}
+
+</script>
 
 
 <style>
@@ -305,6 +425,61 @@ Login | Levetor Hub
 }
 
 
+/* GOOGLE LOGIN */
+
+.google-divider {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin: 28px 0 22px;
+
+    color: #8a94a6;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+.google-divider::before,
+.google-divider::after {
+
+    content: "";
+
+    flex: 1;
+
+    height: 1px;
+
+    background: #e2e6eb;
+
+}
+
+
+.google-login-container {
+
+    width: 100%;
+
+    display: flex;
+
+    justify-content: center;
+
+    overflow: hidden;
+
+}
+
+
+.google-login-container .g_id_signin {
+
+    width: 100%;
+
+}
+
+
 .auth-footer {
 
     text-align: center;
@@ -328,6 +503,35 @@ Login | Levetor Hub
     font-weight: 600;
 
     text-decoration: none;
+
+}
+
+
+.continue-shopping {
+
+    text-align: center;
+
+    margin-top: 18px;
+
+}
+
+
+.continue-shopping a {
+
+    color: #07133d;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+}
+
+
+.continue-shopping a:hover {
+
+    color: #0878c9;
 
 }
 

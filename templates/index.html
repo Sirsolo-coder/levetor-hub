@@ -613,6 +613,79 @@ Levetor Hub | Every Gadget You Love, One Hub
         .lh-product-info {
             padding: 10px;
         }
+        /* =========================================================
+   ABOUT / CONTACT SECTIONS
+========================================================= */
+
+.lh-info-section {
+    padding: 50px 16px;
+    scroll-margin-top: 90px;
+}
+
+.lh-info-card {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.lh-info-icon {
+    width: 58px;
+    height: 58px;
+    min-width: 58px;
+
+    border-radius: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #111827;
+    color: #ffffff;
+
+    font-size: 24px;
+}
+
+.lh-info-card h2 {
+    margin: 0 0 14px;
+    font-weight: 700;
+}
+
+.lh-info-card p {
+    margin-bottom: 12px;
+    line-height: 1.7;
+    color: #555;
+}
+
+.lh-contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.lh-contact-actions .btn {
+    border-radius: 10px;
+    padding: 10px 18px;
+}
+
+@media (max-width: 768px) {
+    .lh-info-card {
+        padding: 24px;
+        flex-direction: column;
+    }
+
+    .lh-info-section {
+        padding: 35px 14px;
+    }
+}
     }
 </style>
 
@@ -1088,7 +1161,81 @@ Levetor Hub | Every Gadget You Love, One Hub
     </section>
 
 </div>
+<!-- =========================================================
+     ABOUT US
+========================================================= -->
+<section id="about" class="lh-info-section">
+    <div class="container">
+        <div class="lh-info-card">
+            <div class="lh-info-icon">
+                <i class="bi bi-info-circle-fill"></i>
+            </div>
 
+            <div>
+                <h2>About Levetor Hub</h2>
+
+                <p>
+                    Levetor Hub is your one-stop destination for gadgets,
+                    electronics and tech products. We make it simple to
+                    discover the gadgets you love and place your order from
+                    one convenient platform.
+                </p>
+
+                <p>
+                    Our goal is to provide customers with a simple,
+                    convenient and reliable shopping experience.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- =========================================================
+     CONTACT
+========================================================= -->
+<section id="contact" class="lh-info-section">
+    <div class="container">
+        <div class="lh-info-card">
+
+            <div class="lh-info-icon">
+                <i class="bi bi-headset"></i>
+            </div>
+
+            <div>
+                <h2>Contact Us</h2>
+
+                <p>
+                    Need help with an order, product or payment?
+                    Our support team is available to assist you.
+                </p>
+
+                <div class="lh-contact-actions">
+
+                    <a
+                        href="https://wa.me/2349131542208"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="btn btn-success"
+                    >
+                        <i class="bi bi-whatsapp"></i>
+                        WhatsApp Us
+                    </a>
+
+                    <a
+                        href="tel:+2349131542208"
+                        class="btn btn-outline-dark"
+                    >
+                        <i class="bi bi-telephone"></i>
+                        Call Us
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
