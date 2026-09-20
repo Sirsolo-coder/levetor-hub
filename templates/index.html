@@ -1,579 +1,1383 @@
-{% extends "base.html" %}
-
+﻿{% extends "base.html" %}
 
 {% block title %}
-
 Levetor Hub | Every Gadget You Love, One Hub
-
 {% endblock %}
-
 
 {% block content %}
 
+<style>
+    /* Hide duplicate logo/brand from the shared navbar */
+.navbar .navbar-brand {
+    display: none !important;
+}
+    /* Hide duplicate logo/brand from shared navbar */
+    .navbar .navbar-brand {
+        display: none !important;
+    }
+    /* =========================================================
+       LEVETOR HUB WEB HOMEPAGE
+       MATCHES FLUTTER MOBILE HOME SCREEN
+       ========================================================= */
 
-<!-- ================= HERO ================= -->
+    :root {
+        --lh-sky: #29B6F6;
+        --lh-sky-dark: #039BE5;
+        --lh-black: #212121;
+        --lh-grey: #757575;
+        --lh-light: #FAFAFA;
+        --lh-border: #E0E0E0;
+        --lh-red: #E53935;
+    }
 
-<section class="hero-section">
+    .lh-home {
+        background: #fff;
+        color: var(--lh-black);
+        min-height: 100vh;
+    }
 
-    <div class="container">
+    /* =========================================================
+       BRAND HEADER
+       ========================================================= */
 
-        <div class="row align-items-center">
+    .lh-brand-header {
+        background: #fff;
+        text-align: center;
+        padding: 28px 16px 24px;
+    }
 
-            <div class="col-lg-7">
+    .lh-logo-box {
+        width: 110px;
+        height: 110px;
+        margin: 0 auto 14px;
+        border-radius: 20px;
+        background: #fff;
+        border: 1px solid rgba(41, 182, 246, .45);
+        box-shadow: 0 3px 12px rgba(41, 182, 246, .08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
 
-                <span class="hero-badge">
+    .lh-logo-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 5px;
+    }
 
-                    🚀 YOUR DIGITAL GADGET HUB
+    .lh-brand-name {
+        color: var(--lh-sky);
+        font-size: 28px;
+        font-weight: 800;
+        margin: 0;
+    }
 
+    .lh-tagline {
+        color: var(--lh-sky);
+        font-size: 17px;
+        font-weight: 600;
+        margin: 5px 0 3px;
+    }
+
+    .lh-subtitle {
+        color: #757575;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    /* =========================================================
+       SEARCH
+       ========================================================= */
+
+    .lh-search-section {
+        padding: 0 16px 14px;
+        background: #fff;
+    }
+
+    .lh-search-box {
+        position: relative;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .lh-search-box .lh-search-icon {
+        position: absolute;
+        left: 17px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--lh-sky);
+        font-size: 18px;
+        z-index: 2;
+    }
+
+    .lh-search-input {
+        width: 100%;
+        min-height: 52px;
+        padding: 0 50px 0 47px;
+        border-radius: 16px;
+        border: 1px solid #E0E0E0;
+        background: #FAFAFA;
+        color: var(--lh-black);
+        font-size: 14px;
+        outline: none;
+        transition: .2s ease;
+    }
+
+    .lh-search-input:focus {
+        border: 1.5px solid var(--lh-sky);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(41, 182, 246, .08);
+    }
+
+    .lh-search-input::placeholder {
+        color: #9E9E9E;
+    }
+
+    .lh-clear-search {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: 0;
+        background: transparent;
+        color: var(--lh-sky);
+        font-size: 18px;
+        display: none;
+        cursor: pointer;
+    }
+
+    /* =========================================================
+       CATEGORY CHIPS
+       ========================================================= */
+
+    .lh-category-scroll {
+        overflow-x: auto;
+        scrollbar-width: thin;
+        padding: 4px 16px 14px;
+        background: #fff;
+    }
+
+    .lh-category-scroll::-webkit-scrollbar {
+        height: 5px;
+    }
+
+    .lh-category-scroll::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 10px;
+    }
+
+    .lh-category-list {
+        display: flex;
+        gap: 9px;
+        min-width: max-content;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .lh-category-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 40px;
+        padding: 0 14px;
+        border-radius: 22px;
+        background: #fff;
+        border: 1px solid #D6D6D6;
+        color: #212121;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+        transition: .2s ease;
+    }
+
+    .lh-category-chip i {
+        color: var(--lh-sky);
+        font-size: 16px;
+    }
+
+    .lh-category-chip:hover {
+        color: var(--lh-sky);
+        border-color: var(--lh-sky);
+        background: rgba(41, 182, 246, .04);
+    }
+
+    .lh-category-chip.active {
+        background: var(--lh-sky);
+        border-color: var(--lh-sky);
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .lh-category-chip.active i {
+        color: #fff;
+    }
+
+    /* =========================================================
+       PRODUCTS HEADER
+       ========================================================= */
+
+    .lh-products-section {
+        background: #fff;
+        padding: 10px 16px 60px;
+    }
+
+    .lh-products-container {
+        max-width: 1250px;
+        margin: 0 auto;
+    }
+
+    .lh-products-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin: 5px 0 18px;
+    }
+
+    .lh-products-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+        color: var(--lh-black);
+        font-size: 22px;
+        font-weight: 800;
+    }
+
+    .lh-products-title i {
+        color: var(--lh-sky);
+    }
+
+    .lh-product-count {
+        color: #757575;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .lh-selected-category {
+        margin: -8px 0 18px;
+        color: #757575;
+        font-size: 13px;
+    }
+
+    .lh-selected-category strong {
+        color: var(--lh-sky);
+    }
+
+    /* =========================================================
+       PRODUCT GRID
+       ========================================================= */
+
+    .lh-product-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    /* =========================================================
+       PRODUCT CARD
+       ========================================================= */
+
+    .lh-product-card {
+        background: #fff;
+        border: 1px solid #EEEEEE;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 7px rgba(0, 0, 0, .07);
+        transition: .22s ease;
+        min-width: 0;
+    }
+
+    .lh-product-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 22px rgba(0, 0, 0, .10);
+        border-color: rgba(41, 182, 246, .35);
+    }
+
+    .lh-product-image {
+        position: relative;
+        aspect-ratio: 1.15;
+        background: #FAFAFA;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .lh-product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: .25s ease;
+    }
+
+    .lh-product-card:hover .lh-product-image img {
+        transform: scale(1.035);
+    }
+
+    .lh-out-of-stock {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--lh-red);
+        color: #fff;
+        padding: 5px 8px;
+        border-radius: 7px;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: .2px;
+    }
+
+    .lh-image-placeholder {
+        color: #BDBDBD;
+        font-size: 46px;
+    }
+
+    .lh-product-info {
+        padding: 12px;
+    }
+
+    .lh-product-name {
+        color: var(--lh-black);
+        font-size: 15px;
+        line-height: 1.35;
+        font-weight: 700;
+        margin: 0 0 5px;
+        min-height: 40px;
+
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .lh-product-category {
+        color: #757575;
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+
+    .lh-product-brand {
+        color: #616161;
+        font-size: 11px;
+        min-height: 17px;
+        margin-bottom: 8px;
+    }
+
+    .lh-product-price {
+        color: #546E7A;
+        font-size: 18px;
+        line-height: 1.2;
+        font-weight: 800;
+        margin-bottom: 9px;
+    }
+
+    .lh-stock-row {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        min-height: 19px;
+        color: #616161;
+        font-size: 11px;
+        margin-bottom: 10px;
+    }
+
+    .lh-stock-row i {
+        color: var(--lh-sky);
+        font-size: 15px;
+    }
+
+    .lh-stock-row.out i {
+        color: var(--lh-red);
+    }
+
+    .lh-stock-row.out {
+        color: var(--lh-red);
+    }
+
+    /* =========================================================
+       ADD TO CART
+       ========================================================= */
+
+    .lh-add-cart {
+        width: 100%;
+        min-height: 42px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--lh-sky);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: none;
+        transition: .2s ease;
+    }
+
+    .lh-add-cart:hover {
+        background: var(--lh-sky-dark);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .lh-add-cart:disabled {
+        background: #BDBDBD;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* =========================================================
+       EMPTY STATE
+       ========================================================= */
+
+    .lh-empty-state {
+        text-align: center;
+        padding: 70px 20px;
+    }
+
+    .lh-empty-state i {
+        color: var(--lh-sky);
+        font-size: 70px;
+        margin-bottom: 15px;
+    }
+
+    .lh-empty-state h3 {
+        color: var(--lh-black);
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .lh-empty-state p {
+        color: #757575;
+        font-size: 13px;
+        margin-bottom: 18px;
+    }
+
+    .lh-clear-filters {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 0 17px;
+        border-radius: 9px;
+        border: 1px solid var(--lh-sky);
+        background: #fff;
+        color: var(--lh-sky);
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .lh-clear-filters:hover {
+        background: var(--lh-sky);
+        color: #fff;
+    }
+
+    /* =========================================================
+       DESKTOP TOP CONTROLS
+       ========================================================= */
+
+    .lh-top-controls {
+        max-width: 1250px;
+        margin: 0 auto;
+        padding: 14px 16px 0;
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .lh-top-control {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        border: 1px solid #E0E0E0;
+        background: #fff;
+        color: var(--lh-sky);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+    .lh-top-control:hover {
+        color: #fff;
+        background: var(--lh-sky);
+        border-color: var(--lh-sky);
+    }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (min-width: 700px) {
+
+        .lh-product-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .lh-brand-header {
+            padding-top: 24px;
+        }
+
+        .lh-logo-box {
+            width: 105px;
+            height: 105px;
+        }
+    }
+
+    @media (min-width: 1100px) {
+
+        .lh-product-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .lh-brand-header {
+            padding-top: 18px;
+        }
+
+        .lh-brand-name {
+            font-size: 30px;
+        }
+
+        .lh-search-section {
+            padding-bottom: 15px;
+        }
+
+        .lh-products-section {
+            padding-top: 12px;
+        }
+    }
+
+    @media (max-width: 575px) {
+
+        .lh-top-controls {
+            padding-top: 10px;
+        }
+
+        .lh-brand-header {
+            padding-top: 18px;
+        }
+
+        .lh-logo-box {
+            width: 82px;
+            height: 82px;
+            border-radius: 18px;
+        }
+
+        .lh-brand-name {
+            font-size: 22px;
+        }
+
+        .lh-tagline {
+            font-size: 16px;
+        }
+
+        .lh-subtitle {
+            font-size: 12px;
+        }
+
+        .lh-products-title {
+            font-size: 19px;
+        }
+
+        .lh-product-count {
+            font-size: 11px;
+        }
+
+        .lh-product-name {
+            font-size: 13px;
+            min-height: 35px;
+        }
+
+        .lh-product-price {
+            font-size: 16px;
+        }
+
+        .lh-add-cart {
+            min-height: 38px;
+            font-size: 11px;
+        }
+
+        .lh-product-info {
+            padding: 10px;
+        }
+    }
+</style>
+
+
+<div class="lh-home">
+
+    <!-- =====================================================
+         TOP CONTROLS
+         ===================================================== -->
+
+    <div class="lh-top-controls">
+
+        <a
+            href="{{ url_for('home') }}"
+            class="lh-top-control"
+            title="Refresh products"
+        >
+            <i class="bi bi-arrow-clockwise"></i>
+        </a>
+
+        <a
+            href="{{ url_for('cart') }}"
+            class="lh-top-control"
+            title="Shopping cart"
+        >
+            <i class="bi bi-cart3"></i>
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         BRAND HEADER
+         ===================================================== -->
+
+    <section class="lh-brand-header">
+
+        <div class="lh-logo-box">
+
+            <img
+                src="{{ url_for(
+                    'static',
+                    filename='images/logo.png'
+                ) }}"
+                alt="Levetor Hub"
+            >
+
+        </div>
+
+        <h1 class="lh-brand-name">
+            Levetor Hub
+        </h1>
+
+        <div class="lh-tagline">
+            Every Gadget You Love, One Hub
+        </div>
+
+        <p class="lh-subtitle">
+            Quality Gadgets, Electronics &amp; Technology Solutions
+        </p>
+
+    </section>
+
+
+    <!-- =====================================================
+         SEARCH
+         ===================================================== -->
+
+    <section class="lh-search-section">
+
+        <div class="lh-search-box">
+
+            <i class="bi bi-search lh-search-icon"></i>
+
+            <input
+                type="text"
+                id="lhSearch"
+                class="lh-search-input"
+                placeholder="Search gadgets, brands or models..."
+                autocomplete="off"
+            >
+
+            <button
+                type="button"
+                id="lhClearSearch"
+                class="lh-clear-search"
+                aria-label="Clear search"
+            >
+                <i class="bi bi-x-circle-fill"></i>
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CATEGORIES
+         ===================================================== -->
+
+    <section class="lh-category-scroll">
+
+        <div class="lh-category-list">
+
+            <a
+                href="{{ url_for('home') }}"
+                class="lh-category-chip active"
+                data-category="All"
+            >
+                <i class="bi bi-grid"></i>
+                <span>All</span>
+            </a>
+
+            <a
+                href="{{ url_for('shop', category='Phones') }}"
+                class="lh-category-chip"
+                data-category="Phones"
+            >
+                <i class="bi bi-phone"></i>
+                <span>Phones</span>
+            </a>
+
+            <a
+                href="{{ url_for('shop', category='Computers') }}"
+                class="lh-category-chip"
+                data-category="Computers"
+            >
+                <i class="bi bi-laptop"></i>
+                <span>Computers</span>
+            </a>
+
+            <a
+                href="{{ url_for('shop', category='Accessories') }}"
+                class="lh-category-chip"
+                data-category="Accessories"
+            >
+                <i class="bi bi-device-ssd"></i>
+                <span>Accessories</span>
+            </a>
+
+            <a
+                href="{{ url_for('shop', category='Tablets') }}"
+                class="lh-category-chip"
+                data-category="Tablets"
+            >
+                <i class="bi bi-tablet"></i>
+                <span>Tablets</span>
+            </a>
+
+            <a
+                href="{{ url_for('shop', category='Audio & Headphones') }}"
+                class="lh-category-chip"
+                data-category="Audio & Headphones"
+            >
+                <i class="bi bi-headphones"></i>
+                <span>Audio &amp; Headphones</span>
+            </a>
+
+            <a
+                href="{{ url_for('shop', category='Gaming') }}"
+                class="lh-category-chip"
+                data-category="Gaming"
+            >
+                <i class="bi bi-controller"></i>
+                <span>Gaming</span>
+            </a>
+
+            <a
+                href="{{ url_for('shop', category='Home Appliances') }}"
+                class="lh-category-chip"
+                data-category="Home Appliances"
+            >
+                <i class="bi bi-house"></i>
+                <span>Home Appliances</span>
+            </a>
+
+            <a
+                href="{{ url_for('shop', category='Softwares') }}"
+                class="lh-category-chip"
+                data-category="Softwares"
+            >
+                <i class="bi bi-grid-1x2"></i>
+                <span>Softwares</span>
+            </a>
+
+            <a
+                href="{{ url_for('shop', category='Solar & Power') }}"
+                class="lh-category-chip"
+                data-category="Solar & Power"
+            >
+                <i class="bi bi-sun"></i>
+                <span>Solar &amp; Power</span>
+            </a>
+
+            <a
+                href="{{ url_for('shop', category='Others') }}"
+                class="lh-category-chip"
+                data-category="Others"
+            >
+                <i class="bi bi-box"></i>
+                <span>Others</span>
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PRODUCTS
+         ===================================================== -->
+
+    <section class="lh-products-section">
+
+        <div class="lh-products-container">
+
+            <div class="lh-products-header">
+
+                <h2 class="lh-products-title">
+                    <i class="bi bi-bag"></i>
+                    Products
+                </h2>
+
+                <span
+                    class="lh-product-count"
+                    id="lhProductCount"
+                >
+                    {{ products|length }} found
                 </span>
 
-
-                <h1>
-
-                    Every Gadget You Love,
-
-                    <span>One Hub.</span>
-
-                </h1>
-
-
-                <p class="hero-description">
-
-                    Discover quality laptops, phones,
-                    tablets, accessories and other
-                    electronics — all in one place.
-
-                </p>
-
-
-                <div class="hero-buttons">
-
-                    <a href="#categories"
-                       class="btn-primary-custom">
-
-                        Explore Products →
-
-                    </a>
-
-
-                    <a
-                        href="https://wa.me/2349131542208"
-                        target="_blank"
-                        class="btn-outline-custom">
-
-                        💬 Chat With Us
-
-                    </a>
-
-                </div>
-
-
-                <div class="hero-features">
-
-                    <div>
-                        <strong>✓</strong>
-                        Quality Products
-                    </div>
-
-                    <div>
-                        <strong>✓</strong>
-                        Great Prices
-                    </div>
-
-                    <div>
-                        <strong>✓</strong>
-                        Customer Support
-                    </div>
-
-                </div>
-
             </div>
 
 
-            <div class="col-lg-5">
-
-                <div class="hero-product">
-
-                    <div class="floating-card card-one">
-
-                        💻
-                        <span>Laptops</span>
-
-                    </div>
-
-
-                    <div class="floating-card card-two">
-
-                        📱
-                        <span>Phones</span>
-
-                    </div>
-
-
-                    <div class="hero-circle">
-
-                        <img
-                            src="{{ url_for(
-                                'static',
-                                filename='images/logo.png'
-                            ) }}"
-                            alt="Levetor Hub">
-
-                    </div>
-
-
-                    <div class="floating-card card-three">
-
-                        🎧
-                        <span>Accessories</span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- ================= TRUST BAR ================= -->
-
-<section class="trust-section">
-
-    <div class="container">
-
-        <div class="row text-center">
-
-            <div class="col-md-3">
-
-                <div class="trust-item">
-
-                    <span>🚚</span>
-
-                    <div>
-                        <strong>Fast Delivery</strong>
-                        <small>Across Nigeria</small>
-                    </div>
-
-                </div>
-
+            <div
+                class="lh-selected-category"
+                id="lhSelectedCategory"
+                style="display:none;"
+            >
+                Showing:
+                <strong id="lhSelectedCategoryText"></strong>
             </div>
 
 
-            <div class="col-md-3">
+            <div
+                class="lh-product-grid"
+                id="lhProductGrid"
+            >
 
-                <div class="trust-item">
+                {% if products %}
 
-                    <span>🛡️</span>
+                    {% for product in products %}
 
-                    <div>
-                        <strong>Quality Products</strong>
-                        <small>Trusted Gadgets</small>
-                    </div>
+                        <div
+                            class="lh-product-card"
+                            data-product-name="{{ product['name']|lower }}"
+                            data-product-category="{{ product['category']|lower }}"
+                            data-product-brand="{{ (product['brand'] or '')|lower }}"
+                            data-product-model="{{ (product['model'] or '')|lower }}"
+                        >
 
-                </div>
+                            <a
+                                href="{{ url_for(
+                                    'product_details',
+                                    product_id=product['id']
+                                ) }}"
+                                style="text-decoration:none;"
+                            >
 
-            </div>
+                                <div class="lh-product-image">
 
+                                    {% if product["stock"]|int <= 0 %}
 
-            <div class="col-md-3">
+                                        <span class="lh-out-of-stock">
+                                            OUT OF STOCK
+                                        </span>
 
-                <div class="trust-item">
+                                    {% endif %}
 
-                    <span>💳</span>
 
-                    <div>
-                        <strong>Secure Payment</strong>
-                        <small>Safe Transactions</small>
-                    </div>
+                                    {% if product["image"] %}
 
-                </div>
+                                        <img
+                                            src="{% if product['image'].startswith('http://') or product['image'].startswith('https://') %}{{ product['image'] }}{% else %}{{ url_for('static', filename='uploads/' + product['image']) }}{% endif %}"
+                                            alt="{{ product['name'] }}"
+                                            loading="lazy"
+                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                                        >
 
-            </div>
+                                        <div
+                                            class="lh-image-placeholder"
+                                            style="display:none;"
+                                        >
+                                            <i class="bi bi-image"></i>
+                                        </div>
 
+                                    {% else %}
 
-            <div class="col-md-3">
+                                        <div class="lh-image-placeholder">
+                                            <i class="bi bi-box-seam"></i>
+                                        </div>
 
-                <div class="trust-item">
+                                    {% endif %}
 
-                    <span>💬</span>
+                                </div>
 
-                    <div>
-                        <strong>Customer Support</strong>
-                        <small>We're Here To Help</small>
-                    </div>
+                            </a>
 
-                </div>
 
-            </div>
+                            <div class="lh-product-info">
 
-        </div>
+                                <div class="lh-product-name">
+                                    {{ product["name"] }}
+                                </div>
 
-    </div>
 
-</section>
+                                <div class="lh-product-category">
+                                    {{ product["category"] }}
+                                </div>
 
 
+                                <div class="lh-product-brand">
 
-<!-- ================= CATEGORIES ================= -->
+                                    {% if product["brand"] %}
+                                        {{ product["brand"] }}
+                                    {% endif %}
 
-<section
-    class="categories-section"
-    id="categories">
+                                    {% if product["model"] %}
+                                        {% if product["brand"] %}
+                                            â€¢
+                                        {% endif %}
+                                        {{ product["model"] }}
+                                    {% endif %}
 
-    <div class="container">
+                                </div>
 
-        <div class="section-heading">
 
-            <span>EXPLORE</span>
+                                <div class="lh-product-price">
+                                    &#8358;{{ "{:,.2f}".format(product["price"]|float) }}
+                                </div>
 
-            <h2>Shop By Category</h2>
 
-            <p>
-                Find the right technology for your needs.
-            </p>
+                                {% if product["stock"]|int > 0 %}
 
-        </div>
+                                    <div class="lh-stock-row">
 
+                                        <i class="bi bi-box-seam"></i>
 
-        <div class="row g-4">
+                                        <span>
+                                            {{ product["stock"] }} in stock
+                                        </span>
 
-
-            <!-- COMPUTERS -->
-
-            <div class="col-6 col-lg-4">
-
-                <a
-                    href="{{ url_for('shop', category='Computers') }}"
-                    class="category-box"
-                >
-
-                    <div class="category-icon">
-                        💻
-                    </div>
-
-                    <h4>Computers</h4>
-
-                    <p>
-                        Laptops & Desktops
-                    </p>
-
-                </a>
-
-            </div>
-
-
-            <!-- PHONES -->
-
-            <div class="col-6 col-lg-4">
-
-                <a
-                    href="{{ url_for('shop', category='Phones') }}"
-                    class="category-box"
-                >
-
-                    <div class="category-icon">
-                        📱
-                    </div>
-
-                    <h4>Phones</h4>
-
-                    <p>
-                        Smartphones & More
-                    </p>
-
-                </a>
-
-            </div>
-
-
-            <!-- TABLETS -->
-
-            <div class="col-6 col-lg-4">
-
-                <a
-                    href="{{ url_for('shop', category='Tablets') }}"
-                    class="category-box"
-                >
-
-                    <div class="category-icon">
-                        📲
-                    </div>
-
-                    <h4>Tablets</h4>
-
-                    <p>
-                        Tablets & Accessories
-                    </p>
-
-                </a>
-
-            </div>
-
-
-            <!-- ACCESSORIES -->
-
-            <div class="col-6 col-lg-4">
-
-                <a
-                    href="{{ url_for('shop', category='Accessories') }}"
-                    class="category-box"
-                >
-
-                    <div class="category-icon">
-                        🎧
-                    </div>
-
-                    <h4>Accessories</h4>
-
-                    <p>
-                        Audio & Computer Accessories
-                    </p>
-
-                </a>
-
-            </div>
-
-
-            <!-- HOME APPLIANCES -->
-
-            <div class="col-6 col-lg-4">
-
-                <a
-                    href="{{ url_for('shop', category='Home Appliances') }}"
-                    class="category-box"
-                >
-
-                    <div class="category-icon">
-                        🏠
-                    </div>
-
-                    <h4>Home Appliances</h4>
-
-                    <p>
-                        Smart Home Electronics
-                    </p>
-
-                </a>
-
-            </div>
-
-
-            <!-- AUDIO & VISUAL -->
-
-            <div class="col-6 col-lg-4">
-
-                <a
-                    href="{{ url_for('shop', category='Audio & Visual') }}"
-                    class="category-box"
-                >
-
-                    <div class="category-icon">
-                        📷
-                    </div>
-
-                    <h4>Audio & Visual</h4>
-
-                    <p>
-                        Cameras, Speakers & More
-                    </p>
-
-                </a>
-
-            </div>
-
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= FEATURED PRODUCTS ================= -->
-
-<section class="products-section">
-
-    <div class="container">
-
-        <div class="section-heading">
-
-            <span>LEVETOR HUB</span>
-
-            <h2>Featured Gadgets</h2>
-
-            <p>
-                Our latest products and best deals.
-            </p>
-
-        </div>
-
-
-        <!-- DYNAMIC PRODUCTS -->
-
-        <div class="row g-4">
-
-            {% if products %}
-
-                {% for product in products[:8] %}
-
-                    <div class="col-6 col-lg-3">
-
-                        <div class="product-card">
-
-                            <!-- PRODUCT IMAGE -->
-
-                            <div class="product-placeholder">
-
-                                {% if product["image"] %}
-
-                                    <img
-                                        src="{% if product['image'].startswith('http://') or product['image'].startswith('https://') %}{{ product['image'] }}{% else %}{{ url_for('static', filename='uploads/' + product['image']) }}{% endif %}"
-                                        alt="{{ product['name'] }}"
-                                        class="img-fluid"
-                                    >
+                                    </div>
 
                                 {% else %}
 
-                                    <div class="no-product-image">
-                                        📦
+                                    <div class="lh-stock-row out">
+
+                                        <i class="bi bi-dash-circle"></i>
+
+                                        <span>
+                                            Out of stock
+                                        </span>
+
                                     </div>
 
                                 {% endif %}
 
-                            </div>
 
-
-                            <!-- PRODUCT INFORMATION -->
-
-                            <div class="product-info">
-
-                                <small>
-                                    {{ product["category"] }}
-                                </small>
-
-                                <h5>
-                                    {{ product["name"] }}
-                                </h5>
-
-                                <h4>
-                                    ₦{{ "{:,.0f}".format(product["price"]) }}
-                                </h4>
-
-
-                                <a
-                                    href="{{ url_for(
-                                        'product_details',
+                                <form
+                                    method="POST"
+                                    action="{{ url_for(
+                                        'add_to_cart',
                                         product_id=product['id']
                                     ) }}"
-                                    class="product-btn"
+                                    class="lh-cart-form"
                                 >
-                                    View Product
-                                </a>
+
+                                    {% if product["stock"]|int > 0 %}
+
+                                        <button
+                                            type="submit"
+                                            class="lh-add-cart"
+                                        >
+                                            <i class="bi bi-cart-plus"></i>
+                                            Add to Cart
+                                        </button>
+
+                                    {% else %}
+
+                                        <button
+                                            type="button"
+                                            class="lh-add-cart"
+                                            disabled
+                                        >
+                                            <i class="bi bi-cart-x"></i>
+                                            Out of Stock
+                                        </button>
+
+                                    {% endif %}
+
+                                </form>
 
                             </div>
 
                         </div>
 
-                    </div>
+                    {% endfor %}
 
-                {% endfor %}
+                {% else %}
 
+                    <div
+                        class="lh-empty-state"
+                        style="grid-column: 1 / -1;"
+                    >
 
-            {% else %}
+                        <i class="bi bi-search"></i>
 
-                <!-- NO PRODUCTS -->
-
-                <div class="col-12">
-
-                    <div class="text-center py-5">
-
-                        <div style="font-size: 60px;">
-                            📦
-                        </div>
-
-                        <h4 class="mt-3">
-                            No products available yet
-                        </h4>
+                        <h3>
+                            No products found
+                        </h3>
 
                         <p>
-                            Our latest gadgets will appear here soon.
+                            Try another search or category.
                         </p>
+
+                        <a
+                            href="{{ url_for('shop') }}"
+                            class="lh-clear-filters"
+                        >
+                            Browse Products
+                        </a>
 
                     </div>
 
-                </div>
-
-            {% endif %}
-
-        </div>
-
-
-        <!-- VIEW ALL PRODUCTS -->
-
-        <div class="text-center mt-5">
-
-            <a
-                href="{{ url_for('shop') }}"
-                class="btn-primary-custom"
-            >
-                View All Products →
-            </a>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- ================= CTA ================= -->
-
-<section class="cta-section">
-
-    <div class="container">
-
-        <div class="cta-box">
-
-            <div>
-
-                <span>
-                    NEED HELP CHOOSING A GADGET?
-                </span>
-
-                <h2>
-                    Let's Help You Find The Right One.
-                </h2>
-
-                <p>
-                    Talk to our team and get expert
-                    recommendations based on your
-                    budget and needs.
-                </p>
+                {% endif %}
 
             </div>
 
 
-            <a
-                href="https://wa.me/2349131542208"
-                target="_blank"
-                class="btn-white">
+            <!-- =================================================
+                 DYNAMIC EMPTY SEARCH STATE
+                 ================================================= -->
 
-                💬 Chat With Levetor Hub
+            <div
+                id="lhSearchEmpty"
+                class="lh-empty-state"
+                style="display:none;"
+            >
 
-            </a>
+                <i class="bi bi-search"></i>
+
+                <h3>
+                    No products found
+                </h3>
+
+                <p>
+                    Try another search or category.
+                </p>
+
+                <button
+                    type="button"
+                    id="lhClearFilters"
+                    class="lh-clear-filters"
+                >
+                    Clear Filters
+                </button>
+
+            </div>
+
 
         </div>
 
-    </div>
+    </section>
 
-</section>
+</div>
 
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput =
+        document.getElementById("lhSearch");
+
+    const clearSearch =
+        document.getElementById("lhClearSearch");
+
+    const productCards =
+        Array.from(
+            document.querySelectorAll(
+                ".lh-product-card"
+            )
+        );
+
+    const productCount =
+        document.getElementById(
+            "lhProductCount"
+        );
+
+    const categoryChips =
+        Array.from(
+            document.querySelectorAll(
+                ".lh-category-chip"
+            )
+        );
+
+    const searchEmpty =
+        document.getElementById(
+            "lhSearchEmpty"
+        );
+
+    const clearFilters =
+        document.getElementById(
+            "lhClearFilters"
+        );
+
+    const selectedCategory =
+        document.getElementById(
+            "lhSelectedCategory"
+        );
+
+    const selectedCategoryText =
+        document.getElementById(
+            "lhSelectedCategoryText"
+        );
+
+
+    let activeCategory = "All";
+
+
+    function normalize(value) {
+        return String(value || "")
+            .toLowerCase()
+            .trim();
+    }
+
+
+    function filterProducts() {
+
+        const query =
+            normalize(searchInput.value);
+
+        let visibleCount = 0;
+
+
+        productCards.forEach(function (card) {
+
+            const name =
+                card.dataset.productName || "";
+
+            const category =
+                card.dataset.productCategory || "";
+
+            const brand =
+                card.dataset.productBrand || "";
+
+            const model =
+                card.dataset.productModel || "";
+
+
+            const matchesSearch =
+                !query ||
+                name.includes(query) ||
+                category.includes(query) ||
+                brand.includes(query) ||
+                model.includes(query);
+
+
+            const matchesCategory =
+                activeCategory === "All" ||
+                category === normalize(
+                    activeCategory
+                );
+
+
+            const visible =
+                matchesSearch &&
+                matchesCategory;
+
+
+            card.style.display =
+                visible ? "" : "block";
+
+            if (!visible) {
+                card.style.display = "none";
+            }
+
+            if (visible) {
+                visibleCount++;
+            }
+
+        });
+
+
+        productCount.textContent =
+            visibleCount + " found";
+
+
+        if (activeCategory !== "All") {
+
+            selectedCategory.style.display =
+                "block";
+
+            selectedCategoryText.textContent =
+                activeCategory;
+
+        } else {
+
+            selectedCategory.style.display =
+                "none";
+
+        }
+
+
+        if (query) {
+            clearSearch.style.display =
+                "block";
+        } else {
+            clearSearch.style.display =
+                "none";
+        }
+
+
+        if (visibleCount === 0) {
+
+            searchEmpty.style.display =
+                "block";
+
+        } else {
+
+            searchEmpty.style.display =
+                "none";
+
+        }
+
+    }
+
+
+    searchInput.addEventListener(
+        "input",
+        filterProducts
+    );
+
+
+    clearSearch.addEventListener(
+        "click",
+        function () {
+
+            searchInput.value = "";
+
+            filterProducts();
+
+            searchInput.focus();
+
+        }
+    );
+
+
+    categoryChips.forEach(
+        function (chip) {
+
+            chip.addEventListener(
+                "click",
+                function (event) {
+
+                    const category =
+                        chip.dataset.category;
+
+                    /*
+                     * Keep normal Flask navigation
+                     * for real category pages.
+                     * "All" stays on the homepage.
+                     */
+
+                    if (category === "All") {
+
+                        event.preventDefault();
+
+                        activeCategory = "All";
+
+                        categoryChips.forEach(
+                            function (item) {
+                                item.classList.remove(
+                                    "active"
+                                );
+                            }
+                        );
+
+                        chip.classList.add(
+                            "active"
+                        );
+
+                        filterProducts();
+
+                        return;
+
+                    }
+
+                    /*
+                     * On the homepage, prevent
+                     * navigation and filter locally.
+                     */
+
+                    event.preventDefault();
+
+                    activeCategory =
+                        category;
+
+                    categoryChips.forEach(
+                        function (item) {
+                            item.classList.remove(
+                                "active"
+                            );
+                        }
+                    );
+
+                    chip.classList.add(
+                        "active"
+                    );
+
+                    filterProducts();
+
+                }
+            );
+
+        }
+    );
+
+
+    clearFilters.addEventListener(
+        "click",
+        function () {
+
+            searchInput.value = "";
+
+            activeCategory = "All";
+
+            categoryChips.forEach(
+                function (item) {
+
+                    item.classList.remove(
+                        "active"
+                    );
+
+                    if (
+                        item.dataset.category ===
+                        "All"
+                    ) {
+                        item.classList.add(
+                            "active"
+                        );
+                    }
+
+                }
+            );
+
+            filterProducts();
+
+        }
+    );
+
+
+    filterProducts();
+
+});
+</script>
 
 {% endblock %}
+

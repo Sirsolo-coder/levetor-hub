@@ -81,7 +81,202 @@ if (
 GOOGLE_WEB_CLIENT_ID = os.getenv(
     "GOOGLE_WEB_CLIENT_ID"
 )
+# =========================================================
+# BREVO - PASSWORD RESET EMAIL
+# =========================================================
 
+BREVO_API_KEY = os.getenv("BREVO_API_KEY")
+BREVO_SENDER_EMAIL = os.getenv(
+    "BREVO_SENDER_EMAIL",
+    "levetorglobalsolutions@gmail.com"
+)
+BREVO_SENDER_NAME = os.getenv(
+    "BREVO_SENDER_NAME",
+    "Levetor Hub"
+)
+PUBLIC_BASE_URL = os.getenv(
+    "PUBLIC_BASE_URL",
+    "http://127.0.0.1:5000"
+)
+
+
+def send_password_reset_email(
+    recipient_email,
+    reset_link
+):
+
+    if not BREVO_API_KEY:
+        return False, "Brevo API key is not configured."
+
+    if not BREVO_SENDER_EMAIL:
+        return False, "Brevo sender email is not configured."
+
+    payload = {
+        "sender": {
+            "name": BREVO_SENDER_NAME,
+            "email": BREVO_SENDER_EMAIL
+        },
+        "to": [
+            {
+                "email": recipient_email
+            }
+        ],
+        "subject": "Reset Your Levetor Hub Password",
+        "htmlContent": f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password</title>
+</head>
+
+<body style="
+    margin:0;
+    padding:0;
+    background:#f4f6f8;
+    font-family:Arial,Helvetica,sans-serif;
+">
+
+    <div style="
+        max-width:600px;
+        margin:40px auto;
+        background:#ffffff;
+        border-radius:12px;
+        padding:32px;
+        box-shadow:0 4px 18px rgba(0,0,0,0.08);
+    ">
+
+        <h1 style="
+            margin-top:0;
+            color:#111827;
+        ">
+            Levetor Hub
+        </h1>
+
+        <h2 style="
+            color:#1f2937;
+        ">
+            Password Reset Request
+        </h2>
+
+        <p style="
+            color:#4b5563;
+            line-height:1.6;
+        ">
+            We received a request to reset the password
+            for your Levetor Hub account.
+        </p>
+
+        <p style="
+            color:#4b5563;
+            line-height:1.6;
+        ">
+            Click the button below to create a new password.
+        </p>
+
+        <div style="
+            text-align:center;
+            margin:30px 0;
+        ">
+
+            <a href="{reset_link}"
+               style="
+                   display:inline-block;
+                   padding:14px 24px;
+                   background:#111827;
+                   color:#ffffff;
+                   text-decoration:none;
+                   border-radius:8px;
+                   font-weight:bold;
+               ">
+                Reset My Password
+            </a>
+
+        </div>
+
+        <p style="
+            color:#6b7280;
+            font-size:14px;
+            line-height:1.6;
+        ">
+            This password reset link will expire in
+            <strong>30 minutes</strong>.
+        </p>
+
+        <p style="
+            color:#6b7280;
+            font-size:14px;
+            line-height:1.6;
+        ">
+            If you did not request a password reset,
+            you can safely ignore this email.
+        </p>
+
+        <hr style="
+            border:0;
+            border-top:1px solid #e5e7eb;
+            margin:30px 0;
+        ">
+
+        <p style="
+            color:#9ca3af;
+            font-size:12px;
+            text-align:center;
+        ">
+            Levetor Hub<br>
+            Every Gadget You Love, One Hub.
+        </p>
+
+    </div>
+
+</body>
+</html>
+""",
+        "textContent": (
+            "Levetor Hub Password Reset\n\n"
+            "We received a request to reset your password.\n\n"
+            f"Reset your password using this link:\n{reset_link}\n\n"
+            "This link expires in 30 minutes.\n\n"
+            "If you did not request this, you can ignore this email."
+        )
+    }
+
+    headers = {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY,
+        "content-type": "application/json"
+    }
+
+    try:
+
+        response = requests.post(
+            "https://api.brevo.com/v3/smtp/email",
+            headers=headers,
+            json=payload,
+            timeout=15
+        )
+
+        if 200 <= response.status_code < 300:
+
+            return True, None
+
+        try:
+            error_data = response.json()
+        except Exception:
+            error_data = response.text
+
+        return False, (
+            f"Brevo email failed "
+            f"({response.status_code}): {error_data}"
+        )
+
+    except requests.RequestException as exc:
+
+        return False, (
+            f"Unable to connect to Brevo: {exc}"
+        )
 # =========================================================
 # FLASK APPLICATION
 # =========================================================
@@ -1543,6 +1738,1555 @@ def api_login():
     }), 200
 
 # =========================================================
+# CUSTOMER WEB AUTHENTICATION
+# =========================================================
+
+@app.route(
+    "/login",
+    methods=["GET", "POST"]
+)
+def customer_login():
+
+    if session.get("customer_id"):
+
+        return redirect(
+            url_for("customer_account")
+        )
+
+    if request.method == "POST":
+
+        email = str(
+            request.form.get(
+                "email",
+                ""
+            )
+        ).strip().lower()
+
+        password = str(
+            request.form.get(
+                "password",
+                ""
+            )
+        )
+
+        if not email or not password:
+
+            flash(
+                "Email and password are required.",
+                "danger"
+            )
+
+            return render_template(
+                "customer_login.html",
+                google_web_client_id=GOOGLE_WEB_CLIENT_ID
+            )
+
+        conn = get_db()
+
+        customer = conn.execute(
+            """
+            SELECT
+                id,
+                fullname,
+                email,
+                phone,
+                address,
+                password_hash
+            FROM customers
+            WHERE email = ?
+            """,
+            (
+                email,
+            )
+        ).fetchone()
+
+        conn.close()
+
+        if customer is None:
+
+            flash(
+                "Invalid email or password.",
+                "danger"
+            )
+
+            return render_template(
+                "customer_login.html",
+                google_web_client_id=GOOGLE_WEB_CLIENT_ID
+            )
+
+        password_hash = customer["password_hash"]
+
+        if not password_hash:
+
+            flash(
+                "This account does not have a password. "
+                "Please use Continue with Google.",
+                "warning"
+            )
+
+            return render_template(
+                "customer_login.html",
+                google_web_client_id=GOOGLE_WEB_CLIENT_ID
+            )
+
+        if not check_password_hash(
+            password_hash,
+            password
+        ):
+
+            flash(
+                "Invalid email or password.",
+                "danger"
+            )
+
+            return render_template(
+                "customer_login.html",
+                google_web_client_id=GOOGLE_WEB_CLIENT_ID
+            )
+
+        session["customer_id"] = int(
+            customer["id"]
+        )
+
+        session["customer_fullname"] = (
+            customer["fullname"]
+        )
+
+        session["customer_email"] = (
+            customer["email"]
+        )
+
+        session.modified = True
+
+        flash(
+            f"Welcome back, {customer['fullname']}!",
+            "success"
+        )
+
+        return redirect(
+            url_for("customer_account")
+        )
+
+    return render_template(
+        "customer_login.html",
+        google_web_client_id=GOOGLE_WEB_CLIENT_ID
+    )
+# =========================================================
+# BROWSER - CUSTOMER REGISTRATION
+# =========================================================
+
+@app.route(
+    "/register",
+    methods=["GET", "POST"]
+)
+def customer_register():
+
+    if session.get("customer_id"):
+
+        return redirect(
+            url_for("customer_account")
+        )
+
+    if request.method == "POST":
+
+        fullname = str(
+            request.form.get(
+                "fullname",
+                ""
+            )
+        ).strip()
+
+        email = str(
+            request.form.get(
+                "email",
+                ""
+            )
+        ).strip().lower()
+
+        phone = str(
+            request.form.get(
+                "phone",
+                ""
+            )
+        ).strip()
+
+        address = str(
+            request.form.get(
+                "address",
+                ""
+            )
+        ).strip()
+
+        password = str(
+            request.form.get(
+                "password",
+                ""
+            )
+        )
+
+        confirm_password = str(
+            request.form.get(
+                "confirm_password",
+                ""
+            )
+        )
+
+        if not fullname or not email or not phone or not password:
+
+            flash(
+                "Full name, email, phone and password are required.",
+                "danger"
+            )
+
+            return render_template(
+                "register.html"
+            )
+
+        if len(password) < 8:
+
+            flash(
+                "Password must be at least 8 characters.",
+                "danger"
+            )
+
+            return render_template(
+                "register.html"
+            )
+
+        if password != confirm_password:
+
+            flash(
+                "Passwords do not match.",
+                "danger"
+            )
+
+            return render_template(
+                "register.html"
+            )
+
+        conn = get_db()
+
+        existing_customer = conn.execute(
+            """
+            SELECT id
+            FROM customers
+            WHERE email = ?
+            """,
+            (
+                email,
+            )
+        ).fetchone()
+
+        if existing_customer:
+
+            conn.close()
+
+            flash(
+                "An account with this email already exists. "
+                "Please login instead.",
+                "warning"
+            )
+
+            return render_template(
+                "register.html"
+            )
+
+        password_hash = generate_password_hash(
+            password
+        )
+
+        cursor = conn.execute(
+            """
+            INSERT INTO customers
+            (
+                fullname,
+                email,
+                phone,
+                address,
+                password_hash
+            )
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                fullname,
+                email,
+                phone,
+                address,
+                password_hash
+            )
+        )
+
+        conn.commit()
+
+        customer_id = cursor.lastrowid
+
+        conn.close()
+
+        session["customer_id"] = int(
+            customer_id
+        )
+
+        session["customer_fullname"] = fullname
+        session["customer_email"] = email
+
+        session.modified = True
+
+        flash(
+            "Account created successfully. Welcome to Levetor Hub!",
+            "success"
+        )
+
+        return redirect(
+            url_for("customer_account")
+        )
+
+    return render_template(
+        "register.html"
+    )
+
+
+# =========================================================
+# BROWSER - FORGOT PASSWORD
+# =========================================================
+
+@app.route(
+    "/forgot-password",
+    methods=["GET", "POST"]
+)
+def forgot_password():
+
+    if request.method == "POST":
+
+        email = str(
+            request.form.get(
+                "email",
+                ""
+            )
+        ).strip().lower()
+
+        if not email:
+
+            flash(
+                "Please enter your email address.",
+                "danger"
+            )
+
+            return render_template(
+                "forgot_password.html"
+            )
+
+        conn = get_db()
+
+        customer = conn.execute(
+            """
+            SELECT
+                id,
+                email
+            FROM customers
+            WHERE email = ?
+            """,
+            (
+                email,
+            )
+        ).fetchone()
+
+        if customer is None:
+
+            conn.close()
+
+            flash(
+                "No account was found with that email address.",
+                "danger"
+            )
+
+            return render_template(
+                "forgot_password.html"
+            )
+
+        # -------------------------------------------------
+        # CREATE SECURE RESET TOKEN
+        # -------------------------------------------------
+
+        reset_token = secrets.token_urlsafe(
+            32
+        )
+
+        reset_expiry = (
+            datetime.now()
+            + timedelta(minutes=30)
+        )
+
+        conn.execute(
+            """
+            UPDATE customers
+            SET
+                reset_token = ?,
+                reset_token_expiry = ?
+            WHERE id = ?
+            """,
+            (
+                reset_token,
+                reset_expiry,
+                customer["id"]
+            )
+        )
+
+        conn.commit()
+        conn.close()
+
+        # -------------------------------------------------
+        # CREATE PRODUCTION RESET LINK
+        # -------------------------------------------------
+
+        reset_link = (
+            PUBLIC_BASE_URL.rstrip("/")
+            + "/reset-password/"
+            + reset_token
+        )
+
+        # -------------------------------------------------
+        # SEND EMAIL
+        # -------------------------------------------------
+
+        email_sent, email_error = (
+            send_password_reset_email(
+                customer["email"],
+                reset_link
+            )
+        )
+
+        if not email_sent:
+
+            # Invalidate the token if email delivery failed.
+
+            conn = get_db()
+
+            conn.execute(
+                """
+                UPDATE customers
+                SET
+                    reset_token = NULL,
+                    reset_token_expiry = NULL
+                WHERE id = ?
+                """,
+                (
+                    customer["id"],
+                )
+            )
+
+            conn.commit()
+            conn.close()
+
+            app.logger.error(
+                "Password reset email failed: %s",
+                email_error
+            )
+
+            flash(
+                "We could not send the password reset email. "
+                "Please try again later.",
+                "danger"
+            )
+
+            return render_template(
+                "forgot_password.html"
+            )
+
+        # -------------------------------------------------
+        # EMAIL SENT
+        # -------------------------------------------------
+
+        flash(
+            "Password reset instructions have been sent "
+            "to your email address.",
+            "success"
+        )
+
+        return redirect(
+            url_for("customer_login")
+        )
+
+    return render_template(
+        "forgot_password.html"
+    )
+
+
+# =========================================================
+# BROWSER - RESET PASSWORD
+# =========================================================
+
+@app.route(
+    "/reset-password/<token>",
+    methods=["GET", "POST"]
+)
+def reset_password(token):
+
+    conn = get_db()
+
+    customer = conn.execute(
+        """
+        SELECT
+            id,
+            email,
+            reset_token,
+            reset_token_expiry
+        FROM customers
+        WHERE reset_token = ?
+        """,
+        (
+            token,
+        )
+    ).fetchone()
+
+    conn.close()
+
+    if customer is None:
+
+        flash(
+            "This password reset link is invalid.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("customer_login")
+        )
+
+    expiry_value = customer[
+        "reset_token_expiry"
+    ]
+
+    try:
+
+        expiry = datetime.fromisoformat(
+            str(expiry_value)
+        )
+
+    except (ValueError, TypeError):
+
+        flash(
+            "This password reset link is invalid.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("customer_login")
+        )
+
+    if datetime.now() > expiry:
+
+        flash(
+            "This password reset link has expired. "
+            "Please request a new one.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("forgot_password")
+        )
+
+    if request.method == "POST":
+
+        password = str(
+            request.form.get(
+                "password",
+                ""
+            )
+        )
+
+        confirm_password = str(
+            request.form.get(
+                "confirm_password",
+                ""
+            )
+        )
+
+        if len(password) < 8:
+
+            flash(
+                "Password must be at least 8 characters.",
+                "danger"
+            )
+
+            return render_template(
+                "reset_password.html"
+            )
+
+        if password != confirm_password:
+
+            flash(
+                "Passwords do not match.",
+                "danger"
+            )
+
+            return render_template(
+                "reset_password.html"
+            )
+
+        password_hash = generate_password_hash(
+            password
+        )
+
+        conn = get_db()
+
+        conn.execute(
+            """
+            UPDATE customers
+            SET
+                password_hash = ?,
+                reset_token = NULL,
+                reset_token_expiry = NULL
+            WHERE id = ?
+            """,
+            (
+                password_hash,
+                customer["id"]
+            )
+        )
+
+        conn.commit()
+        conn.close()
+
+        flash(
+            "Your password has been reset successfully. "
+            "You can now login.",
+            "success"
+        )
+
+        return redirect(
+            url_for("customer_login")
+        )
+
+    return render_template(
+        "reset_password.html"
+    )
+
+
+# =========================================================
+# BROWSER - GOOGLE LOGIN
+# =========================================================
+
+@app.route(
+    "/auth/google",
+    methods=["POST"]
+)
+def customer_google_login():
+
+    if not GOOGLE_WEB_CLIENT_ID:
+
+        return jsonify({
+            "success": False,
+            "message": "Google authentication is not configured."
+        }), 500
+
+    data = request.get_json(
+        silent=True
+    ) or {}
+
+    google_token = str(
+        data.get(
+            "id_token",
+            ""
+        )
+    ).strip()
+
+    if not google_token:
+
+        return jsonify({
+            "success": False,
+            "message": "Google authentication token is required."
+        }), 400
+
+    try:
+
+        google_user = id_token.verify_oauth2_token(
+            google_token,
+            google_requests.Request(),
+            GOOGLE_WEB_CLIENT_ID
+        )
+
+    except ValueError:
+
+        return jsonify({
+            "success": False,
+            "message": "Invalid or expired Google account token."
+        }), 401
+
+    google_id = str(
+        google_user.get(
+            "sub",
+            ""
+        )
+    ).strip()
+
+    email = str(
+        google_user.get(
+            "email",
+            ""
+        )
+    ).strip().lower()
+
+    fullname = str(
+        google_user.get(
+            "name",
+            ""
+        )
+    ).strip()
+
+    email_verified = google_user.get(
+        "email_verified",
+        False
+    )
+
+    if not google_id or not email:
+
+        return jsonify({
+            "success": False,
+            "message": "Google account information is incomplete."
+        }), 400
+
+    if not email_verified:
+
+        return jsonify({
+            "success": False,
+            "message": "Your Google email address is not verified."
+        }), 400
+
+    if not fullname:
+
+        fullname = email.split("@")[0]
+
+    conn = get_db()
+
+    customer = conn.execute(
+        """
+        SELECT
+            id,
+            fullname,
+            email,
+            phone,
+            address,
+            password_hash,
+            google_id,
+            auth_provider
+        FROM customers
+        WHERE google_id = ?
+        """,
+        (
+            google_id,
+        )
+    ).fetchone()
+
+    if customer is None:
+
+        customer = conn.execute(
+            """
+            SELECT
+                id,
+                fullname,
+                email,
+                phone,
+                address,
+                password_hash,
+                google_id,
+                auth_provider
+            FROM customers
+            WHERE email = ?
+            """,
+            (
+                email,
+            )
+        ).fetchone()
+
+    if customer:
+
+        auth_provider = (
+            "password_google"
+            if customer["password_hash"]
+            else "google"
+        )
+
+        conn.execute(
+            """
+            UPDATE customers
+            SET
+                google_id = ?,
+                auth_provider = ?
+            WHERE id = ?
+            """,
+            (
+                google_id,
+                auth_provider,
+                customer["id"]
+            )
+        )
+
+        conn.commit()
+
+        customer_id = int(
+            customer["id"]
+        )
+
+        customer_name = (
+            customer["fullname"]
+            or fullname
+        )
+
+        customer_email = (
+            customer["email"]
+            or email
+        )
+
+    else:
+
+        cursor = conn.execute(
+            """
+            INSERT INTO customers
+            (
+                fullname,
+                email,
+                phone,
+                address,
+                password_hash,
+                google_id,
+                auth_provider
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                fullname,
+                email,
+                "",
+                "",
+                None,
+                google_id,
+                "google"
+            )
+        )
+
+        conn.commit()
+
+        customer_id = int(
+            cursor.lastrowid
+        )
+
+        customer_name = fullname
+        customer_email = email
+
+    conn.close()
+
+    session["customer_id"] = customer_id
+    session["customer_fullname"] = customer_name
+    session["customer_email"] = customer_email
+    session.modified = True
+
+    return jsonify({
+        "success": True,
+        "message": "Google login successful.",
+        "customer": {
+            "id": customer_id,
+            "fullname": customer_name,
+            "email": customer_email
+        }
+    }), 200
+
+@app.route("/logout")
+def customer_logout():
+
+    session.pop(
+        "customer_id",
+        None
+    )
+
+    session.pop(
+        "customer_fullname",
+        None
+    )
+
+    session.pop(
+        "customer_email",
+        None
+    )
+
+    session.modified = True
+
+    flash(
+        "You have been logged out successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for("home")
+    )
+
+
+# =========================================================
+# CUSTOMER ACCOUNT
+# =========================================================
+
+@app.route("/account")
+def customer_account():
+
+    customer_id = session.get(
+        "customer_id"
+    )
+
+    if not customer_id:
+
+        flash(
+            "Please login to access your account.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("customer_login")
+        )
+
+    conn = get_db()
+
+    customer = conn.execute("""
+        SELECT
+            id,
+            fullname,
+            email,
+            phone,
+            address,
+            created_at
+        FROM customers
+        WHERE id = ?
+    """, (
+        customer_id,
+    )).fetchone()
+
+    if customer is None:
+
+        conn.close()
+
+        session.pop(
+            "customer_id",
+            None
+        )
+
+        session.pop(
+            "customer_fullname",
+            None
+        )
+
+        session.pop(
+            "customer_email",
+            None
+        )
+
+        flash(
+            "Your account could not be found. Please login again.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("customer_login")
+        )
+
+    orders = conn.execute("""
+        SELECT
+            id,
+            total_amount,
+            payment_status,
+            order_status,
+            created_at
+        FROM orders
+        WHERE customer_id = ?
+        ORDER BY created_at DESC
+        LIMIT 5
+    """, (
+        customer_id,
+    )).fetchall()
+
+    unread_count = conn.execute("""
+        SELECT COUNT(*) AS count
+        FROM notifications
+        WHERE customer_id = ?
+        AND is_read = 0
+    """, (
+        customer_id,
+    )).fetchone()["count"]
+
+    conn.close()
+
+    return render_template(
+        "account.html",
+        customer=customer,
+        orders=orders,
+        unread_count=unread_count
+    )
+
+# =========================================================
+# CUSTOMER EDIT PROFILE
+# =========================================================
+
+@app.route(
+    "/edit-profile",
+    methods=["GET", "POST"]
+)
+def edit_profile():
+
+    customer_id = session.get(
+        "customer_id"
+    )
+
+    if not customer_id:
+
+        flash(
+            "Please login to edit your profile.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("customer_login")
+        )
+
+    conn = get_db()
+
+    customer = conn.execute(
+        """
+        SELECT
+            id,
+            fullname,
+            email,
+            phone,
+            address
+        FROM customers
+        WHERE id = ?
+        """,
+        (
+            customer_id,
+        )
+    ).fetchone()
+
+    if customer is None:
+
+        conn.close()
+
+        session.pop(
+            "customer_id",
+            None
+        )
+
+        session.pop(
+            "customer_fullname",
+            None
+        )
+
+        session.pop(
+            "customer_email",
+            None
+        )
+
+        flash(
+            "Customer account could not be found.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("customer_login")
+        )
+
+    if request.method == "POST":
+
+        fullname = (
+            request.form.get(
+                "fullname",
+                ""
+            ).strip()
+        )
+
+        email = (
+            request.form.get(
+                "email",
+                ""
+            ).strip().lower()
+        )
+
+        phone = (
+            request.form.get(
+                "phone",
+                ""
+            ).strip()
+        )
+
+        address = (
+            request.form.get(
+                "address",
+                ""
+            ).strip()
+        )
+
+        if not fullname:
+
+            flash(
+                "Full name is required.",
+                "danger"
+            )
+
+            conn.close()
+
+            return render_template(
+                "edit_profile.html",
+                customer=customer
+            )
+
+        if not phone:
+
+            flash(
+                "Phone number is required.",
+                "danger"
+            )
+
+            conn.close()
+
+            return render_template(
+                "edit_profile.html",
+                customer=customer
+            )
+
+        # -------------------------------------------------
+        # Check whether another customer already uses
+        # the submitted email address.
+        # -------------------------------------------------
+
+        if email:
+
+            existing_customer = conn.execute(
+                """
+                SELECT id
+                FROM customers
+                WHERE LOWER(email) = ?
+                AND id != ?
+                LIMIT 1
+                """,
+                (
+                    email,
+                    customer_id
+                )
+            ).fetchone()
+
+            if existing_customer:
+
+                flash(
+                    "That email address is already being used by another account.",
+                    "danger"
+                )
+
+                conn.close()
+
+                return render_template(
+                    "edit_profile.html",
+                    customer=customer
+                )
+
+        # -------------------------------------------------
+        # Update customer profile
+        # -------------------------------------------------
+
+        conn.execute(
+            """
+            UPDATE customers
+            SET
+                fullname = ?,
+                email = ?,
+                phone = ?,
+                address = ?
+            WHERE id = ?
+            """,
+            (
+                fullname,
+                email if email else None,
+                phone,
+                address,
+                customer_id
+            )
+        )
+
+        conn.commit()
+        conn.close()
+
+        # -------------------------------------------------
+        # Keep the browser session synchronized
+        # -------------------------------------------------
+
+        session["customer_fullname"] = fullname
+        session["customer_email"] = email
+
+        flash(
+            "Your profile has been updated successfully.",
+            "success"
+        )
+
+        return redirect(
+            url_for("customer_account")
+        )
+
+    conn.close()
+
+    return render_template(
+        "edit_profile.html",
+        customer=customer
+    )
+
+
+# =========================================================
+# CUSTOMER ORDERS
+# =========================================================
+
+@app.route("/my-orders")
+def customer_orders():
+
+    customer_id = session.get(
+        "customer_id"
+    )
+
+    if not customer_id:
+
+        flash(
+            "Please login to view your orders.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("customer_login")
+        )
+
+    conn = get_db()
+
+    orders = conn.execute("""
+        SELECT
+            id,
+            total_amount,
+            payment_status,
+            order_status,
+            created_at
+        FROM orders
+        WHERE customer_id = ?
+        ORDER BY created_at DESC
+    """, (
+        customer_id,
+    )).fetchall()
+
+    order_items = {}
+
+    for order in orders:
+
+        items = conn.execute("""
+            SELECT
+                order_items.product_id,
+                order_items.quantity,
+                order_items.price,
+                products.name,
+                products.brand,
+                products.model,
+                products.image
+            FROM order_items
+
+            LEFT JOIN products
+            ON order_items.product_id = products.id
+
+            WHERE order_items.order_id = ?
+        """, (
+            order["id"],
+        )).fetchall()
+
+        order_items[order["id"]] = items
+
+    conn.close()
+
+    return render_template(
+        "customer_orders.html",
+        orders=orders,
+        order_items=order_items
+    )
+
+# =========================================================
+# CUSTOMER ORDER DETAILS
+# =========================================================
+
+@app.route(
+    "/my-orders/<int:order_id>"
+)
+def customer_order_details(
+    order_id
+):
+
+    customer_id = session.get(
+        "customer_id"
+    )
+
+    if not customer_id:
+
+        flash(
+            "Please login to view your order.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("customer_login")
+        )
+
+    conn = get_db()
+
+    # -----------------------------------------------------
+    # Get the order
+    # -----------------------------------------------------
+
+    order = conn.execute("""
+        SELECT
+            id,
+            customer_id,
+            total_amount,
+            payment_status,
+            order_status,
+            created_at
+        FROM orders
+        WHERE id = ?
+        AND customer_id = ?
+        LIMIT 1
+    """, (
+        order_id,
+        customer_id
+    )).fetchone()
+
+    if order is None:
+
+        conn.close()
+
+        flash(
+            "Order not found.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("customer_orders")
+        )
+
+    # -----------------------------------------------------
+    # Get order items
+    # -----------------------------------------------------
+
+    order_items = conn.execute("""
+        SELECT
+            order_items.product_id,
+            order_items.quantity,
+            order_items.price,
+            products.name,
+            products.brand,
+            products.model,
+            products.image
+        FROM order_items
+
+        LEFT JOIN products
+        ON order_items.product_id = products.id
+
+        WHERE order_items.order_id = ?
+    """, (
+        order_id,
+    )).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "customer_order_details.html",
+        order=order,
+        order_items=order_items
+    )
+# =========================================================
+# CUSTOMER NOTIFICATIONS
+# =========================================================
+
+@app.route("/notifications")
+def customer_notifications():
+
+    customer_id = session.get(
+        "customer_id"
+    )
+
+    if not customer_id:
+
+        flash(
+            "Please login to view your notifications.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("customer_login")
+        )
+
+    conn = get_db()
+
+    notifications = conn.execute("""
+        SELECT
+            id,
+            title,
+            body,
+            notification_type,
+            data,
+            is_read,
+            created_at
+        FROM notifications
+        WHERE customer_id = ?
+        ORDER BY created_at DESC, id DESC
+    """, (
+        customer_id,
+    )).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "notifications.html",
+        notifications=notifications
+    )
+
+
+# =========================================================
+# MARK ONE WEB NOTIFICATION AS READ
+# =========================================================
+
+@app.route(
+    "/notifications/<int:notification_id>/read",
+    methods=["POST"]
+)
+def customer_mark_notification_read(
+    notification_id
+):
+
+    customer_id = session.get(
+        "customer_id"
+    )
+
+    if not customer_id:
+
+        flash(
+            "Please login to continue.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("customer_login")
+        )
+
+    conn = get_db()
+
+    conn.execute("""
+        UPDATE notifications
+        SET is_read = 1
+        WHERE id = ?
+        AND customer_id = ?
+    """, (
+        notification_id,
+        customer_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(
+        url_for("customer_notifications")
+    )
+
+
+# =========================================================
+# MARK ALL WEB NOTIFICATIONS AS READ
+# =========================================================
+
+@app.route(
+    "/notifications/read-all",
+    methods=["POST"]
+)
+def customer_mark_all_notifications_read():
+
+    customer_id = session.get(
+        "customer_id"
+    )
+
+    if not customer_id:
+
+        flash(
+            "Please login to continue.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("customer_login")
+        )
+
+    conn = get_db()
+
+    conn.execute("""
+        UPDATE notifications
+        SET is_read = 1
+        WHERE customer_id = ?
+    """, (
+        customer_id,
+    ))
+
+    conn.commit()
+    conn.close()
+
+    flash(
+        "All notifications marked as read.",
+        "success"
+    )
+
+    return redirect(
+        url_for("customer_notifications")
+    )
+
+
+# =========================================================
+# CUSTOMER NAVBAR CONTEXT
+# =========================================================
+
+@app.context_processor
+def inject_customer_nav_data():
+
+    customer_id = session.get(
+        "customer_id"
+    )
+
+    customer_nav = None
+    customer_unread_notifications = 0
+
+    if customer_id:
+
+        conn = get_db()
+
+        customer_nav = conn.execute("""
+            SELECT
+                id,
+                fullname,
+                email
+            FROM customers
+            WHERE id = ?
+        """, (
+            customer_id,
+        )).fetchone()
+
+        if customer_nav:
+
+            customer_unread_notifications = conn.execute("""
+                SELECT COUNT(*) AS count
+                FROM notifications
+                WHERE customer_id = ?
+                AND is_read = 0
+            """, (
+                customer_id,
+            )).fetchone()["count"]
+
+        conn.close()
+
+    return {
+        "customer_nav": customer_nav,
+        "customer_unread_notifications": (
+            customer_unread_notifications
+        )
+    }
+# =========================================================
 # MOBILE APP - GOOGLE LOGIN / REGISTRATION
 # =========================================================
 
@@ -1910,21 +3654,69 @@ def api_forgot_password():
     conn.close()
 
     # =====================================================
-    # CREATE RESET LINK
+    # CREATE PRODUCTION RESET LINK
     # =====================================================
 
-    reset_link = url_for(
-        "reset_password",
-        token=reset_token,
-        _external=True
+    reset_link = (
+        PUBLIC_BASE_URL.rstrip("/")
+        + "/reset-password/"
+        + reset_token
     )
+
+    # =====================================================
+    # SEND PASSWORD RESET EMAIL
+    # =====================================================
+
+    email_sent, email_error = (
+        send_password_reset_email(
+            customer["email"],
+            reset_link
+        )
+    )
+
+    if not email_sent:
+
+        # Invalidate the token because the customer
+        # did not receive the reset link.
+
+        conn = get_db()
+
+        conn.execute("""
+            UPDATE customers
+            SET
+                reset_token = NULL,
+                reset_token_expiry = NULL
+            WHERE id = ?
+        """, (
+            customer["id"],
+        ))
+
+        conn.commit()
+        conn.close()
+
+        app.logger.error(
+            "API password reset email failed: %s",
+            email_error
+        )
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "We could not send the password reset email. "
+                "Please try again later."
+            )
+        }), 500
+
+    # =====================================================
+    # SUCCESS
+    # =====================================================
 
     return jsonify({
         "success": True,
         "message": (
-            "Password reset link generated successfully."
+            "Password reset instructions have been "
+            "sent to your email address."
         ),
-        "reset_link": reset_link,
         "expires_in_minutes": 30
     }), 200
 # =========================================================
@@ -3470,23 +5262,43 @@ def checkout():
     conn = get_db()
 
     cart_items = []
-
     total = 0
 
+    # =====================================================
+    # VALIDATE CART AGAINST CURRENT STOCK
+    # =====================================================
+
     for product_id, quantity in cart.items():
+
+        try:
+
+            product_id = int(product_id)
+            quantity = int(quantity)
+
+        except (
+            ValueError,
+            TypeError
+        ):
+
+            continue
+
+        if quantity <= 0:
+
+            continue
 
         product = conn.execute("""
             SELECT *
             FROM products
             WHERE id = ?
         """, (
-            int(product_id),
+            product_id,
         )).fetchone()
 
         if product is None:
 
             continue
 
+        # Keep cart quantity within available stock.
         if quantity > product["stock"]:
 
             quantity = product["stock"]
@@ -3500,7 +5312,7 @@ def checkout():
             ] = quantity
 
         subtotal = (
-            product["price"]
+            float(product["price"])
             * quantity
         )
 
@@ -3533,7 +5345,7 @@ def checkout():
         )
 
     # =====================================================
-    # SUBMIT ORDER
+    # SUBMIT CHECKOUT
     # =====================================================
 
     if request.method == "POST":
@@ -3546,7 +5358,7 @@ def checkout():
         email = request.form.get(
             "email",
             ""
-        ).strip()
+        ).strip().lower()
 
         phone = request.form.get(
             "phone",
@@ -3558,12 +5370,21 @@ def checkout():
             ""
         ).strip()
 
-        if not fullname or not phone or not address:
+        # -------------------------------------------------
+        # REQUIRED INFORMATION
+        # -------------------------------------------------
+
+        if (
+            not fullname
+            or not email
+            or not phone
+            or not address
+        ):
 
             conn.close()
 
             flash(
-                "Full name, phone number and delivery address are required.",
+                "Full name, email, phone number and delivery address are required.",
                 "danger"
             )
 
@@ -3577,100 +5398,424 @@ def checkout():
                 address=address
             )
 
-        # CREATE CUSTOMER
+        # -------------------------------------------------
+        # BASIC EMAIL VALIDATION
+        # -------------------------------------------------
 
-        cursor = conn.execute("""
-            INSERT INTO customers
-            (
+        if (
+            "@" not in email
+            or "." not in email.split("@")[-1]
+        ):
+
+            conn.close()
+
+            flash(
+                "Please enter a valid email address.",
+                "danger"
+            )
+
+            return render_template(
+                "checkout.html",
+                cart_items=cart_items,
+                total=total,
+                fullname=fullname,
+                email=email,
+                phone=phone,
+                address=address
+            )
+
+        # -------------------------------------------------
+        # PAYSTACK CONFIGURATION
+        # -------------------------------------------------
+
+        if not PAYSTACK_SECRET_KEY:
+
+            conn.close()
+
+            flash(
+                "Payment service is currently unavailable. Please try again later.",
+                "danger"
+            )
+
+            return render_template(
+                "checkout.html",
+                cart_items=cart_items,
+                total=total,
+                fullname=fullname,
+                email=email,
+                phone=phone,
+                address=address
+            )
+
+        # =================================================
+        # CREATE CUSTOMER + PENDING ORDER
+        # =================================================
+
+        try:
+
+            cursor = conn.execute("""
+                INSERT INTO customers
+                (
+                    fullname,
+                    email,
+                    phone,
+                    address
+                )
+                VALUES (?, ?, ?, ?)
+            """, (
                 fullname,
                 email,
                 phone,
                 address
-            )
-            VALUES (?, ?, ?, ?)
-        """, (
-            fullname,
-            email,
-            phone,
-            address
-        ))
+            ))
 
-        customer_id = cursor.lastrowid
+            customer_id = cursor.lastrowid
 
-        # CREATE ORDER
-
-        cursor = conn.execute("""
-            INSERT INTO orders
-            (
-                customer_id,
-                total_amount,
-                payment_status,
-                order_status
-            )
-            VALUES (?, ?, ?, ?)
-        """, (
-            customer_id,
-            total,
-            "Pending",
-            "Pending"
-        ))
-
-        order_id = cursor.lastrowid
-
-        # CREATE ORDER ITEMS
-
-        for item in cart_items:
-
-            product = item["product"]
-
-            conn.execute("""
-                INSERT INTO order_items
+            cursor = conn.execute("""
+                INSERT INTO orders
                 (
-                    order_id,
-                    product_id,
-                    quantity,
-                    price
+                    customer_id,
+                    total_amount,
+                    payment_status,
+                    order_status
                 )
                 VALUES (?, ?, ?, ?)
             """, (
-                order_id,
-                product["id"],
-                item["quantity"],
-                product["price"]
+                customer_id,
+                total,
+                "Pending",
+                "Pending"
             ))
 
-            conn.execute("""
-                UPDATE products
-                SET stock = stock - ?
-                WHERE id = ?
-            """, (
-                item["quantity"],
-                product["id"]
-            ))
+            order_id = cursor.lastrowid
 
-        conn.commit()
+            # -------------------------------------------------
+            # CREATE ORDER ITEMS
+            #
+            # IMPORTANT:
+            # STOCK IS NOT DEDUCTED HERE.
+            #
+            # Stock will only be deducted after Paystack
+            # successfully verifies the payment.
+            # -------------------------------------------------
+
+            for item in cart_items:
+
+                product = item["product"]
+
+                conn.execute("""
+                    INSERT INTO order_items
+                    (
+                        order_id,
+                        product_id,
+                        quantity,
+                        price
+                    )
+                    VALUES (?, ?, ?, ?)
+                """, (
+                    order_id,
+                    product["id"],
+                    item["quantity"],
+                    product["price"]
+                ))
+
+            conn.commit()
+
+        except Exception as e:
+
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+
+            conn.close()
+
+            print(
+                "Web checkout order creation failed:",
+                e
+            )
+
+            flash(
+                "We could not create your order. Please try again.",
+                "danger"
+            )
+
+            return render_template(
+                "checkout.html",
+                cart_items=cart_items,
+                total=total,
+                fullname=fullname,
+                email=email,
+                phone=phone,
+                address=address
+            )
+
         conn.close()
 
-        session.pop(
-            "cart",
-            None
+        # =================================================
+        # INITIALIZE PAYSTACK
+        # =================================================
+
+        try:
+
+            amount_kobo = int(
+                round(
+                    float(total) * 100
+                )
+            )
+
+            reference = (
+                f"LEVETOR-WEB-{order_id}-"
+                f"{uuid.uuid4().hex[:12].upper()}"
+            )
+
+            headers = {
+                "Authorization": (
+                    f"Bearer {PAYSTACK_SECRET_KEY}"
+                ),
+                "Content-Type": "application/json"
+            }
+
+            payload = {
+                "email": email,
+                "amount": amount_kobo,
+                "reference": reference,
+                "callback_url": url_for(
+                    "paystack_web_callback",
+                    _external=True
+                ),
+                "metadata": {
+                    "order_id": order_id,
+                    "customer_id": customer_id,
+                    "fullname": fullname,
+                    "phone": phone
+                }
+            }
+
+            response = requests.post(
+                f"{PAYSTACK_BASE_URL}/transaction/initialize",
+                json=payload,
+                headers=headers,
+                timeout=30
+            )
+
+            response_data = response.json()
+
+        except requests.RequestException as e:
+
+            response_data = None
+
+            print(
+                "Paystack connection error:",
+                e
+            )
+
+        except ValueError:
+
+            response_data = None
+
+            print(
+                "Invalid Paystack response."
+            )
+
+        except Exception as e:
+
+            response_data = None
+
+            print(
+                "Paystack initialization error:",
+                e
+            )
+
+        # =================================================
+        # INITIALIZATION FAILED
+        # =================================================
+
+        if (
+            not response_data
+            or not response_data.get("status")
+        ):
+
+            cleanup_conn = get_db()
+
+            try:
+
+                cleanup_conn.execute(
+                    "BEGIN IMMEDIATE"
+                )
+
+                cleanup_conn.execute("""
+                    DELETE FROM order_items
+                    WHERE order_id = ?
+                """, (
+                    order_id,
+                ))
+
+                cleanup_conn.execute("""
+                    DELETE FROM orders
+                    WHERE id = ?
+                """, (
+                    order_id,
+                ))
+
+                cleanup_conn.execute("""
+                    DELETE FROM customers
+                    WHERE id = ?
+                """, (
+                    customer_id,
+                ))
+
+                cleanup_conn.commit()
+
+            except Exception as cleanup_error:
+
+                try:
+                    cleanup_conn.rollback()
+                except Exception:
+                    pass
+
+                print(
+                    "Checkout cleanup failed:",
+                    cleanup_error
+                )
+
+            finally:
+
+                cleanup_conn.close()
+
+            message = (
+                response_data.get(
+                    "message",
+                    "Payment initialization failed."
+                )
+                if response_data
+                else
+                "Could not connect to the payment service."
+            )
+
+            flash(
+                f"Payment could not be started: {message}",
+                "danger"
+            )
+
+            return render_template(
+                "checkout.html",
+                cart_items=cart_items,
+                total=total,
+                fullname=fullname,
+                email=email,
+                phone=phone,
+                address=address
+            )
+
+        # =================================================
+        # GET PAYSTACK AUTHORIZATION URL
+        # =================================================
+
+        paystack_data = response_data.get(
+            "data",
+            {}
         )
+
+        authorization_url = paystack_data.get(
+            "authorization_url"
+        )
+
+        returned_reference = paystack_data.get(
+            "reference",
+            reference
+        )
+
+        if not authorization_url:
+
+            flash(
+                "Paystack did not return a payment page. Please try again.",
+                "danger"
+            )
+
+            return render_template(
+                "checkout.html",
+                cart_items=cart_items,
+                total=total,
+                fullname=fullname,
+                email=email,
+                phone=phone,
+                address=address
+            )
+
+        # =================================================
+        # SAVE PAYSTACK REFERENCE
+        # =================================================
+
+        conn = get_db()
+
+        try:
+
+            conn.execute("""
+                UPDATE orders
+                SET paystack_reference = ?
+                WHERE id = ?
+            """, (
+                returned_reference,
+                order_id
+            ))
+
+            conn.commit()
+
+        except Exception as e:
+
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+
+            conn.close()
+
+            print(
+                "Could not save Paystack reference:",
+                e
+            )
+
+            flash(
+                "Could not prepare your payment. Please try again.",
+                "danger"
+            )
+
+            return render_template(
+                "checkout.html",
+                cart_items=cart_items,
+                total=total,
+                fullname=fullname,
+                email=email,
+                phone=phone,
+                address=address
+            )
+
+        conn.close()
+
+        # =================================================
+        # REMEMBER ORDER
+        # =================================================
 
         session[
             "last_order_id"
         ] = order_id
 
-        flash(
-            "Your order has been placed successfully!",
-            "success"
-        )
+        session[
+            "web_payment_order_id"
+        ] = order_id
+
+        # =================================================
+        # REDIRECT TO PAYSTACK
+        # =================================================
 
         return redirect(
-            url_for(
-                "order_success",
-                order_id=order_id
-            )
+            authorization_url
         )
+
+    # =====================================================
+    # GET CHECKOUT PAGE
+    # =====================================================
 
     conn.close()
 
@@ -3679,6 +5824,381 @@ def checkout():
         cart_items=cart_items,
         total=total
     )
+
+
+
+# =========================================================
+# PAYSTACK WEB CALLBACK / PAYMENT VERIFICATION
+# =========================================================
+
+@app.route(
+    "/payments/paystack/callback"
+)
+def paystack_web_callback():
+
+    reference = request.args.get(
+        "reference",
+        ""
+    ).strip()
+
+    if not reference:
+        flash(
+            "No payment reference was received.",
+            "danger"
+        )
+        return redirect(url_for("checkout"))
+
+    if not PAYSTACK_SECRET_KEY:
+        flash(
+            "Payment service is currently unavailable.",
+            "danger"
+        )
+        return redirect(url_for("checkout"))
+
+    # -----------------------------------------------------
+    # VERIFY TRANSACTION WITH PAYSTACK
+    # -----------------------------------------------------
+
+    try:
+
+        headers = {
+            "Authorization": (
+                f"Bearer {PAYSTACK_SECRET_KEY}"
+            )
+        }
+
+        response = requests.get(
+            f"{PAYSTACK_BASE_URL}/transaction/verify/{reference}",
+            headers=headers,
+            timeout=30
+        )
+
+        response_data = response.json()
+
+    except requests.RequestException as e:
+
+        print(
+            "Paystack verification connection error:",
+            e
+        )
+
+        flash(
+            "We could not verify your payment. Please try again.",
+            "danger"
+        )
+
+        return redirect(url_for("checkout"))
+
+    except ValueError as e:
+
+        print(
+            "Invalid Paystack verification response:",
+            e
+        )
+
+        flash(
+            "Invalid payment verification response.",
+            "danger"
+        )
+
+        return redirect(url_for("checkout"))
+
+    except Exception as e:
+
+        print(
+            "Paystack verification error:",
+            e
+        )
+
+        flash(
+            "Payment verification failed. Please try again.",
+            "danger"
+        )
+
+        return redirect(url_for("checkout"))
+
+    # -----------------------------------------------------
+    # VERIFY PAYSTACK TRANSACTION STATUS
+    # -----------------------------------------------------
+
+    if not response_data.get("status"):
+
+        print(
+            "Paystack verification failed:",
+            response_data
+        )
+
+        flash(
+            response_data.get(
+                "message",
+                "Payment verification failed."
+            ),
+            "danger"
+        )
+
+        return redirect(url_for("checkout"))
+
+    paystack_data = response_data.get(
+        "data",
+        {}
+    )
+
+    transaction_status = paystack_data.get(
+        "status"
+    )
+
+    verified_reference = paystack_data.get(
+        "reference"
+    )
+
+    if (
+        transaction_status != "success"
+        or verified_reference != reference
+    ):
+
+        print(
+            "Unsuccessful Paystack transaction:",
+            paystack_data
+        )
+
+        flash(
+            "Payment was not successful.",
+            "danger"
+        )
+
+        return redirect(url_for("checkout"))
+
+    # -----------------------------------------------------
+    # FIND ORDER
+    # -----------------------------------------------------
+
+    conn = get_db()
+
+    try:
+
+        order = conn.execute(
+            """
+            SELECT
+                id,
+                customer_id,
+                total_amount,
+                payment_status,
+                order_status,
+                paystack_reference
+            FROM orders
+            WHERE paystack_reference = ?
+            """,
+            (
+                reference,
+            )
+        ).fetchone()
+
+        if order is None:
+
+            conn.close()
+
+            print(
+                "Paystack callback order not found:",
+                reference
+            )
+
+            flash(
+                "We could not find the order for this payment.",
+                "danger"
+            )
+
+            return redirect(url_for("checkout"))
+
+        # -------------------------------------------------
+        # PREVENT DOUBLE STOCK DEDUCTION
+        # -------------------------------------------------
+
+        if order["payment_status"] == "Paid":
+
+            conn.close()
+
+            return redirect(
+                url_for(
+                    "order_success",
+                    order_id=order["id"]
+                )
+            )
+
+        # -------------------------------------------------
+        # VERIFY PAYMENT AMOUNT
+        # -------------------------------------------------
+
+        expected_amount = int(
+            round(
+                float(order["total_amount"]) * 100
+            )
+        )
+
+        paid_amount = int(
+            paystack_data.get(
+                "amount",
+                0
+            )
+        )
+
+        if paid_amount != expected_amount:
+
+            print(
+                "Paystack amount mismatch:",
+                {
+                    "order_id": order["id"],
+                    "expected": expected_amount,
+                    "received": paid_amount
+                }
+            )
+
+            conn.close()
+
+            flash(
+                "The payment amount could not be verified.",
+                "danger"
+            )
+
+            return redirect(url_for("checkout"))
+
+        # -------------------------------------------------
+        # GET ORDER ITEMS
+        # -------------------------------------------------
+
+        order_items = conn.execute(
+            """
+            SELECT
+                product_id,
+                quantity
+            FROM order_items
+            WHERE order_id = ?
+            """,
+            (
+                order["id"],
+            )
+        ).fetchall()
+
+        # -------------------------------------------------
+        # VERIFY STOCK AND DEDUCT
+        # -------------------------------------------------
+
+        for item in order_items:
+
+            product = conn.execute(
+                """
+                SELECT
+                    id,
+                    stock
+                FROM products
+                WHERE id = ?
+                """,
+                (
+                    item["product_id"],
+                )
+            ).fetchone()
+
+            if product is None:
+
+                raise Exception(
+                    f"Product {item['product_id']} "
+                    "not found during payment verification."
+                )
+
+            if product["stock"] < item["quantity"]:
+
+                raise Exception(
+                    f"Insufficient stock for product "
+                    f"{item['product_id']}."
+                )
+
+            conn.execute(
+                """
+                UPDATE products
+                SET stock = stock - ?
+                WHERE id = ?
+                """,
+                (
+                    item["quantity"],
+                    item["product_id"]
+                )
+            )
+
+        # -------------------------------------------------
+        # MARK ORDER AS PAID
+        # -------------------------------------------------
+
+        conn.execute(
+            """
+            UPDATE orders
+            SET
+                payment_status = ?,
+                order_status = ?
+            WHERE id = ?
+            """,
+            (
+                "Paid",
+                "Processing",
+                order["id"]
+            )
+        )
+
+        conn.commit()
+
+        # -------------------------------------------------
+        # SAVE SUCCESSFUL ORDER IN SESSION
+        # -------------------------------------------------
+
+        session[
+            "last_order_id"
+        ] = order["id"]
+
+        session[
+            "web_payment_order_id"
+        ] = order["id"]
+
+        # -------------------------------------------------
+        # CLEAR WEB CART
+        # -------------------------------------------------
+
+        session.pop(
+            "cart",
+            None
+        )
+
+        conn.close()
+
+        flash(
+            "Payment successful. Your order has been received.",
+            "success"
+        )
+
+        return redirect(
+            url_for(
+                "order_success",
+                order_id=order["id"]
+            )
+        )
+
+    except Exception as e:
+
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+
+        conn.close()
+
+        print(
+            "Payment processing error:",
+            e
+        )
+
+        flash(
+            "Payment was received but could not be completed automatically. Please contact support.",
+            "danger"
+        )
+
+        return redirect(url_for("checkout"))
 
 
 # =========================================================
@@ -3783,6 +6303,125 @@ def admin_orders():
 # =========================================================
 # ADMIN ORDER DETAILS
 # =========================================================
+
+# =========================================================
+# ADMIN DELETE SELECTED ORDERS
+# =========================================================
+
+@app.route(
+    "/admin/orders/delete-selected",
+    methods=["POST"]
+)
+def delete_selected_admin_orders():
+
+    if not admin_required():
+
+        return redirect(
+            url_for("admin_login")
+        )
+
+    order_ids = request.form.getlist(
+        "order_ids"
+    )
+
+    if not order_ids:
+
+        flash(
+            "No orders were selected.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("admin_orders")
+        )
+
+    conn = get_db()
+
+    try:
+
+        for order_id in order_ids:
+
+            order = conn.execute(
+                """
+                SELECT
+                    id,
+                    payment_status,
+                    paystack_reference
+                FROM orders
+                WHERE id = ?
+                """,
+                (order_id,)
+            ).fetchone()
+
+            if not order:
+                continue
+
+            order_items = conn.execute(
+                """
+                SELECT
+                    product_id,
+                    quantity
+                FROM order_items
+                WHERE order_id = ?
+                """,
+                (order_id,)
+            ).fetchall()
+
+            if (
+                order["payment_status"] == "Paid"
+                and order["paystack_reference"]
+            ):
+
+                for item in order_items:
+
+                    conn.execute(
+                        """
+                        UPDATE products
+                        SET stock = stock + ?
+                        WHERE id = ?
+                        """,
+                        (
+                            item["quantity"],
+                            item["product_id"]
+                        )
+                    )
+
+            conn.execute(
+                """
+                DELETE FROM order_items
+                WHERE order_id = ?
+                """,
+                (order_id,)
+            )
+
+            conn.execute(
+                """
+                DELETE FROM orders
+                WHERE id = ?
+                """,
+                (order_id,)
+            )
+
+        conn.commit()
+
+        flash(
+            f"{len(order_ids)} selected order(s) deleted successfully.",
+            "success"
+        )
+
+    except Exception:
+
+        conn.rollback()
+
+        raise
+
+    finally:
+
+        conn.close()
+
+    return redirect(
+        url_for("admin_orders")
+    )
 
 @app.route(
     "/admin/orders/<int:order_id>"
@@ -3975,1636 +6614,6 @@ def update_order_status(order_id):
         )
     )
 
-# =========================================================
-# UPDATE PAYMENT STATUS
-# =========================================================
-
-@app.route(
-    "/admin/orders/<int:order_id>/payment-status",
-    methods=["POST"]
-)
-def update_payment_status(order_id):
-
-    if not admin_required():
-
-        return redirect(
-            url_for("admin_login")
-        )
-
-    payment_status = request.form.get(
-        "payment_status",
-        ""
-    ).strip()
-
-    allowed_statuses = [
-        "Pending",
-        "Paid",
-        "Failed",
-        "Refunded"
-    ]
-
-    if payment_status not in allowed_statuses:
-
-        flash(
-            "Invalid payment status.",
-            "danger"
-        )
-
-        return redirect(
-            url_for(
-                "admin_order_details",
-                order_id=order_id
-            )
-        )
-
-    conn = get_db()
-
-    order = conn.execute("""
-        SELECT id
-        FROM orders
-        WHERE id = ?
-    """, (
-        order_id,
-    )).fetchone()
-
-    if order is None:
-
-        conn.close()
-
-        flash(
-            "Order not found.",
-            "danger"
-        )
-
-        return redirect(
-            url_for("admin_orders")
-        )
-
-    conn.execute("""
-        UPDATE orders
-        SET payment_status = ?
-        WHERE id = ?
-    """, (
-        payment_status,
-        order_id
-    ))
-
-    conn.commit()
-    conn.close()
-
-    flash(
-        f"Order #{order_id} payment status updated to {payment_status}.",
-        "success"
-    )
-
-    return redirect(
-        url_for(
-            "admin_order_details",
-            order_id=order_id
-        )
-    )
-# =========================================================
-# CUSTOMER REGISTRATION - WEBSITE
-# =========================================================
-
-@app.route(
-    "/register",
-    methods=["GET", "POST"]
-)
-def register():
-
-    if "customer_id" in session:
-
-        return redirect(
-            url_for("customer_account")
-        )
-
-    if request.method == "POST":
-
-        fullname = request.form.get(
-            "fullname",
-            ""
-        ).strip()
-
-        email = request.form.get(
-            "email",
-            ""
-        ).strip().lower()
-
-        phone = request.form.get(
-            "phone",
-            ""
-        ).strip()
-
-        address = request.form.get(
-            "address",
-            ""
-        ).strip()
-
-        password = request.form.get(
-            "password",
-            ""
-        )
-
-        confirm_password = request.form.get(
-            "confirm_password",
-            ""
-        )
-
-        if (
-            not fullname
-            or not email
-            or not phone
-            or not password
-        ):
-
-            flash(
-                "Please fill in all required fields.",
-                "danger"
-            )
-
-            return render_template(
-                "register.html"
-            )
-
-        if password != confirm_password:
-
-            flash(
-                "Passwords do not match.",
-                "danger"
-            )
-
-            return render_template(
-                "register.html"
-            )
-
-        if len(password) < 8:
-
-            flash(
-                "Password must contain at least 8 characters.",
-                "danger"
-            )
-
-            return render_template(
-                "register.html"
-            )
-
-        conn = get_db()
-
-        existing_customer = conn.execute("""
-            SELECT id
-            FROM customers
-            WHERE email = ?
-        """, (
-            email,
-        )).fetchone()
-
-        if existing_customer:
-
-            conn.close()
-
-            flash(
-                "An account with this email already exists.",
-                "danger"
-            )
-
-            return render_template(
-                "register.html"
-            )
-
-        password_hash = generate_password_hash(
-            password
-        )
-
-        cursor = conn.execute("""
-            INSERT INTO customers
-            (
-                fullname,
-                email,
-                phone,
-                address,
-                password_hash
-            )
-            VALUES (?, ?, ?, ?, ?)
-        """, (
-            fullname,
-            email,
-            phone,
-            address,
-            password_hash
-        ))
-
-        customer_id = cursor.lastrowid
-
-        conn.commit()
-        conn.close()
-
-        session[
-            "customer_id"
-        ] = customer_id
-
-        session[
-            "customer_name"
-        ] = fullname
-
-        session[
-            "customer_email"
-        ] = email
-
-        flash(
-            "Your account has been created successfully!",
-            "success"
-        )
-
-        return redirect(
-            url_for("customer_account")
-        )
-
-    return render_template(
-        "register.html"
-    )
-
-
-# =========================================================
-# CUSTOMER LOGIN - WEBSITE
-# =========================================================
-
-@app.route(
-    "/login",
-    methods=["GET", "POST"]
-)
-def login():
-
-    if "customer_id" in session:
-
-        return redirect(
-            url_for("customer_account")
-        )
-
-    if request.method == "POST":
-
-        email = request.form.get(
-            "email",
-            ""
-        ).strip().lower()
-
-        password = request.form.get(
-            "password",
-            ""
-        )
-
-        if not email or not password:
-
-            flash(
-                "Email and password are required.",
-                "danger"
-            )
-
-            return render_template(
-                "login.html"
-            )
-
-        conn = get_db()
-
-        customer = conn.execute("""
-            SELECT *
-            FROM customers
-            WHERE email = ?
-        """, (
-            email,
-        )).fetchone()
-
-        conn.close()
-
-        if customer is None:
-
-            flash(
-                "Invalid email or password.",
-                "danger"
-            )
-
-            return render_template(
-                "login.html"
-            )
-
-        if not customer["password_hash"]:
-
-            flash(
-                "This account does not have a password. Please contact support.",
-                "danger"
-            )
-
-            return render_template(
-                "login.html"
-            )
-
-        if not check_password_hash(
-            customer["password_hash"],
-            password
-        ):
-
-            flash(
-                "Invalid email or password.",
-                "danger"
-            )
-
-            return render_template(
-                "login.html"
-            )
-
-        session[
-            "customer_id"
-        ] = customer["id"]
-
-        session[
-            "customer_name"
-        ] = customer["fullname"]
-
-        session[
-            "customer_email"
-        ] = customer["email"]
-
-        flash(
-            f"Welcome back, {customer['fullname']}!",
-            "success"
-        )
-
-        next_page = session.pop(
-            "login_next",
-            None
-        )
-
-        if next_page == "checkout":
-
-            return redirect(
-                url_for("checkout")
-            )
-
-        return redirect(
-            url_for("customer_account")
-        )
-
-    return render_template(
-        "login.html"
-    )
-
-
-# =========================================================
-# CUSTOMER ACCOUNT
-# =========================================================
-
-@app.route("/account")
-def customer_account():
-
-    if "customer_id" not in session:
-
-        flash(
-            "Please login to access your account.",
-            "warning"
-        )
-
-        return redirect(
-            url_for("login")
-        )
-
-    customer_id = session[
-        "customer_id"
-    ]
-
-    conn = get_db()
-
-    customer = conn.execute("""
-        SELECT *
-        FROM customers
-        WHERE id = ?
-    """, (
-        customer_id,
-    )).fetchone()
-
-    if customer is None:
-
-        conn.close()
-
-        session.clear()
-
-        flash(
-            "Your account could not be found.",
-            "danger"
-        )
-
-        return redirect(
-            url_for("login")
-        )
-
-    orders = conn.execute("""
-        SELECT *
-        FROM orders
-        WHERE customer_id = ?
-        ORDER BY created_at DESC
-    """, (
-        customer_id,
-    )).fetchall()
-
-    conn.close()
-
-    return render_template(
-        "account.html",
-        customer=customer,
-        orders=orders
-    )
-
-
-# =========================================================
-# EDIT CUSTOMER PROFILE
-# =========================================================
-
-@app.route(
-    "/account/edit",
-    methods=["GET", "POST"]
-)
-def edit_profile():
-
-    if "customer_id" not in session:
-
-        flash(
-            "Please login to edit your profile.",
-            "warning"
-        )
-
-        return redirect(
-            url_for("login")
-        )
-
-    customer_id = session[
-        "customer_id"
-    ]
-
-    conn = get_db()
-
-    customer = conn.execute("""
-        SELECT *
-        FROM customers
-        WHERE id = ?
-    """, (
-        customer_id,
-    )).fetchone()
-
-    if customer is None:
-
-        conn.close()
-
-        session.clear()
-
-        flash(
-            "Your account could not be found.",
-            "danger"
-        )
-
-        return redirect(
-            url_for("login")
-        )
-
-    if request.method == "POST":
-
-        fullname = request.form.get(
-            "fullname",
-            ""
-        ).strip()
-
-        email = request.form.get(
-            "email",
-            ""
-        ).strip()
-
-        phone = request.form.get(
-            "phone",
-            ""
-        ).strip()
-
-        address = request.form.get(
-            "address",
-            ""
-        ).strip()
-
-        if not fullname or not phone:
-
-            flash(
-                "Full name and phone number are required.",
-                "danger"
-            )
-
-            conn.close()
-
-            return render_template(
-                "edit_profile.html",
-                customer=customer
-            )
-
-        conn.execute("""
-            UPDATE customers
-            SET
-                fullname = ?,
-                email = ?,
-                phone = ?,
-                address = ?
-            WHERE id = ?
-        """, (
-            fullname,
-            email,
-            phone,
-            address,
-            customer_id
-        ))
-
-        conn.commit()
-        conn.close()
-
-        session[
-            "customer_name"
-        ] = fullname
-
-        session[
-            "customer_email"
-        ] = email
-
-        flash(
-            "Your profile has been updated successfully.",
-            "success"
-        )
-
-        return redirect(
-            url_for("customer_account")
-        )
-
-    conn.close()
-
-    return render_template(
-        "edit_profile.html",
-        customer=customer
-    )
-
-
-# =========================================================
-# CUSTOMER ORDER DETAILS
-# =========================================================
-
-@app.route(
-    "/account/order/<int:order_id>"
-)
-def customer_order_details(order_id):
-
-    if "customer_id" not in session:
-
-        flash(
-            "Please login to view your order.",
-            "warning"
-        )
-
-        return redirect(
-            url_for("login")
-        )
-
-    customer_id = session[
-        "customer_id"
-    ]
-
-    conn = get_db()
-
-    order = conn.execute("""
-        SELECT *
-        FROM orders
-        WHERE id = ?
-        AND customer_id = ?
-    """, (
-        order_id,
-        customer_id
-    )).fetchone()
-
-    if order is None:
-
-        conn.close()
-
-        flash(
-            "Order not found.",
-            "danger"
-        )
-
-        return redirect(
-            url_for("customer_account")
-        )
-
-    order_items = conn.execute("""
-        SELECT
-            order_items.*,
-            products.name,
-            products.image
-        FROM order_items
-
-        JOIN products
-        ON order_items.product_id = products.id
-
-        WHERE order_items.order_id = ?
-    """, (
-        order_id,
-    )).fetchall()
-
-    customer = conn.execute("""
-        SELECT *
-        FROM customers
-        WHERE id = ?
-    """, (
-        customer_id,
-    )).fetchone()
-
-    conn.close()
-
-    return render_template(
-        "order_details.html",
-        order=order,
-        order_items=order_items,
-        customer=customer
-    )
-
-
-# =========================================================
-# CUSTOMER LOGOUT
-# =========================================================
-
-@app.route("/logout")
-def logout():
-
-    session.pop(
-        "customer_id",
-        None
-    )
-
-    session.pop(
-        "customer_name",
-        None
-    )
-
-    session.pop(
-        "customer_email",
-        None
-    )
-
-    flash(
-        "You have been logged out successfully.",
-        "success"
-    )
-
-    return redirect(
-        url_for("home")
-    )
-
-
-# =========================================================
-# FORGOT PASSWORD
-# =========================================================
-
-@app.route(
-    "/forgot-password",
-    methods=["GET", "POST"]
-)
-def forgot_password():
-
-    if request.method == "POST":
-
-        email = request.form.get(
-            "email",
-            ""
-        ).strip().lower()
-
-        if not email:
-
-            flash(
-                "Please enter your email address.",
-                "danger"
-            )
-
-            return render_template(
-                "forgot_password.html"
-            )
-
-        conn = get_db()
-
-        customer = conn.execute("""
-            SELECT id, email
-            FROM customers
-            WHERE email = ?
-        """, (
-            email,
-        )).fetchone()
-
-        if customer is None:
-
-            conn.close()
-
-            flash(
-                "No account was found with that email address.",
-                "danger"
-            )
-
-            return render_template(
-                "forgot_password.html"
-            )
-
-        reset_token = secrets.token_urlsafe(
-            32
-        )
-
-        reset_expiry = (
-            datetime.now()
-            + timedelta(minutes=30)
-        )
-
-        conn.execute("""
-            UPDATE customers
-            SET
-                reset_token = ?,
-                reset_token_expiry = ?
-            WHERE id = ?
-        """, (
-            reset_token,
-            reset_expiry,
-            customer["id"]
-        ))
-
-        conn.commit()
-        conn.close()
-
-        reset_link = url_for(
-            "reset_password",
-            token=reset_token,
-            _external=True
-        )
-
-        return render_template(
-            "reset_link.html",
-            reset_link=reset_link
-        )
-
-    return render_template(
-        "forgot_password.html"
-    )
-
-
-# =========================================================
-# RESET PASSWORD
-# =========================================================
-
-@app.route(
-    "/reset-password/<token>",
-    methods=["GET", "POST"]
-)
-def reset_password(token):
-
-    conn = get_db()
-
-    customer = conn.execute("""
-        SELECT *
-        FROM customers
-        WHERE reset_token = ?
-    """, (
-        token,
-    )).fetchone()
-
-    if customer is None:
-
-        conn.close()
-
-        flash(
-            "This password reset link is invalid.",
-            "danger"
-        )
-
-        return redirect(
-            url_for("forgot_password")
-        )
-
-    expiry = customer[
-        "reset_token_expiry"
-    ]
-
-    if not expiry:
-
-        conn.close()
-
-        flash(
-            "This password reset link is invalid.",
-            "danger"
-        )
-
-        return redirect(
-            url_for("forgot_password")
-        )
-
-    try:
-
-        expiry_datetime = datetime.fromisoformat(
-            str(expiry)
-        )
-
-    except (
-        ValueError,
-        TypeError
-    ):
-
-        conn.close()
-
-        flash(
-            "This password reset link is invalid.",
-            "danger"
-        )
-
-        return redirect(
-            url_for("forgot_password")
-        )
-
-    if datetime.now() > expiry_datetime:
-
-        conn.close()
-
-        flash(
-            "This password reset link has expired. Please request a new one.",
-            "danger"
-        )
-
-        return redirect(
-            url_for("forgot_password")
-        )
-
-    if request.method == "POST":
-
-        password = request.form.get(
-            "password",
-            ""
-        )
-
-        confirm_password = request.form.get(
-            "confirm_password",
-            ""
-        )
-
-        if not password or not confirm_password:
-
-            conn.close()
-
-            flash(
-                "Please enter and confirm your new password.",
-                "danger"
-            )
-
-            return render_template(
-                "reset_password.html"
-            )
-
-        if password != confirm_password:
-
-            conn.close()
-
-            flash(
-                "Passwords do not match.",
-                "danger"
-            )
-
-            return render_template(
-                "reset_password.html"
-            )
-
-        if len(password) < 8:
-
-            conn.close()
-
-            flash(
-                "Password must contain at least 8 characters.",
-                "danger"
-            )
-
-            return render_template(
-                "reset_password.html"
-            )
-
-        password_hash = generate_password_hash(
-            password
-        )
-
-        conn.execute("""
-            UPDATE customers
-            SET
-                password_hash = ?,
-                reset_token = NULL,
-                reset_token_expiry = NULL
-            WHERE id = ?
-        """, (
-            password_hash,
-            customer["id"]
-        ))
-
-        conn.commit()
-        conn.close()
-
-        flash(
-            "Your password has been reset successfully. You can now login.",
-            "success"
-        )
-
-        return redirect(
-            url_for("login")
-        )
-
-    conn.close()
-
-    return render_template(
-        "reset_password.html"
-    )
-
-
-# =========================================================
-# MY ACCOUNT
-# =========================================================
-
-@app.route("/my-account")
-def my_account():
-
-    if "customer_id" not in session:
-
-        flash(
-            "Please login to access your account.",
-            "warning"
-        )
-
-        return redirect(
-            url_for("login")
-        )
-
-    customer_id = session[
-        "customer_id"
-    ]
-
-    conn = get_db()
-
-    customer = conn.execute("""
-        SELECT *
-        FROM customers
-        WHERE id = ?
-    """, (
-        customer_id,
-    )).fetchone()
-
-    if customer is None:
-
-        conn.close()
-
-        session.pop(
-            "customer_id",
-            None
-        )
-
-        flash(
-            "Your account could not be found.",
-            "danger"
-        )
-
-        return redirect(
-            url_for("login")
-        )
-
-    orders = conn.execute("""
-        SELECT
-            id,
-            total_amount,
-            payment_status,
-            order_status,
-            created_at
-        FROM orders
-        WHERE customer_id = ?
-        ORDER BY created_at DESC
-    """, (
-        customer_id,
-    )).fetchall()
-
-    conn.close()
-
-    return render_template(
-        "my_account.html",
-        customer=customer,
-        orders=orders
-    )
-# =========================================================
-# PAYSTACK PAYMENT INITIALIZATION
-# =========================================================
-
-@app.route(
-    "/api/payments/initialize",
-    methods=["POST"]
-)
-def initialize_paystack_payment():
-
-    data = request.get_json(
-        silent=True
-    )
-
-    if not data:
-
-        return jsonify({
-            "success": False,
-            "message": "No payment data received."
-        }), 400
-
-    try:
-
-        order_id = int(
-            data.get(
-                "order_id",
-                0
-            )
-        )
-
-    except (
-        ValueError,
-        TypeError
-    ):
-
-        return jsonify({
-            "success": False,
-            "message": "Invalid order ID."
-        }), 400
-
-    if order_id <= 0:
-
-        return jsonify({
-            "success": False,
-            "message": "Invalid order ID."
-        }), 400
-
-    conn = get_db()
-
-    # Payment initialization is an authenticated customer operation.
-    authenticated_customer_id = get_bearer_customer_id()
-    if authenticated_customer_id is None:
-        conn.close()
-        return jsonify({
-            "success": False,
-            "message": "Authentication required. Please login again."
-        }), 401
-
-    order = conn.execute("""
-        SELECT
-            orders.id,
-            orders.customer_id,
-            orders.total_amount,
-            orders.payment_status,
-            orders.paystack_reference,
-            customers.fullname,
-            customers.email,
-            customers.phone
-        FROM orders
-        LEFT JOIN customers
-        ON orders.customer_id = customers.id
-        WHERE orders.id = ?
-    """, (
-        order_id,
-    )).fetchone()
-
-    conn.close()
-
-    if order is None:
-
-        return jsonify({
-            "success": False,
-            "message": "Order not found."
-        }), 404
-
-    if int(order["customer_id"]) != authenticated_customer_id:
-        return jsonify({
-            "success": False,
-            "message": "You are not authorized to pay for this order."
-        }), 403
-
-    if order["payment_status"] == "Paid":
-
-        return jsonify({
-            "success": False,
-            "message": "This order has already been paid."
-        }), 400
-
-    if not PAYSTACK_SECRET_KEY:
-
-        return jsonify({
-            "success": False,
-            "message": "Paystack secret key is not configured."
-        }), 500
-
-    email = order["email"]
-
-    if not email:
-
-        return jsonify({
-            "success": False,
-            "message": (
-                "A valid customer email address "
-                "is required for payment."
-            )
-        }), 400
-
-    try:
-
-        amount_kobo = int(
-            round(
-                float(
-                    order["total_amount"]
-                ) * 100
-            )
-        )
-
-    except (
-        ValueError,
-        TypeError
-    ):
-
-        return jsonify({
-            "success": False,
-            "message": "Invalid order amount."
-        }), 400
-
-    if amount_kobo <= 0:
-
-        return jsonify({
-            "success": False,
-            "message": "Order amount must be greater than zero."
-        }), 400
-
-    reference = (
-        order["paystack_reference"]
-        or
-        f"LEVETOR-{order_id}-{uuid.uuid4().hex[:12].upper()}"
-    )
-
-    headers = {
-        "Authorization": (
-            f"Bearer {PAYSTACK_SECRET_KEY}"
-        ),
-        "Content-Type": "application/json"
-    }
-
-    payload = {
-        "email": email,
-        "amount": amount_kobo,
-        "reference": reference,
-        "metadata": {
-            "order_id": order_id,
-            "customer_id": order["customer_id"],
-            "fullname": order["fullname"],
-            "phone": order["phone"]
-        }
-    }
-
-    try:
-
-        response = requests.post(
-            f"{PAYSTACK_BASE_URL}/transaction/initialize",
-            json=payload,
-            headers=headers,
-            timeout=30
-        )
-
-        response_data = response.json()
-
-    except requests.RequestException as e:
-
-        return jsonify({
-            "success": False,
-            "message": (
-                f"Could not connect to Paystack: {str(e)}"
-            )
-        }), 502
-
-    except ValueError:
-
-        return jsonify({
-            "success": False,
-            "message": "Invalid response received from Paystack."
-        }), 502
-
-    if not response_data.get("status"):
-
-        return jsonify({
-            "success": False,
-            "message": response_data.get(
-                "message",
-                "Paystack payment initialization failed."
-            )
-        }), 400
-
-    paystack_data = response_data.get(
-        "data",
-        {}
-    )
-
-    authorization_url = paystack_data.get(
-        "authorization_url"
-    )
-
-    returned_reference = paystack_data.get(
-        "reference",
-        reference
-    )
-
-    if not authorization_url:
-
-        return jsonify({
-            "success": False,
-            "message": (
-                "Paystack did not return "
-                "a payment authorization URL."
-            )
-        }), 502
-
-    conn = get_db()
-
-    try:
-
-        conn.execute("""
-            UPDATE orders
-            SET paystack_reference = ?
-            WHERE id = ?
-        """, (
-            returned_reference,
-            order_id
-        ))
-
-        conn.commit()
-
-    except Exception as e:
-
-        conn.rollback()
-        conn.close()
-
-        return jsonify({
-            "success": False,
-            "message": (
-                f"Could not save Paystack reference: {str(e)}"
-            )
-        }), 500
-
-    conn.close()
-
-    return jsonify({
-        "success": True,
-        "message": "Paystack payment initialized successfully.",
-        "order_id": order_id,
-        "reference": returned_reference,
-        "authorization_url": authorization_url,
-        "access_code": paystack_data.get(
-            "access_code"
-        ),
-        "amount": order["total_amount"],
-        "currency": "NGN",
-        "public_key": PAYSTACK_PUBLIC_KEY
-    }), 200
-
-
-# =========================================================
-# PAYSTACK PAYMENT VERIFICATION
-# =========================================================
-
-@app.route(
-    "/api/payments/verify/<reference>",
-    methods=["GET"]
-)
-def verify_paystack_payment(reference):
-
-    reference = str(reference).strip()
-
-    if not reference:
-        return jsonify({
-            "success": False,
-            "message": "Payment reference is required."
-        }), 400
-
-    if not PAYSTACK_SECRET_KEY:
-        return jsonify({
-            "success": False,
-            "message": "Paystack secret key is not configured."
-        }), 500
-
-    headers = {
-        "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    try:
-        response = requests.get(
-            f"{PAYSTACK_BASE_URL}/transaction/verify/{reference}",
-            headers=headers,
-            timeout=30
-        )
-        response_data = response.json()
-    except requests.RequestException as e:
-        return jsonify({
-            "success": False,
-            "message": f"Could not connect to Paystack: {str(e)}"
-        }), 502
-    except ValueError:
-        return jsonify({
-            "success": False,
-            "message": "Invalid response received from Paystack."
-        }), 502
-
-    if not response_data.get("status"):
-        return jsonify({
-            "success": False,
-            "message": response_data.get(
-                "message",
-                "Payment verification failed."
-            )
-        }), 400
-
-    payment_data = response_data.get("data") or {}
-    payment_status = payment_data.get("status")
-
-    if payment_status != "success":
-        return jsonify({
-            "success": False,
-            "message": (
-                "Payment has not been completed. "
-                f"Paystack status: {payment_status}"
-            ),
-            "payment_status": payment_status,
-            "reference": reference
-        }), 400
-
-    # -----------------------------------------------------
-    # Resolve order from our stored reference first.
-    # -----------------------------------------------------
-    conn = get_db()
-
-    order = conn.execute("""
-        SELECT
-            id,
-            customer_id,
-            total_amount,
-            payment_status,
-            order_status,
-            paystack_reference
-        FROM orders
-        WHERE paystack_reference = ?
-    """, (reference,)).fetchone()
-
-    metadata = payment_data.get("metadata") or {}
-
-    # Fallback to Paystack metadata if our reference was not stored.
-    if order is None:
-        try:
-            metadata_order_id = int(metadata.get("order_id"))
-        except (ValueError, TypeError):
-            metadata_order_id = 0
-
-        if metadata_order_id <= 0:
-            conn.close()
-            return jsonify({
-                "success": False,
-                "message": (
-                    "Payment was successful, but the related "
-                    "order could not be found."
-                ),
-                "reference": reference
-            }), 404
-
-        order = conn.execute("""
-            SELECT
-                id,
-                customer_id,
-                total_amount,
-                payment_status,
-                order_status,
-                paystack_reference
-            FROM orders
-            WHERE id = ?
-        """, (metadata_order_id,)).fetchone()
-
-    if order is None:
-        conn.close()
-        return jsonify({
-            "success": False,
-            "message": "Order not found."
-        }), 404
-
-    # -----------------------------------------------------
-    # Strict reference and metadata validation.
-    # -----------------------------------------------------
-    if order["paystack_reference"] and order["paystack_reference"] != reference:
-        conn.close()
-        return jsonify({
-            "success": False,
-            "message": "Payment reference does not match the order."
-        }), 400
-
-    try:
-        metadata_order_id = int(metadata.get("order_id"))
-    except (ValueError, TypeError):
-        metadata_order_id = None
-
-    if metadata_order_id is not None and metadata_order_id != int(order["id"]):
-        conn.close()
-        return jsonify({
-            "success": False,
-            "message": "Paystack order metadata does not match the order."
-        }), 400
-
-    try:
-        metadata_customer_id = int(metadata.get("customer_id"))
-    except (ValueError, TypeError):
-        metadata_customer_id = None
-
-    if (
-        metadata_customer_id is not None
-        and metadata_customer_id != int(order["customer_id"])
-    ):
-        conn.close()
-        return jsonify({
-            "success": False,
-            "message": "Paystack customer metadata does not match the order."
-        }), 400
-
-    # Paystack should report the same reference that we initialized.
-    returned_reference = str(payment_data.get("reference", "")).strip()
-    if returned_reference and returned_reference != reference:
-        conn.close()
-        return jsonify({
-            "success": False,
-            "message": "Paystack returned a different payment reference."
-        }), 400
-
-    # -----------------------------------------------------
-    # Verify exact payment amount and currency.
-    # -----------------------------------------------------
-    try:
-        expected_amount = int(round(float(order["total_amount"]) * 100))
-        paid_amount = int(payment_data.get("amount", 0))
-    except (ValueError, TypeError):
-        conn.close()
-        return jsonify({
-            "success": False,
-            "message": "Invalid payment amount."
-        }), 400
-
-    if paid_amount != expected_amount:
-        conn.close()
-        return jsonify({
-            "success": False,
-            "message": "Payment amount does not match the order amount.",
-            "expected_amount": expected_amount,
-            "paid_amount": paid_amount
-        }), 400
-
-    payment_currency = str(payment_data.get("currency", "NGN")).upper()
-    if payment_currency != "NGN":
-        conn.close()
-        return jsonify({
-            "success": False,
-            "message": "Payment currency is not supported for this order.",
-            "currency": payment_currency
-        }), 400
-
-    # -----------------------------------------------------
-    # Idempotency + atomic stock deduction.
-    # BEGIN IMMEDIATE prevents two verification requests from
-    # checking the same stock and both deducting it.
-    # -----------------------------------------------------
-    try:
-        conn.execute("BEGIN IMMEDIATE")
-
-        locked_order = conn.execute("""
-            SELECT
-                id,
-                customer_id,
-                total_amount,
-                payment_status,
-                order_status,
-                paystack_reference
-            FROM orders
-            WHERE id = ?
-        """, (order["id"],)).fetchone()
-
-        if locked_order is None:
-            conn.rollback()
-            conn.close()
-            return jsonify({
-                "success": False,
-                "message": "Order not found."
-            }), 404
-
-        if locked_order["payment_status"] == "Paid":
-            conn.rollback()
-            conn.close()
-            return jsonify({
-                "success": True,
-                "message": "Payment was already verified.",
-                "order_id": locked_order["id"],
-                "reference": reference,
-                "payment_status": "Paid",
-                "order_status": locked_order["order_status"],
-                "amount": locked_order["total_amount"],
-                "currency": payment_currency
-            }), 200
-
-        order_items = conn.execute("""
-            SELECT
-                order_items.product_id,
-                order_items.quantity,
-                order_items.price,
-                products.name,
-                products.stock
-            FROM order_items
-            INNER JOIN products
-                ON order_items.product_id = products.id
-            WHERE order_items.order_id = ?
-        """, (locked_order["id"],)).fetchall()
-
-        if not order_items:
-            conn.rollback()
-            conn.close()
-            return jsonify({
-                "success": False,
-                "message": "The order contains no items."
-            }), 400
-
-        for item in order_items:
-            if item["stock"] < item["quantity"]:
-                conn.rollback()
-                conn.close()
-                return jsonify({
-                    "success": False,
-                    "message": (
-                        f"Insufficient stock for {item['name']}. "
-                        f"Available stock: {item['stock']}"
-                    )
-                }), 409
-
-        for item in order_items:
-            conn.execute("""
-                UPDATE products
-                SET stock = stock - ?
-                WHERE id = ?
-            """, (item["quantity"], item["product_id"]))
-
-        conn.execute("""
-            UPDATE orders
-            SET
-                payment_status = ?,
-                paystack_reference = ?
-            WHERE id = ?
-              AND payment_status != 'Paid'
-        """, ("Paid", reference, locked_order["id"]))
-
-        conn.commit()
-
-        # Notification is intentionally after the transaction commits.
-        try:
-            send_customer_notification(
-                conn,
-                locked_order["customer_id"],
-                "Payment Successful",
-                (
-                    f"Your payment of ₦{locked_order['total_amount']:,.0f} "
-                    f"for order #{locked_order['id']} has been confirmed."
-                ),
-                {
-                    "type": "payment_success",
-                    "order_id": str(locked_order["id"]),
-                    "customer_id": str(locked_order["customer_id"]),
-                    "reference": reference,
-                }
-            )
-        except Exception as notification_error:
-            print("Payment notification failed:", notification_error)
-
-        conn.close()
-
-        return jsonify({
-            "success": True,
-            "message": "Payment verified and order confirmed successfully.",
-            "order_id": locked_order["id"],
-            "reference": reference,
-            "payment_status": "Paid",
-            "order_status": locked_order["order_status"],
-            "amount": locked_order["total_amount"],
-            "currency": payment_currency,
-            "paid_at": payment_data.get("paid_at")
-        }), 200
-
-    except Exception as e:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
-        conn.close()
-        return jsonify({
-            "success": False,
-            "message": f"Could not finalize payment: {str(e)}"
-        }), 500
 
 # =========================================================
 # RUN APPLICATION
@@ -5617,3 +6626,7 @@ if __name__ == "__main__":
         port=5000,
         debug=os.getenv("FLASK_DEBUG", "false").lower() == "true"
     )
+
+
+
+

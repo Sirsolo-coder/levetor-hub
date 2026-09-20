@@ -516,7 +516,7 @@ Order #{{ order["id"] }} | Admin | Levetor Hub
         <form
             method="POST"
             action="{{ url_for(
-                'update_payment_status',
+                'update_order_status',
                 order_id=order['id']
             ) }}"
         >
@@ -621,3 +621,5 @@ Order #{{ order["id"] }} | Admin | Levetor Hub
 </section>
 
 {% endblock %}
+
+

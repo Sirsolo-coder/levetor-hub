@@ -4,14 +4,11 @@
 Checkout | Levetor Hub
 {% endblock %}
 
-
 {% block content %}
 
 <section class="py-5">
 
     <div class="container">
-
-        <!-- HEADER -->
 
         <div class="mb-5">
 
@@ -20,11 +17,10 @@ Checkout | Levetor Hub
             </h1>
 
             <p class="text-muted">
-                Complete your details to place your order.
+                Enter your delivery details and continue to secure payment.
             </p>
 
         </div>
-
 
         <form
             method="POST"
@@ -47,7 +43,6 @@ Checkout | Levetor Hub
                                 Customer Information
                             </h4>
 
-
                             <!-- FULL NAME -->
 
                             <div class="mb-3">
@@ -66,7 +61,6 @@ Checkout | Levetor Hub
                                 >
 
                             </div>
-
 
                             <!-- PHONE -->
 
@@ -87,13 +81,12 @@ Checkout | Levetor Hub
 
                             </div>
 
-
                             <!-- EMAIL -->
 
                             <div class="mb-3">
 
                                 <label class="form-label fw-semibold">
-                                    Email Address
+                                    Email Address *
                                 </label>
 
                                 <input
@@ -102,10 +95,14 @@ Checkout | Levetor Hub
                                     class="form-control"
                                     placeholder="you@example.com"
                                     value="{{ email|default('') }}"
+                                    required
                                 >
 
-                            </div>
+                                <div class="form-text">
+                                    This email will be used for your Paystack payment.
+                                </div>
 
+                            </div>
 
                             <!-- ADDRESS -->
 
@@ -125,13 +122,16 @@ Checkout | Levetor Hub
 
                             </div>
 
+                            <!-- PAYMENT INFORMATION -->
 
                             <div class="alert alert-info mb-0">
 
-                                <strong>Delivery:</strong>
+                                <strong>Secure Payment:</strong>
 
-                                Delivery charges will be confirmed
-                                based on your location.
+                                After submitting your order, you will be
+                                redirected to Paystack's secure payment page.
+                                Your card or other available payment details
+                                will be entered there.
 
                             </div>
 
@@ -140,7 +140,6 @@ Checkout | Levetor Hub
                     </div>
 
                 </div>
-
 
                 <!-- =================================================
                      ORDER SUMMARY
@@ -159,7 +158,6 @@ Checkout | Levetor Hub
                                 Your Order
                             </h4>
 
-
                             {% for item in cart_items %}
 
                                 <div
@@ -175,7 +173,8 @@ Checkout | Levetor Hub
 
                                         <small class="text-muted d-block">
 
-                                            {{ item.quantity }} ×
+                                            {{ item.quantity }}
+                                            ×
                                             ₦{{ "{:,.0f}".format(
                                                 item.product["price"]
                                             ) }}
@@ -183,7 +182,6 @@ Checkout | Levetor Hub
                                         </small>
 
                                     </div>
-
 
                                     <strong>
 
@@ -197,11 +195,7 @@ Checkout | Levetor Hub
 
                             {% endfor %}
 
-
                             <hr>
-
-
-                            <!-- TOTAL -->
 
                             <div
                                 class="d-flex justify-content-between mb-4"
@@ -219,18 +213,16 @@ Checkout | Levetor Hub
 
                             </div>
 
-
-                            <!-- PLACE ORDER -->
+                            <!-- SECURE PAYMENT BUTTON -->
 
                             <button
                                 type="submit"
                                 class="btn btn-primary btn-lg w-100"
                             >
 
-                                🛍️ Place Order
+                                🔒 Proceed to Secure Payment
 
                             </button>
-
 
                             <a
                                 href="{{ url_for('cart') }}"
@@ -241,13 +233,12 @@ Checkout | Levetor Hub
 
                             </a>
 
-
                             <p
                                 class="text-muted text-center small mt-3 mb-0"
                             >
 
-                                Your order will be saved securely
-                                in Levetor Hub.
+                                You will be redirected to Paystack to
+                                securely complete your payment.
 
                             </p>
 

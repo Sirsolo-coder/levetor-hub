@@ -1,0 +1,541 @@
+{% extends "base.html" %}
+
+{% block title %}
+Customer Login | Levetor Hub
+{% endblock %}
+
+{% block content %}
+
+<section class="auth-section">
+
+    <div class="auth-container">
+
+        <div class="auth-header">
+
+            <span class="auth-label">
+                LEVETOR HUB
+            </span>
+
+            <h1>
+                Welcome Back
+            </h1>
+
+            <p>
+                Login to your Levetor Hub account
+            </p>
+
+        </div>
+
+
+        <!-- FLASH MESSAGES -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- EMAIL / PASSWORD LOGIN -->
+
+        <form
+            method="POST"
+            action="{{ url_for('customer_login') }}"
+            class="auth-form"
+        >
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    required
+                    autocomplete="email"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <div class="password-label-row">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <a
+                        href="{{ url_for('forgot_password') }}"
+                    >
+                        Forgot password?
+                    </a>
+
+                </div>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                    autocomplete="current-password"
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="auth-button"
+            >
+
+                <i class="bi bi-box-arrow-in-right"></i>
+
+                Login
+
+            </button>
+
+        </form>
+
+
+        <!-- DIVIDER -->
+
+        <div class="auth-divider">
+
+            <span>
+                OR
+            </span>
+
+        </div>
+
+
+        <!-- GOOGLE LOGIN -->
+
+        {% if google_web_client_id %}
+
+            <div
+                id="g_id_onload"
+                data-client_id="{{ google_web_client_id }}"
+                data-callback="handleGoogleCredential"
+                data-auto_prompt="false"
+            ></div>
+
+            <div
+                class="g_id_signin"
+                data-type="standard"
+                data-size="large"
+                data-theme="outline"
+                data-text="continue_with"
+                data-shape="rectangular"
+                data-logo_alignment="left"
+                data-width="100%"
+            ></div>
+
+        {% endif %}
+
+
+        <!-- CREATE ACCOUNT -->
+
+        <div class="create-account">
+
+            <p>
+                Don't have an account?
+
+                <a href="{{ url_for('customer_register') }}">
+                    Create Account
+                </a>
+            </p>
+
+        </div>
+
+
+        <!-- CONTINUE SHOPPING -->
+
+        <div class="continue-shopping">
+
+            <a
+                href="{{ url_for('shop') }}"
+            >
+                Continue Shopping
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<script
+    src="https://accounts.google.com/gsi/client"
+    async
+    defer
+></script>
+
+
+<script>
+
+async function handleGoogleCredential(response) {
+
+    try {
+
+        const result = await fetch(
+            "{{ url_for('customer_google_login') }}",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    id_token: response.credential
+                })
+            }
+        );
+
+        const data = await result.json();
+
+        if (data.success) {
+
+            window.location.href =
+                "{{ url_for('customer_account') }}";
+
+            return;
+        }
+
+        alert(
+            data.message ||
+            "Google login failed."
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Google login error:",
+            error
+        );
+
+        alert(
+            "Unable to complete Google login. Please try again."
+        );
+
+    }
+
+}
+
+</script>
+
+
+<style>
+
+.auth-section {
+
+    min-height: 80vh;
+
+    padding: 70px 20px;
+
+    background: #f7f9fc;
+
+}
+
+
+.auth-container {
+
+    max-width: 500px;
+
+    margin: auto;
+
+    background: white;
+
+    padding: 40px;
+
+    border-radius: 15px;
+
+    box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+
+}
+
+
+.auth-header {
+
+    text-align: center;
+
+    margin-bottom: 30px;
+
+}
+
+
+.auth-label {
+
+    color: #0878c9;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    letter-spacing: 3px;
+
+}
+
+
+.auth-header h1 {
+
+    color: #07133d;
+
+    margin: 10px 0;
+
+}
+
+
+.auth-header p {
+
+    color: #687386;
+
+}
+
+
+.form-group {
+
+    margin-bottom: 20px;
+
+}
+
+
+.form-group label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-weight: 600;
+
+    color: #17203a;
+
+}
+
+
+.password-label-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+.password-label-row a {
+
+    color: #0878c9;
+
+    font-size: 14px;
+
+    text-decoration: none;
+
+}
+
+
+.password-label-row a:hover {
+
+    text-decoration: underline;
+
+}
+
+
+.form-group input {
+
+    width: 100%;
+
+    padding: 13px 15px;
+
+    border: 1px solid #dfe4ea;
+
+    border-radius: 8px;
+
+    outline: none;
+
+    font-size: 15px;
+
+}
+
+
+.form-group input:focus {
+
+    border-color: #0878c9;
+
+}
+
+
+.auth-button {
+
+    width: 100%;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #063f9e;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+
+.auth-button:hover {
+
+    background: #0878c9;
+
+}
+
+
+.auth-divider {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin: 25px 0;
+
+    color: #687386;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+.auth-divider::before,
+.auth-divider::after {
+
+    content: "";
+
+    flex: 1;
+
+    height: 1px;
+
+    background: #dfe4ea;
+
+}
+
+
+.auth-divider span {
+
+    white-space: nowrap;
+
+}
+
+
+.g_id_signin {
+
+    width: 100%;
+
+}
+
+
+.create-account {
+
+    text-align: center;
+
+    margin-top: 25px;
+
+}
+
+
+.create-account p {
+
+    color: #687386;
+
+    margin-bottom: 0;
+
+}
+
+
+.create-account a {
+
+    color: #0878c9;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+}
+
+
+.create-account a:hover {
+
+    text-decoration: underline;
+
+}
+
+
+.continue-shopping {
+
+    text-align: center;
+
+    margin-top: 20px;
+
+}
+
+
+.continue-shopping a {
+
+    color: #687386;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+}
+
+
+.continue-shopping a:hover {
+
+    color: #0878c9;
+
+}
+
+
+@media (max-width: 576px) {
+
+    .auth-container {
+
+        padding: 25px;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -11,26 +11,27 @@
         {% block title %}Levetor Hub{% endblock %}
     </title>
 
-    <meta name="description"
-          content="Levetor Hub - Every Gadget You Love, One Hub.">
+    <meta
+        name="description"
+        content="Levetor Hub - Every Gadget You Love, One Hub."
+    >
 
-    <!-- Bootstrap 5 -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+        rel="stylesheet"
+    >
 
-    <!-- Bootstrap Icons -->
     <link
         rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
 
-    <!-- Main Website CSS -->
     <link
         rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}">
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
 
-    {% block extra_css %}
-    {% endblock %}
+    {% block extra_css %}{% endblock %}
 
 </head>
 
@@ -38,27 +39,33 @@
 <body>
 
 
-<!-- =====================================================
+<!-- =========================================================
      NAVBAR
-===================================================== -->
+     ========================================================= -->
 
 <nav class="navbar navbar-expand-lg navbar-dark levetor-navbar">
 
     <div class="container">
 
+
         <!-- LOGO -->
-        <a class="navbar-brand"
-           href="{{ url_for('home') }}">
+
+        <a
+            class="navbar-brand"
+            href="{{ url_for('home') }}"
+        >
 
             <img
                 src="{{ url_for('static', filename='images/logo.png') }}"
                 alt="Levetor Hub Logo"
-                class="logo">
+                class="logo"
+            >
 
         </a>
 
 
-        <!-- MOBILE MENU BUTTON -->
+        <!-- MOBILE TOGGLE -->
+
         <button
             class="navbar-toggler"
             type="button"
@@ -66,7 +73,8 @@
             data-bs-target="#mainNavbar"
             aria-controls="mainNavbar"
             aria-expanded="false"
-            aria-label="Toggle navigation">
+            aria-label="Toggle navigation"
+        >
 
             <span class="navbar-toggler-icon"></span>
 
@@ -74,23 +82,27 @@
 
 
         <!-- NAVIGATION -->
+
         <div
             class="collapse navbar-collapse"
-            id="mainNavbar">
+            id="mainNavbar"
+        >
 
 
-            <!-- MAIN LINKS -->
             <ul class="navbar-nav mx-auto">
 
 
                 <!-- HOME -->
+
                 <li class="nav-item">
 
                     <a
                         class="nav-link {% if request.endpoint == 'home' %}active{% endif %}"
-                        href="{{ url_for('home') }}">
+                        href="{{ url_for('home') }}"
+                    >
 
                         <i class="bi bi-house"></i>
+
                         Home
 
                     </a>
@@ -98,14 +110,52 @@
                 </li>
 
 
+                <!-- MY ACCOUNT -->
+
+                <li class="nav-item">
+
+                    {% if customer_nav %}
+
+                        <a
+                            class="nav-link {% if request.endpoint == 'customer_account' %}active{% endif %}"
+                            href="{{ url_for('customer_account') }}"
+                        >
+
+                            <i class="bi bi-person-circle"></i>
+
+                            My Account
+
+                        </a>
+
+                    {% else %}
+
+                        <a
+                            class="nav-link {% if request.endpoint == 'customer_login' %}active{% endif %}"
+                            href="{{ url_for('customer_login') }}"
+                        >
+
+                            <i class="bi bi-person-circle"></i>
+
+                            My Account
+
+                        </a>
+
+                    {% endif %}
+
+                </li>
+
+
                 <!-- SHOP -->
+
                 <li class="nav-item">
 
                     <a
                         class="nav-link {% if request.endpoint == 'shop' %}active{% endif %}"
-                        href="{{ url_for('shop') }}">
+                        href="{{ url_for('shop') }}"
+                    >
 
                         <i class="bi bi-shop"></i>
+
                         Shop
 
                     </a>
@@ -113,29 +163,52 @@
                 </li>
 
 
-                <!-- CATEGORIES -->
+                <!-- CONTACT -->
+
                 <li class="nav-item">
 
                     <a
                         class="nav-link"
-                        href="{{ url_for('shop') }}">
+                        href="#contact"
+                    >
 
-                        <i class="bi bi-grid"></i>
-                        Categories
+                        <i class="bi bi-telephone"></i>
+
+                        Contact
 
                     </a>
 
                 </li>
 
 
-                <!-- ABOUT -->
+                <!-- WHATSAPP -->
+
+                <li class="nav-item">
+
+                    <a
+    href="https://wa.me/2349131542208"
+    class="whatsapp-btn"
+    target="_blank"
+    rel="noopener noreferrer"
+>
+    <i class="bi bi-whatsapp"></i>
+    WhatsApp
+</a>
+
+                </li>
+
+
+                <!-- ABOUT US -->
+
                 <li class="nav-item">
 
                     <a
                         class="nav-link"
-                        href="#about">
+                        href="#about"
+                    >
 
                         <i class="bi bi-info-circle"></i>
+
                         About Us
 
                     </a>
@@ -143,69 +216,107 @@
                 </li>
 
 
-                <!-- CONTACT -->
-                <li class="nav-item">
-
-                    <a
-                        class="nav-link"
-                        href="#contact">
-
-                        <i class="bi bi-telephone"></i>
-                        Contact
-
-                    </a>
-<a href="{{ url_for('my_account') }}">
-    👤 My Account
-</a>
-                </li>
-
             </ul>
 
 
-            <!-- RIGHT SIDE ACTIONS -->
-            <div class="navbar-actions">
+            <!-- NAVBAR ACTIONS -->
+
+            <div class="navbar-actions d-flex align-items-center gap-3">
 
 
-                <div class="navbar-actions">
+                <!-- SEARCH -->
 
-    <!-- SEARCH -->
-    <a href="{{ url_for('shop') }}"
-       class="nav-icon"
-       title="Search Products"
-       aria-label="Search Products">
-        🔍
-    </a>
+                <a
+                    href="{{ url_for('shop') }}"
+                    class="nav-icon"
+                    title="Search Products"
+                    aria-label="Search Products"
+                >
 
-    <!-- CART -->
-<a href="{{ url_for('cart') }}"
-   class="nav-icon"
-   title="Shopping Cart"
-   aria-label="Shopping Cart">
+                    <i class="bi bi-search"></i>
 
-    🛒
-    <span id="cart-count">
-        {{ session.get('cart', {}) | length }}
-    </span>
+                </a>
 
-</a>
 
-    <!-- WHATSAPP -->
-    <a href="https://wa.me/2349131542208"
-       class="whatsapp-btn"
-       target="_blank"
-       rel="noopener noreferrer">
-        <span>☘</span> WhatsApp
-    </a>
+                <!-- CART -->
 
-</div>
+                <a
+                    href="{{ url_for('cart') }}"
+                    class="nav-icon position-relative"
+                    title="Shopping Cart"
+                    aria-label="Shopping Cart"
+                >
+
+                    <i class="bi bi-cart3"></i>
+
+                    <span id="cart-count">
+
+                        {{ session.get('cart', {}) | length }}
+
+                    </span>
+
+                </a>
+
+
+                <!-- NOTIFICATIONS -->
+
+                {% if customer_nav %}
+
+                    <a
+                        href="{{ url_for('customer_notifications') }}"
+                        class="nav-icon notification-nav-icon position-relative"
+                        title="Notifications"
+                        aria-label="Notifications"
+                    >
+
+                        <i class="bi bi-bell"></i>
+
+
+                        {% if customer_unread_notifications > 0 %}
+
+                            <span
+                                class="notification-badge"
+                                id="notification-count"
+                            >
+
+                                {{ customer_unread_notifications }}
+
+                            </span>
+
+                        {% endif %}
+
+                    </a>
+
+                {% else %}
+
+                    <a
+                        href="{{ url_for('customer_login') }}"
+                        class="nav-icon notification-nav-icon"
+                        title="Login to view notifications"
+                        aria-label="Login to view notifications"
+                    >
+
+                        <i class="bi bi-bell"></i>
+
+                    </a>
+
+                {% endif %}
+
+
+            </div>
+
+
+        </div>
+
+    </div>
 
 </nav>
 
 
 
-<!-- =====================================================
+<!-- =========================================================
      FLASH MESSAGES
-===================================================== -->
+     ========================================================= -->
 
 {% with messages = get_flashed_messages(with_categories=true) %}
 
@@ -217,7 +328,8 @@
 
                 <div
                     class="alert alert-{{ category if category else 'info' }} alert-dismissible fade show"
-                    role="alert">
+                    role="alert"
+                >
 
                     {{ message }}
 
@@ -225,8 +337,8 @@
                         type="button"
                         class="btn-close"
                         data-bs-dismiss="alert"
-                        aria-label="Close">
-                    </button>
+                        aria-label="Close"
+                    ></button>
 
                 </div>
 
@@ -240,351 +352,56 @@
 
 
 
-<!-- =====================================================
-     MAIN PAGE CONTENT
-===================================================== -->
+<!-- =========================================================
+     MAIN CONTENT
+     ========================================================= -->
 
 <main>
 
-    {% block content %}
-
-    {% endblock %}
+    {% block content %}{% endblock %}
 
 </main>
 
 
 
-<!-- =====================================================
+<!-- =========================================================
      FOOTER
-===================================================== -->
+     ========================================================= -->
 
-<footer class="footer" id="contact">
+<footer class="mt-5">
 
-    <div class="container">
+    {% block footer %}
 
-        <div class="row gy-5">
+        <div class="container text-center py-4">
 
+            <p class="mb-0">
 
-            <!-- =================================================
-                 BRAND
-            ================================================== -->
+                &copy;
 
-            <div class="col-lg-4 col-md-6">
+                {{ current_year if current_year is defined else '' }}
 
-                <img
-                    src="{{ url_for(
-                        'static',
-                        filename='images/logo.png'
-                    ) }}"
-                    class="footer-logo"
-                    alt="Levetor Hub Logo">
-
-
-                <h5 class="footer-brand-title">
-
-                    Every Gadget You Love, One Hub.
-
-                </h5>
-
-
-                <p class="footer-text">
-
-                    Your trusted destination for quality
-                    gadgets, electronics, computers,
-                    phones, tablets and accessories.
-
-                </p>
-
-
-                <!-- SOCIAL LINKS -->
-
-                <div class="footer-socials">
-
-                    <a
-                        href="#"
-                        aria-label="Facebook">
-
-                        <i class="bi bi-facebook"></i>
-
-                    </a>
-
-
-                    <a
-                        href="#"
-                        aria-label="Instagram">
-
-                        <i class="bi bi-instagram"></i>
-
-                    </a>
-
-
-                    <a
-                        href="#"
-                        aria-label="TikTok">
-
-                        <i class="bi bi-tiktok"></i>
-
-                    </a>
-
-
-                    <a
-                        href="https://wa.me/2349131542208"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="WhatsApp">
-
-                        <i class="bi bi-whatsapp"></i>
-
-                    </a>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- =================================================
-                 QUICK LINKS
-            ================================================== -->
-
-            <div class="col-lg-2 col-md-6">
-
-                <h5>
-                    Quick Links
-                </h5>
-
-
-                <a href="{{ url_for('home') }}">
-                    <i class="bi bi-chevron-right"></i>
-                    Home
-                </a>
-
-
-                <a href="{{ url_for('shop') }}">
-                    <i class="bi bi-chevron-right"></i>
-                    Shop
-                </a>
-
-
-                <a href="{{ url_for('shop') }}">
-                    <i class="bi bi-chevron-right"></i>
-                    Categories
-                </a>
-
-
-                <a href="#about">
-                    <i class="bi bi-chevron-right"></i>
-                    About Us
-                </a>
-
-
-                <a href="#contact">
-                    <i class="bi bi-chevron-right"></i>
-                    Contact
-                </a>
-
-            </div>
-
-
-
-            <!-- =================================================
-                 CATEGORIES
-            ================================================== -->
-
-            <div class="col-lg-3 col-md-6">
-
-                <h5>
-                    Categories
-                </h5>
-
-
-                <a href="{{ url_for('shop') }}">
-                    <i class="bi bi-laptop"></i>
-                    Computers
-                </a>
-
-
-                <a href="{{ url_for('shop') }}">
-                    <i class="bi bi-phone"></i>
-                    Phones
-                </a>
-
-
-                <a href="{{ url_for('shop') }}">
-                    <i class="bi bi-tablet"></i>
-                    Tablets
-                </a>
-
-
-                <a href="{{ url_for('shop') }}">
-                    <i class="bi bi-headphones"></i>
-                    Accessories
-                </a>
-
-
-                <a href="{{ url_for('shop') }}">
-                    <i class="bi bi-house"></i>
-                    Home Appliances
-                </a>
-
-
-                <a href="{{ url_for('shop') }}">
-                    <i class="bi bi-speaker"></i>
-                    Audio & Visual
-                </a>
-
-            </div>
-
-
-
-            <!-- =================================================
-                 CONTACT
-            ================================================== -->
-
-            <div class="col-lg-3 col-md-6">
-
-                <h5>
-                    Contact Us
-                </h5>
-
-
-                <p>
-                    <i class="bi bi-telephone-fill"></i>
-
-                    <a href="tel:+2349131542208">
-
-                        0913 154 2208
-
-                    </a>
-
-                </p>
-
-
-                <p>
-                    <i class="bi bi-envelope-fill"></i>
-
-                    <a href="mailto:levetorhub@gmail.com">
-
-                        levetorhub@gmail.com
-
-                    </a>
-
-                </p>
-
-
-                <p>
-
-                    <i class="bi bi-geo-alt-fill"></i>
-
-                    Nigeria
-
-                </p>
-
-
-                <!-- WHATSAPP -->
-
-                <a
-                    href="https://wa.me/2349131542208"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="footer-whatsapp">
-
-                    <i class="bi bi-whatsapp"></i>
-
-                    Chat with us on WhatsApp
-
-                </a>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- =================================================
-             ABOUT SECTION
-        ================================================== -->
-
-        <div
-            class="footer-about"
-            id="about">
-
-            <hr>
-
-            <h5>
-                About Levetor Hub
-            </h5>
-
-            <p>
-
-                Levetor Hub is an online shopping platform
-                designed to make it easier for customers to
-                discover and purchase quality gadgets,
-                electronics, computers, smartphones,
-                tablets and accessories.
-
-                Our goal is simple:
-
-                <strong>
-                    Every Gadget You Love, One Hub.
-                </strong>
+                Levetor Hub. All rights reserved.
 
             </p>
 
         </div>
 
-
-
-        <!-- =================================================
-             FOOTER BOTTOM
-        ================================================== -->
-
-        <hr>
-
-
-        <div class="copyright">
-
-
-            <p>
-
-                © 2026
-                <strong>Levetor Hub</strong>.
-
-                All Rights Reserved.
-
-            </p>
-
-
-            <p>
-
-                Every Gadget You Love, One Hub.
-
-            </p>
-
-        </div>
-
-    </div>
+    {% endblock %}
 
 </footer>
 
 
 
-<!-- =====================================================
-     BOOTSTRAP JAVASCRIPT
-===================================================== -->
+<!-- =========================================================
+     BOOTSTRAP JS
+     ========================================================= -->
 
 <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-</script>
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
 
 
-
-<!-- =====================================================
-     CUSTOM JAVASCRIPT
-===================================================== -->
-
-{% block extra_js %}
-{% endblock %}
+{% block extra_js %}{% endblock %}
 
 
 </body>
