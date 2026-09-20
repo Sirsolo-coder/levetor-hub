@@ -3566,9 +3566,7 @@ def api_google_auth():
                 f"Google authentication failed: {str(e)}"
             )
         }), 500
-    # =========================================================
-# MOBILE APP - FORGOT PASSWORD
-# =========================================================
+
 
 @app.route(
     "/api/forgot-password",
