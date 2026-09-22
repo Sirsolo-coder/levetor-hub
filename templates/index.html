@@ -1009,16 +1009,14 @@ Levetor Hub | Every Gadget You Love, One Hub
                                 <div class="lh-product-brand">
 
                                     {% if product["brand"] %}
-                                        {{ product["brand"] }}
-                                    {% endif %}
-
-                                    {% if product["model"] %}
-                                        {% if product["brand"] %}
-                                            â€¢
-                                        {% endif %}
-                                        {{ product["model"] }}
-                                    {% endif %}
-
+    {{ product["brand"] }}
+{% endif %}
+{% if product["model"] %}
+    {% if product["brand"] %}
+        •
+    {% endif %}
+    {{ product["model"] }}
+{% endif %}
                                 </div>
 
 

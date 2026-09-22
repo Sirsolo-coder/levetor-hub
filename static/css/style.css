@@ -40,8 +40,9 @@ img {
    ========================================================= */
 
 .levetor-navbar {
-    background: #06185c;
+    background: #ffffff;
     padding: 12px 0;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .logo {
@@ -54,7 +55,7 @@ img {
 }
 
 .nav-link {
-    color: white !important;
+    color: #06185c !important;
     font-weight: 500;
     padding: 10px 15px !important;
     transition: 0.3s;
@@ -72,7 +73,7 @@ img {
 }
 
 .nav-icon {
-    color: white;
+    color: #06185c;
     text-decoration: none;
     font-size: 20px;
     transition: 0.3s;
@@ -1433,5 +1434,5 @@ img {
     font-weight: 700;
     line-height: 1;
 
-    border: 2px solid #06185c;
+    border: 2px solid #ffffff;
 }
