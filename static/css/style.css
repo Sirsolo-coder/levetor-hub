@@ -1436,3 +1436,221 @@ img {
 
     border: 2px solid #ffffff;
 }
+/* =========================================================
+   TELEGRAM / MOBILE APP ALERT
+   ========================================================= */
+
+.lh-telegram-alert {
+    width: 100%;
+    padding: 0 16px 16px;
+    background: #ffffff;
+}
+
+.lh-telegram-alert-card {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+
+    padding: 15px 16px;
+
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    background: linear-gradient(
+        135deg,
+        rgba(41, 182, 246, 0.10),
+        #ffffff
+    );
+
+    border: 1px solid rgba(41, 182, 246, 0.22);
+    border-radius: 16px;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+
+/* TELEGRAM ICON */
+
+.lh-telegram-alert-icon {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+
+    border-radius: 14px;
+
+    background: #10b7e8;
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 22px;
+}
+
+
+/* ALERT CONTENT */
+
+.lh-telegram-alert-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.lh-telegram-alert-title {
+    color: #06185c;
+
+    font-size: 15px;
+    font-weight: 800;
+
+    margin-bottom: 3px;
+}
+
+.lh-telegram-alert-text {
+    color: #616161;
+
+    font-size: 12px;
+    line-height: 1.45;
+
+    margin: 0;
+}
+
+
+/* JOIN TELEGRAM BUTTON */
+
+.lh-telegram-alert-button {
+    flex-shrink: 0;
+
+    min-height: 36px;
+
+    padding: 0 13px;
+
+    border-radius: 9px;
+
+    background: #10b7e8;
+    color: #ffffff;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    text-decoration: none;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    transition: 0.2s ease;
+}
+
+.lh-telegram-alert-button:hover {
+    background: #06185c;
+    color: #ffffff;
+
+    text-decoration: none;
+
+    transform: translateY(-1px);
+}
+
+
+/* CLOSE BUTTON */
+
+.lh-telegram-alert-close {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: transparent;
+    color: #9e9e9e;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    transition: 0.2s ease;
+}
+
+.lh-telegram-alert-close:hover {
+    background: #f5f5f5;
+    color: #424242;
+}
+
+
+/* =========================================================
+   TELEGRAM ALERT - TABLET
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .lh-telegram-alert {
+        padding: 0 15px 15px;
+    }
+
+    .lh-telegram-alert-card {
+        padding: 14px;
+        gap: 11px;
+    }
+
+}
+
+
+/* =========================================================
+   TELEGRAM ALERT - SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 576px) {
+
+    .lh-telegram-alert {
+        padding: 0 12px 14px;
+    }
+
+    .lh-telegram-alert-card {
+        align-items: flex-start;
+        padding: 13px;
+        gap: 10px;
+        border-radius: 14px;
+    }
+
+    .lh-telegram-alert-icon {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+
+        font-size: 19px;
+    }
+
+    .lh-telegram-alert-title {
+        font-size: 13px;
+        line-height: 1.35;
+    }
+
+    .lh-telegram-alert-text {
+        font-size: 11px;
+        line-height: 1.45;
+    }
+
+    .lh-telegram-alert-button {
+        min-height: 34px;
+        padding: 0 10px;
+
+        font-size: 10px;
+    }
+
+    .lh-telegram-alert-close {
+        width: 26px;
+        height: 26px;
+        min-width: 26px;
+
+        font-size: 13px;
+    }
+
+}

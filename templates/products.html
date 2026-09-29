@@ -9,7 +9,9 @@
     }
 </style>
 {% endblock %}
+
 {% block content %}
+
 <!-- ================= SHOP HERO ================= -->
 
 <section class="shop-hero">
@@ -29,7 +31,81 @@
             accessories and other gadgets at great prices.
         </p>
 
-        <!-- SEARCH -->
+
+        <!-- ================= AI ASSISTANT ================= -->
+
+        <div class="levetor-ai-shop">
+
+            <div class="levetor-ai-shop-header">
+
+                <div class="levetor-ai-shop-icon">
+                    <i class="bi bi-stars"></i>
+                </div>
+
+                <div class="levetor-ai-shop-heading">
+
+                    <h2>
+                        Levetor AI Assistant
+                    </h2>
+
+                    <p>
+                        Not sure what gadget you need?
+                        Ask our AI Assistant for help.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="levetor-ai-shop-messages"
+                id="levetorAiShopMessages"
+            >
+
+                <div class="levetor-ai-shop-message assistant">
+
+                    <div class="levetor-ai-shop-bubble">
+
+                        Hi! 👋 Tell me what you're looking for,
+                        your budget, or what you want to use it for.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <form
+                class="levetor-ai-shop-form"
+                id="levetorAiShopForm"
+            >
+
+                <input
+                    type="text"
+                    id="levetorAiShopInput"
+                    placeholder="Ask about phones, laptops, prices..."
+                    maxlength="2000"
+                    autocomplete="off"
+                >
+
+                <button
+                    type="submit"
+                    id="levetorAiShopSend"
+                    aria-label="Send message"
+                >
+
+                    <i class="bi bi-send-fill"></i>
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- ================= SEARCH ================= -->
 
         <form method="GET"
               action="{{ url_for('shop') }}"
@@ -49,7 +125,7 @@
         </form>
 
 
-        <!-- CATEGORY FILTERS -->
+        <!-- ================= CATEGORY FILTERS ================= -->
 
         <div class="category-filters">
 
@@ -125,19 +201,33 @@
                                 {% else %}
 
                                     <div class="placeholder-text">
+
                                         {% if product["category"] == "Phones" %}
+
                                             📱
+
                                         {% elif product["category"] == "Computers" %}
+
                                             💻
+
                                         {% elif product["category"] == "Tablets" %}
+
                                             📱
+
                                         {% elif product["category"] == "Accessories" %}
+
                                             🎧
+
                                         {% elif product["category"] == "Audio & Visual" %}
+
                                             🔊
+
                                         {% else %}
+
                                             🛍️
+
                                         {% endif %}
+
                                     </div>
 
                                 {% endif %}
@@ -315,39 +405,311 @@
 }
 
 
+/* =========================================================
+   LEVETOR AI ASSISTANT
+   ========================================================= */
+
+.levetor-ai-shop {
+
+    max-width: 760px;
+
+    margin: 0 auto 35px;
+
+    background: white;
+
+    border: 1px solid #e3e8f0;
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    text-align: left;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.07);
+
+}
+
+
+.levetor-ai-shop-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 18px;
+
+}
+
+
+.levetor-ai-shop-icon {
+
+    width: 48px;
+
+    height: 48px;
+
+    min-width: 48px;
+
+    border-radius: 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #063f9e;
+
+    color: white;
+
+    font-size: 22px;
+
+}
+
+
+.levetor-ai-shop-heading h2 {
+
+    margin: 0 0 4px;
+
+    color: #07133d;
+
+    font-size: 21px;
+
+    font-weight: 700;
+
+}
+
+
+.levetor-ai-shop-heading p {
+
+    margin: 0;
+
+    color: #687386;
+
+    font-size: 14px;
+
+}
+
+
+.levetor-ai-shop-messages {
+
+    min-height: 85px;
+
+    max-height: 320px;
+
+    overflow-y: auto;
+
+    padding: 4px 2px 12px;
+
+}
+
+
+.levetor-ai-shop-message {
+
+    display: flex;
+
+    margin-bottom: 10px;
+
+}
+
+
+.levetor-ai-shop-message.assistant {
+
+    justify-content: flex-start;
+
+}
+
+
+.levetor-ai-shop-message.user {
+
+    justify-content: flex-end;
+
+}
+
+
+.levetor-ai-shop-bubble {
+
+    max-width: 85%;
+
+    padding: 12px 15px;
+
+    border-radius: 14px;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+}
+
+
+.levetor-ai-shop-message.assistant
+.levetor-ai-shop-bubble {
+
+    background: #f1f5fa;
+
+    color: #17203a;
+
+    border-bottom-left-radius: 5px;
+
+}
+
+
+.levetor-ai-shop-message.user
+.levetor-ai-shop-bubble {
+
+    background: #063f9e;
+
+    color: white;
+
+    border-bottom-right-radius: 5px;
+
+}
+
+
+.levetor-ai-shop-form {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 5px;
+
+}
+
+
+.levetor-ai-shop-form input {
+
+    flex: 1;
+
+    min-width: 0;
+
+    border: 1px solid #dce2ea;
+
+    outline: none;
+
+    border-radius: 10px;
+
+    padding: 13px 15px;
+
+    font-size: 14px;
+
+    background: #fafbfc;
+
+    transition: 0.2s ease;
+
+}
+
+
+.levetor-ai-shop-form input:focus {
+
+    border-color: #0878c9;
+
+    background: white;
+
+    box-shadow:
+        0 0 0 3px rgba(8, 120, 201, 0.08);
+
+}
+
+
+.levetor-ai-shop-form button {
+
+    width: 48px;
+
+    min-width: 48px;
+
+    height: 48px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #063f9e;
+
+    color: white;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+    transition: 0.3s ease;
+
+}
+
+
+.levetor-ai-shop-form button:hover {
+
+    background: #0878c9;
+
+}
+
+
+.levetor-ai-shop-form button:disabled {
+
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+}
+
+
 /* ================= SEARCH ================= */
 
 .shop-search {
+
     max-width: 620px;
+
     margin: auto;
+
     display: flex;
+
     background: white;
+
     border-radius: 10px;
+
     overflow: hidden;
+
     box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+
 }
 
 .shop-search input {
+
     flex: 1;
+
     border: none;
+
     outline: none;
+
     padding: 18px 20px;
+
     font-size: 16px;
+
 }
 
 .shop-search button {
+
     width: 70px;
+
     border: none;
+
     background: #0878c9;
+
     color: white;
+
     font-size: 20px;
+
     cursor: pointer;
+
 }
 
 
 /* ================= CATEGORIES ================= */
 
 .category-filters {
+
     margin-top: 40px;
 
     display: flex;
@@ -359,9 +721,11 @@
     flex-wrap: wrap;
 
     gap: 30px;
+
 }
 
 .category-link {
+
     color: #687386;
 
     text-decoration: none;
@@ -369,19 +733,24 @@
     font-size: 16px;
 
     transition: 0.3s;
+
 }
 
 .category-link:hover {
+
     color: #0878c9;
+
 }
 
 
 /* ================= PRODUCTS ================= */
 
 .products-section {
+
     padding: 50px 20px 80px;
 
     background: white;
+
 }
 
 
@@ -671,6 +1040,50 @@
 
     }
 
+    .levetor-ai-shop {
+
+        padding: 18px;
+
+        border-radius: 15px;
+
+    }
+
+    .levetor-ai-shop-header {
+
+        gap: 12px;
+
+    }
+
+    .levetor-ai-shop-icon {
+
+        width: 42px;
+
+        height: 42px;
+
+        min-width: 42px;
+
+        font-size: 18px;
+
+    }
+
+    .levetor-ai-shop-heading h2 {
+
+        font-size: 18px;
+
+    }
+
+    .levetor-ai-shop-heading p {
+
+        font-size: 13px;
+
+    }
+
+    .levetor-ai-shop-form input {
+
+        padding: 12px;
+
+    }
+
     .category-filters {
 
         gap: 15px 20px;
@@ -686,5 +1099,185 @@
 }
 
 </style>
+
+<!-- ================= LEVETOR AI ASSISTANT JS ================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const aiForm = document.getElementById("levetorAiShopForm");
+    const aiInput = document.getElementById("levetorAiShopInput");
+    const aiSend = document.getElementById("levetorAiShopSend");
+    const aiMessages = document.getElementById("levetorAiShopMessages");
+
+    if (!aiForm || !aiInput || !aiSend || !aiMessages) {
+        return;
+    }
+
+
+    function addMessage(message, type = "assistant") {
+
+        const messageWrapper = document.createElement("div");
+
+        messageWrapper.className =
+            "levetor-ai-shop-message " + type;
+
+
+        const bubble = document.createElement("div");
+
+        bubble.className =
+            "levetor-ai-shop-bubble";
+
+
+        bubble.textContent = message;
+
+
+        messageWrapper.appendChild(bubble);
+
+        aiMessages.appendChild(messageWrapper);
+
+
+        aiMessages.scrollTop =
+            aiMessages.scrollHeight;
+    }
+
+
+    function setLoading(loading) {
+
+        aiSend.disabled = loading;
+
+        aiInput.disabled = loading;
+
+
+        if (loading) {
+
+            aiSend.innerHTML =
+                '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>';
+
+        } else {
+
+            aiSend.innerHTML =
+                '<i class="bi bi-send-fill"></i>';
+
+        }
+
+    }
+
+
+    aiForm.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+
+        const message =
+            aiInput.value.trim();
+
+
+        if (!message) {
+            return;
+        }
+
+
+        // Show user's message
+
+        addMessage(message, "user");
+
+
+        // Clear input
+
+        aiInput.value = "";
+
+
+        // Disable while waiting
+
+        setLoading(true);
+
+
+        try {
+
+            const response = await fetch(
+                "/api/ai/assistant",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        message: message
+                    })
+                }
+            );
+
+
+            const data = await response.json();
+
+
+            if (!response.ok || !data.success) {
+
+                throw new Error(
+                    data.message ||
+                    "The AI Assistant could not process your request."
+                );
+
+            }
+
+
+            // Display AI response
+
+            addMessage(
+                data.message ||
+                "Sorry, I couldn't generate a response.",
+                "assistant"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Levetor AI Assistant error:",
+                error
+            );
+
+
+            addMessage(
+                "Sorry, I'm having trouble connecting right now. Please try again.",
+                "assistant"
+            );
+
+
+        } finally {
+
+            setLoading(false);
+
+            aiInput.focus();
+
+        }
+
+    });
+
+
+    // Allow Enter to send
+
+    aiInput.addEventListener("keydown", function (event) {
+
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+
+            event.preventDefault();
+
+            aiForm.requestSubmit();
+
+        }
+
+    });
+
+});
+
+</script>
 
 {% endblock %}

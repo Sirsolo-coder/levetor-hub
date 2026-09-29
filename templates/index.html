@@ -7,17 +7,16 @@ Levetor Hub | Every Gadget You Love, One Hub
 {% block content %}
 
 <style>
-    /* Hide duplicate logo/brand from the shared navbar */
-.navbar .navbar-brand {
-    display: none !important;
-}
-    /* Hide duplicate logo/brand from shared navbar */
+    /* =========================================================
+       SHARED NAVBAR
+       ========================================================= */
+
     .navbar .navbar-brand {
         display: none !important;
     }
+
     /* =========================================================
-       LEVETOR HUB WEB HOMEPAGE
-       MATCHES FLUTTER MOBILE HOME SCREEN
+       LEVETOR HUB HOMEPAGE
        ========================================================= */
 
     :root {
@@ -34,6 +33,39 @@ Levetor Hub | Every Gadget You Love, One Hub
         background: #fff;
         color: var(--lh-black);
         min-height: 100vh;
+    }
+
+    /* =========================================================
+       TOP CONTROLS
+       ========================================================= */
+
+    .lh-top-controls {
+        max-width: 1250px;
+        margin: 0 auto;
+        padding: 14px 16px 0;
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .lh-top-control {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        border: 1px solid #E0E0E0;
+        background: #fff;
+        color: var(--lh-sky);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+    .lh-top-control:hover {
+        color: #fff;
+        background: var(--lh-sky);
+        border-color: var(--lh-sky);
     }
 
     /* =========================================================
@@ -85,6 +117,506 @@ Levetor Hub | Every Gadget You Love, One Hub
         color: #757575;
         font-size: 13px;
         margin: 0;
+    }
+
+    /* =========================================================
+       AI ASSISTANT HOME CARD
+       MATCHES MOBILE HOME SCREEN
+       ========================================================= */
+
+    .lh-ai-home-card {
+        padding: 0 16px 16px;
+        background: #fff;
+    }
+
+    .lh-ai-home-button {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        text-align: left;
+        background:
+            linear-gradient(
+                135deg,
+                rgba(41, 182, 246, .12),
+                #fff
+            );
+        border: 1px solid rgba(41, 182, 246, .18);
+        border-radius: 18px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, .04);
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+    .lh-ai-home-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 7px 18px rgba(0, 0, 0, .07);
+        border-color: rgba(41, 182, 246, .30);
+    }
+
+    .lh-ai-home-icon {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        border-radius: 16px;
+        background: var(--lh-sky);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+    }
+
+    .lh-ai-home-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .lh-ai-home-title {
+        color: var(--lh-sky);
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .lh-ai-home-description {
+        color: #616161;
+        font-size: 13px;
+        line-height: 1.3;
+        margin: 0;
+    }
+
+    .lh-ai-home-arrow {
+        color: var(--lh-sky);
+        font-size: 16px;
+        min-width: 16px;
+    }
+
+    /* =========================================================
+       AI ASSISTANT CHAT
+       ========================================================= */
+
+    .lh-ai-screen {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: #F8FAFC;
+        flex-direction: column;
+    }
+
+    .lh-ai-screen.active {
+        display: flex;
+    }
+
+    .lh-ai-header {
+        flex-shrink: 0;
+        background: #fff;
+        border-bottom: 1px solid #E5E7EB;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+    }
+
+    .lh-ai-back {
+        width: 38px;
+        height: 38px;
+        border: 0;
+        background: transparent;
+        color: #616161;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+        cursor: pointer;
+    }
+
+    .lh-ai-back:hover {
+        background: #F5F5F5;
+    }
+
+    .lh-ai-header-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
+        background: var(--lh-sky);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+    }
+
+    .lh-ai-header-text {
+        flex: 1;
+    }
+
+    .lh-ai-header-title {
+        color: var(--lh-sky);
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    .lh-ai-header-subtitle {
+        color: #757575;
+        font-size: 11px;
+        margin-top: 3px;
+    }
+
+    .lh-ai-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+    }
+
+    .lh-ai-content {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* =========================================================
+       AI SUGGESTIONS
+       ========================================================= */
+
+    .lh-ai-suggestions {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 2px 0 14px;
+        scrollbar-width: thin;
+    }
+
+    .lh-ai-suggestions::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .lh-ai-suggestions::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 10px;
+    }
+
+    .lh-ai-suggestion {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid rgba(41, 182, 246, .20);
+        background: #fff;
+        color: #424242;
+        border-radius: 18px;
+        padding: 8px 12px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+    .lh-ai-suggestion:hover {
+        border-color: var(--lh-sky);
+        background: rgba(41, 182, 246, .05);
+    }
+
+    .lh-ai-suggestion i {
+        color: var(--lh-sky);
+    }
+
+    /* =========================================================
+       AI MESSAGES
+       ========================================================= */
+
+    .lh-ai-message {
+        display: flex;
+        margin-bottom: 14px;
+    }
+
+    .lh-ai-message.user {
+        justify-content: flex-end;
+    }
+
+    .lh-ai-message.assistant {
+        justify-content: flex-start;
+    }
+
+    .lh-ai-bubble {
+        max-width: min(78%, 700px);
+        padding: 11px 13px;
+        border-radius: 16px;
+        font-size: 14px;
+        line-height: 1.5;
+        word-break: break-word;
+    }
+
+    .lh-ai-message.user .lh-ai-bubble {
+        background: var(--lh-sky);
+        color: #fff;
+        border-bottom-right-radius: 5px;
+    }
+
+    .lh-ai-message.assistant .lh-ai-bubble {
+        background: #fff;
+        color: #424242;
+        border: 1px solid #E5E7EB;
+        border-bottom-left-radius: 5px;
+        box-shadow: 0 2px 7px rgba(0, 0, 0, .04);
+    }
+
+    .lh-ai-message-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+    }
+
+    .lh-ai-avatar {
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--lh-sky);
+        color: #fff;
+        font-size: 17px;
+    }
+
+    .lh-ai-user-avatar {
+        background: rgba(255, 255, 255, .18);
+        color: #fff;
+    }
+
+    .lh-ai-error .lh-ai-bubble {
+        background: #FFF5F5;
+        color: #C62828;
+        border-color: #FFCDD2;
+    }
+
+    /* =========================================================
+       AI LOADING
+       ========================================================= */
+
+    .lh-ai-loading {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        min-height: 20px;
+    }
+
+    .lh-ai-dot {
+        width: 7px;
+        height: 7px;
+        background: var(--lh-sky);
+        border-radius: 50%;
+        animation: lhAiDot 1.2s infinite ease-in-out;
+    }
+
+    .lh-ai-dot:nth-child(2) {
+        animation-delay: .15s;
+    }
+
+    .lh-ai-dot:nth-child(3) {
+        animation-delay: .30s;
+    }
+
+    @keyframes lhAiDot {
+        0%, 80%, 100% {
+            transform: scale(.65);
+            opacity: .45;
+        }
+
+        40% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    /* =========================================================
+       AI PRODUCT RECOMMENDATIONS
+       ========================================================= */
+
+    .lh-ai-products {
+        margin: -3px 0 18px 43px;
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        scrollbar-width: thin;
+    }
+
+    .lh-ai-product-card {
+        width: 210px;
+        min-width: 210px;
+        background: #fff;
+        border: 1px solid #E5E7EB;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+    }
+
+    .lh-ai-product-image {
+        height: 100px;
+        background: #FAFAFA;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+    }
+
+    .lh-ai-product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .lh-ai-product-placeholder {
+        color: #BDBDBD;
+        font-size: 34px;
+    }
+
+    .lh-ai-product-info {
+        padding: 10px;
+    }
+
+    .lh-ai-product-name {
+        color: #212121;
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.3;
+        min-height: 34px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .lh-ai-product-price {
+        color: #546E7A;
+        font-size: 15px;
+        font-weight: 800;
+        margin: 5px 0 8px;
+    }
+
+    .lh-ai-product-actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    .lh-ai-product-actions a,
+    .lh-ai-product-actions form {
+        flex: 1;
+        min-width: 0;
+        margin: 0;
+    }
+
+    .lh-ai-product-actions a,
+    .lh-ai-add-product {
+        width: 100%;
+        min-height: 34px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 700;
+        box-sizing: border-box;
+    }
+
+    .lh-ai-view-product {
+        background: #F5F5F5;
+        color: #424242;
+    }
+
+    .lh-ai-view-product:hover {
+        background: #EEEEEE;
+        color: #212121;
+    }
+
+    .lh-ai-add-product {
+        border: 0;
+        background: var(--lh-sky);
+        color: #fff;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+    .lh-ai-add-product:hover {
+        background: var(--lh-sky-dark);
+        color: #fff;
+    }
+
+    .lh-ai-add-product:disabled {
+        background: #BDBDBD;
+        cursor: not-allowed;
+    }
+
+    /* =========================================================
+       AI INPUT
+       ========================================================= */
+
+    .lh-ai-input-area {
+        flex-shrink: 0;
+        background: #fff;
+        border-top: 1px solid #E0E0E0;
+        padding: 10px 12px;
+    }
+
+    .lh-ai-input-inner {
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+    }
+
+    .lh-ai-input {
+        flex: 1;
+        min-height: 48px;
+        max-height: 120px;
+        resize: none;
+        border: 0;
+        outline: none;
+        border-radius: 18px;
+        background: #F3F4F6;
+        padding: 13px 15px;
+        color: #212121;
+        font-size: 14px;
+        line-height: 1.35;
+    }
+
+    .lh-ai-input::placeholder {
+        color: #9E9E9E;
+    }
+
+    .lh-ai-send {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        border: 0;
+        border-radius: 16px;
+        background: var(--lh-sky);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 19px;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+    .lh-ai-send:hover {
+        background: var(--lh-sky-dark);
+    }
+
+    .lh-ai-send:disabled {
+        background: #BDBDBD;
+        cursor: not-allowed;
     }
 
     /* =========================================================
@@ -216,7 +748,7 @@ Levetor Hub | Every Gadget You Love, One Hub
     }
 
     /* =========================================================
-       PRODUCTS HEADER
+       PRODUCTS
        ========================================================= */
 
     .lh-products-section {
@@ -267,19 +799,11 @@ Levetor Hub | Every Gadget You Love, One Hub
         color: var(--lh-sky);
     }
 
-    /* =========================================================
-       PRODUCT GRID
-       ========================================================= */
-
     .lh-product-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px;
     }
-
-    /* =========================================================
-       PRODUCT CARD
-       ========================================================= */
 
     .lh-product-card {
         background: #fff;
@@ -349,7 +873,6 @@ Levetor Hub | Every Gadget You Love, One Hub
         font-weight: 700;
         margin: 0 0 5px;
         min-height: 40px;
-
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -392,17 +915,10 @@ Levetor Hub | Every Gadget You Love, One Hub
         font-size: 15px;
     }
 
-    .lh-stock-row.out i {
-        color: var(--lh-red);
-    }
-
+    .lh-stock-row.out i,
     .lh-stock-row.out {
         color: var(--lh-red);
     }
-
-    /* =========================================================
-       ADD TO CART
-       ========================================================= */
 
     .lh-add-cart {
         width: 100%;
@@ -418,7 +934,6 @@ Levetor Hub | Every Gadget You Love, One Hub
         font-size: 13px;
         font-weight: 700;
         cursor: pointer;
-        box-shadow: none;
         transition: .2s ease;
     }
 
@@ -483,36 +998,61 @@ Levetor Hub | Every Gadget You Love, One Hub
     }
 
     /* =========================================================
-       DESKTOP TOP CONTROLS
+       ABOUT / CONTACT
        ========================================================= */
 
-    .lh-top-controls {
-        max-width: 1250px;
-        margin: 0 auto;
-        padding: 14px 16px 0;
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
+    .lh-info-section {
+        padding: 50px 16px;
+        scroll-margin-top: 90px;
     }
 
-    .lh-top-control {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        border: 1px solid #E0E0E0;
+    .lh-info-card {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 32px;
+        border-radius: 20px;
         background: #fff;
-        color: var(--lh-sky);
-        display: inline-flex;
+        border: 1px solid rgba(0, 0, 0, .08);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, .06);
+        display: flex;
+        align-items: flex-start;
+        gap: 24px;
+    }
+
+    .lh-info-icon {
+        width: 58px;
+        height: 58px;
+        min-width: 58px;
+        border-radius: 16px;
+        display: flex;
         align-items: center;
         justify-content: center;
-        text-decoration: none;
-        transition: .2s ease;
+        background: #111827;
+        color: #fff;
+        font-size: 24px;
     }
 
-    .lh-top-control:hover {
-        color: #fff;
-        background: var(--lh-sky);
-        border-color: var(--lh-sky);
+    .lh-info-card h2 {
+        margin: 0 0 14px;
+        font-weight: 700;
+    }
+
+    .lh-info-card p {
+        margin-bottom: 12px;
+        line-height: 1.7;
+        color: #555;
+    }
+
+    .lh-contact-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .lh-contact-actions .btn {
+        border-radius: 10px;
+        padding: 10px 18px;
     }
 
     /* =========================================================
@@ -520,7 +1060,6 @@ Levetor Hub | Every Gadget You Love, One Hub
        ========================================================= */
 
     @media (min-width: 700px) {
-
         .lh-product-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 14px;
@@ -537,7 +1076,6 @@ Levetor Hub | Every Gadget You Love, One Hub
     }
 
     @media (min-width: 1100px) {
-
         .lh-product-grid {
             grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 16px;
@@ -560,8 +1098,18 @@ Levetor Hub | Every Gadget You Love, One Hub
         }
     }
 
-    @media (max-width: 575px) {
+    @media (max-width: 768px) {
+        .lh-info-card {
+            padding: 24px;
+            flex-direction: column;
+        }
 
+        .lh-info-section {
+            padding: 35px 14px;
+        }
+    }
+
+    @media (max-width: 575px) {
         .lh-top-controls {
             padding-top: 10px;
         }
@@ -613,630 +1161,951 @@ Levetor Hub | Every Gadget You Love, One Hub
         .lh-product-info {
             padding: 10px;
         }
-        /* =========================================================
-   ABOUT / CONTACT SECTIONS
-========================================================= */
 
-.lh-info-section {
-    padding: 50px 16px;
-    scroll-margin-top: 90px;
-}
+        .lh-ai-home-description {
+            font-size: 12px;
+        }
 
-.lh-info-card {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 32px;
-    border-radius: 20px;
-    background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        .lh-ai-bubble {
+            max-width: 86%;
+            font-size: 13px;
+        }
 
-    display: flex;
-    align-items: flex-start;
-    gap: 24px;
-}
-
-.lh-info-icon {
-    width: 58px;
-    height: 58px;
-    min-width: 58px;
-
-    border-radius: 16px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #111827;
-    color: #ffffff;
-
-    font-size: 24px;
-}
-
-.lh-info-card h2 {
-    margin: 0 0 14px;
-    font-weight: 700;
-}
-
-.lh-info-card p {
-    margin-bottom: 12px;
-    line-height: 1.7;
-    color: #555;
-}
-
-.lh-contact-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.lh-contact-actions .btn {
-    border-radius: 10px;
-    padding: 10px 18px;
-}
-
-@media (max-width: 768px) {
-    .lh-info-card {
-        padding: 24px;
-        flex-direction: column;
-    }
-
-    .lh-info-section {
-        padding: 35px 14px;
-    }
-}
+        .lh-ai-products {
+            margin-left: 0;
+        }
     }
 </style>
 
-
 <div class="lh-home">
 
-    <!-- =====================================================
-         TOP CONTROLS
-         ===================================================== -->
+```
+<!-- =====================================================
+     TOP CONTROLS
+     ===================================================== -->
 
-    <div class="lh-top-controls">
+<div class="lh-top-controls">
 
-        <a
-            href="{{ url_for('home') }}"
-            class="lh-top-control"
-            title="Refresh products"
+    <a
+        href="{{ url_for('home') }}"
+        class="lh-top-control"
+        title="Refresh products"
+    >
+        <i class="bi bi-arrow-clockwise"></i>
+    </a>
+
+    <a
+        href="{{ url_for('cart') }}"
+        class="lh-top-control"
+        title="Shopping cart"
+    >
+        <i class="bi bi-cart3"></i>
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     BRAND HEADER
+     ===================================================== -->
+
+<section class="lh-brand-header">
+
+    <div class="lh-logo-box">
+
+        <img
+            src="{{ url_for(
+                'static',
+                filename='images/logo.png'
+            ) }}"
+            alt="Levetor Hub"
         >
-            <i class="bi bi-arrow-clockwise"></i>
-        </a>
-
-        <a
-            href="{{ url_for('cart') }}"
-            class="lh-top-control"
-            title="Shopping cart"
-        >
-            <i class="bi bi-cart3"></i>
-        </a>
 
     </div>
 
+    <h1 class="lh-brand-name">
+        Levetor Hub
+    </h1>
 
-    <!-- =====================================================
-         BRAND HEADER
-         ===================================================== -->
+    <div class="lh-tagline">
+        Every Gadget You Love, One Hub
+    </div>
 
-    <section class="lh-brand-header">
+    <p class="lh-subtitle">
+        Quality Gadgets, Electronics &amp; Technology Solutions
+    </p>
 
-        <div class="lh-logo-box">
+</section>
 
-            <img
-                src="{{ url_for(
-                    'static',
-                    filename='images/logo.png'
-                ) }}"
-                alt="Levetor Hub"
-            >
 
+<!-- =====================================================
+     TELEGRAM / MOBILE APP ALERT
+     ===================================================== -->
+
+<section
+    class="lh-telegram-alert"
+    id="lhTelegramAlert"
+>
+
+    <div class="lh-telegram-alert-card">
+
+        <div class="lh-telegram-alert-icon">
+            <i class="bi bi-telegram"></i>
         </div>
 
-        <h1 class="lh-brand-name">
-            Levetor Hub
-        </h1>
+        <div class="lh-telegram-alert-content">
 
-        <div class="lh-tagline">
-            Every Gadget You Love, One Hub
-        </div>
-
-        <p class="lh-subtitle">
-            Quality Gadgets, Electronics &amp; Technology Solutions
-        </p>
-
-    </section>
-
-
-    <!-- =====================================================
-         SEARCH
-         ===================================================== -->
-
-    <section class="lh-search-section">
-
-        <div class="lh-search-box">
-
-            <i class="bi bi-search lh-search-icon"></i>
-
-            <input
-                type="text"
-                id="lhSearch"
-                class="lh-search-input"
-                placeholder="Search gadgets, brands or models..."
-                autocomplete="off"
-            >
-
-            <button
-                type="button"
-                id="lhClearSearch"
-                class="lh-clear-search"
-                aria-label="Clear search"
-            >
-                <i class="bi bi-x-circle-fill"></i>
-            </button>
-
-        </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         CATEGORIES
-         ===================================================== -->
-
-    <section class="lh-category-scroll">
-
-        <div class="lh-category-list">
-
-            <a
-                href="{{ url_for('home') }}"
-                class="lh-category-chip active"
-                data-category="All"
-            >
-                <i class="bi bi-grid"></i>
-                <span>All</span>
-            </a>
-
-            <a
-                href="{{ url_for('shop', category='Phones') }}"
-                class="lh-category-chip"
-                data-category="Phones"
-            >
-                <i class="bi bi-phone"></i>
-                <span>Phones</span>
-            </a>
-
-            <a
-                href="{{ url_for('shop', category='Computers') }}"
-                class="lh-category-chip"
-                data-category="Computers"
-            >
-                <i class="bi bi-laptop"></i>
-                <span>Computers</span>
-            </a>
-
-            <a
-                href="{{ url_for('shop', category='Accessories') }}"
-                class="lh-category-chip"
-                data-category="Accessories"
-            >
-                <i class="bi bi-device-ssd"></i>
-                <span>Accessories</span>
-            </a>
-
-            <a
-                href="{{ url_for('shop', category='Tablets') }}"
-                class="lh-category-chip"
-                data-category="Tablets"
-            >
-                <i class="bi bi-tablet"></i>
-                <span>Tablets</span>
-            </a>
-
-            <a
-                href="{{ url_for('shop', category='Audio & Headphones') }}"
-                class="lh-category-chip"
-                data-category="Audio & Headphones"
-            >
-                <i class="bi bi-headphones"></i>
-                <span>Audio &amp; Headphones</span>
-            </a>
-
-            <a
-                href="{{ url_for('shop', category='Gaming') }}"
-                class="lh-category-chip"
-                data-category="Gaming"
-            >
-                <i class="bi bi-controller"></i>
-                <span>Gaming</span>
-            </a>
-
-            <a
-                href="{{ url_for('shop', category='Home Appliances') }}"
-                class="lh-category-chip"
-                data-category="Home Appliances"
-            >
-                <i class="bi bi-house"></i>
-                <span>Home Appliances</span>
-            </a>
-
-            <a
-                href="{{ url_for('shop', category='Softwares') }}"
-                class="lh-category-chip"
-                data-category="Softwares"
-            >
-                <i class="bi bi-grid-1x2"></i>
-                <span>Softwares</span>
-            </a>
-
-            <a
-                href="{{ url_for('shop', category='Solar & Power') }}"
-                class="lh-category-chip"
-                data-category="Solar & Power"
-            >
-                <i class="bi bi-sun"></i>
-                <span>Solar &amp; Power</span>
-            </a>
-
-            <a
-                href="{{ url_for('shop', category='Others') }}"
-                class="lh-category-chip"
-                data-category="Others"
-            >
-                <i class="bi bi-box"></i>
-                <span>Others</span>
-            </a>
-
-        </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         PRODUCTS
-         ===================================================== -->
-
-    <section class="lh-products-section">
-
-        <div class="lh-products-container">
-
-            <div class="lh-products-header">
-
-                <h2 class="lh-products-title">
-                    <i class="bi bi-bag"></i>
-                    Products
-                </h2>
-
-                <span
-                    class="lh-product-count"
-                    id="lhProductCount"
-                >
-                    {{ products|length }} found
-                </span>
-
+            <div class="lh-telegram-alert-title">
+                📱 Get the Levetor Hub Mobile App
             </div>
 
+            <p class="lh-telegram-alert-text">
+                The Levetor Hub mobile app APK is available
+                in our official Telegram group. Join to download
+                the latest version and receive app updates.
+            </p>
 
-            <div
-                class="lh-selected-category"
-                id="lhSelectedCategory"
-                style="display:none;"
-            >
-                Showing:
-                <strong id="lhSelectedCategoryText"></strong>
+        </div>
+
+        <a
+            href="https://t.me/Levetor_Hub"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="lh-telegram-alert-button"
+        >
+            <i class="bi bi-telegram"></i>
+            Join Telegram
+        </a>
+
+        <button
+            type="button"
+            class="lh-telegram-alert-close"
+            id="lhTelegramAlertClose"
+            aria-label="Dismiss notification"
+            title="Dismiss"
+        >
+            <i class="bi bi-x-lg"></i>
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     AI ASSISTANT
+     MATCHES MOBILE HOME SCREEN
+     ===================================================== -->
+
+<section class="lh-ai-home-card">
+
+    <div
+        class="lh-ai-home-button"
+        id="lhOpenAI"
+        role="button"
+        tabindex="0"
+        aria-label="Open AI Assistant"
+    >
+
+        <div class="lh-ai-home-icon">
+            <i class="bi bi-stars"></i>
+        </div>
+
+        <div class="lh-ai-home-content">
+
+            <div class="lh-ai-home-title">
+                AI Assistant
             </div>
 
+            <p class="lh-ai-home-description">
+                Get help choosing gadgets and finding the right products.
+            </p>
 
-            <div
-                class="lh-product-grid"
-                id="lhProductGrid"
+        </div>
+
+        <div class="lh-ai-home-arrow">
+            <i class="bi bi-arrow-right"></i>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SEARCH
+     ===================================================== -->
+
+<section class="lh-search-section">
+
+    <div class="lh-search-box">
+
+        <i class="bi bi-search lh-search-icon"></i>
+
+        <input
+            type="text"
+            id="lhSearch"
+            class="lh-search-input"
+            placeholder="Search gadgets, brands or models..."
+            autocomplete="off"
+        >
+
+        <button
+            type="button"
+            id="lhClearSearch"
+            class="lh-clear-search"
+            aria-label="Clear search"
+        >
+            <i class="bi bi-x-circle-fill"></i>
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CATEGORIES
+     ===================================================== -->
+
+<section class="lh-category-scroll">
+
+    <div class="lh-category-list">
+
+        <a
+            href="{{ url_for('home') }}"
+            class="lh-category-chip active"
+            data-category="All"
+        >
+            <i class="bi bi-grid"></i>
+            <span>All</span>
+        </a>
+
+        <a
+            href="{{ url_for('shop', category='Phones') }}"
+            class="lh-category-chip"
+            data-category="Phones"
+        >
+            <i class="bi bi-phone"></i>
+            <span>Phones</span>
+        </a>
+
+        <a
+            href="{{ url_for('shop', category='Computers') }}"
+            class="lh-category-chip"
+            data-category="Computers"
+        >
+            <i class="bi bi-laptop"></i>
+            <span>Computers</span>
+        </a>
+
+        <a
+            href="{{ url_for('shop', category='Accessories') }}"
+            class="lh-category-chip"
+            data-category="Accessories"
+        >
+            <i class="bi bi-device-ssd"></i>
+            <span>Accessories</span>
+        </a>
+
+        <a
+            href="{{ url_for('shop', category='Tablets') }}"
+            class="lh-category-chip"
+            data-category="Tablets"
+        >
+            <i class="bi bi-tablet"></i>
+            <span>Tablets</span>
+        </a>
+
+        <a
+            href="{{ url_for('shop', category='Audio & Headphones') }}"
+            class="lh-category-chip"
+            data-category="Audio & Headphones"
+        >
+            <i class="bi bi-headphones"></i>
+            <span>Audio &amp; Headphones</span>
+        </a>
+
+        <a
+            href="{{ url_for('shop', category='Gaming') }}"
+            class="lh-category-chip"
+            data-category="Gaming"
+        >
+            <i class="bi bi-controller"></i>
+            <span>Gaming</span>
+        </a>
+
+        <a
+            href="{{ url_for('shop', category='Home Appliances') }}"
+            class="lh-category-chip"
+            data-category="Home Appliances"
+        >
+            <i class="bi bi-house"></i>
+            <span>Home Appliances</span>
+        </a>
+
+        <a
+            href="{{ url_for('shop', category='Networking') }}"
+            class="lh-category-chip"
+            data-category="Networking"
+        >
+            <i class="bi bi-box"></i>
+            <span>Networking</span>
+        </a>
+        <a
+            href="{{ url_for('shop', category='Softwares') }}"
+            class="lh-category-chip"
+            data-category="Softwares"
+        >
+            <i class="bi bi-grid-1x2"></i>
+            <span>Softwares</span>
+        </a>
+
+        <a
+            href="{{ url_for('shop', category='Solar & Power') }}"
+            class="lh-category-chip"
+            data-category="Solar & Power"
+        >
+            <i class="bi bi-sun"></i>
+            <span>Solar &amp; Power</span>
+        </a>
+
+        <a
+            href="{{ url_for('shop', category='Others') }}"
+            class="lh-category-chip"
+            data-category="Others"
+        >
+            <i class="bi bi-box"></i>
+            <span>Others</span>
+        </a>
+
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PRODUCTS
+     ===================================================== -->
+
+<section class="lh-products-section">
+
+    <div class="lh-products-container">
+
+        <div class="lh-products-header">
+
+            <h2 class="lh-products-title">
+                <i class="bi bi-bag"></i>
+                Products
+            </h2>
+
+            <span
+                class="lh-product-count"
+                id="lhProductCount"
             >
+                {{ products|length }} found
+            </span>
 
-                {% if products %}
+        </div>
 
-                    {% for product in products %}
 
-                        <div
-                            class="lh-product-card"
-                            data-product-name="{{ product['name']|lower }}"
-                            data-product-category="{{ product['category']|lower }}"
-                            data-product-brand="{{ (product['brand'] or '')|lower }}"
-                            data-product-model="{{ (product['model'] or '')|lower }}"
+        <div
+            class="lh-selected-category"
+            id="lhSelectedCategory"
+            style="display:none;"
+        >
+            Showing:
+            <strong id="lhSelectedCategoryText"></strong>
+        </div>
+
+
+        <div
+            class="lh-product-grid"
+            id="lhProductGrid"
+        >
+
+            {% if products %}
+
+                {% for product in products %}
+
+                    <div
+                        class="lh-product-card"
+                        data-product-id="{{ product['id'] }}"
+                        data-product-name="{{ product['name']|lower }}"
+                        data-product-category="{{ product['category']|lower }}"
+                        data-product-brand="{{ (product['brand'] or '')|lower }}"
+                        data-product-model="{{ (product['model'] or '')|lower }}"
+                        data-product-price="{{ product['price']|float }}"
+                        data-product-image="{{ product['image'] or '' }}"
+                        data-add-cart-url="{{ url_for('add_to_cart', product_id=product['id']) }}"
+                        data-product-stock="{{ product['stock']|int }}"
+                    >
+
+                        <a
+                            href="{{ url_for(
+                                'product_details',
+                                product_id=product['id']
+                            ) }}"
+                            style="text-decoration:none;"
                         >
 
-                            <a
-                                href="{{ url_for(
-                                    'product_details',
-                                    product_id=product['id']
-                                ) }}"
-                                style="text-decoration:none;"
-                            >
+                            <div class="lh-product-image">
 
-                                <div class="lh-product-image">
+                                {% if product["stock"]|int <= 0 %}
 
-                                    {% if product["stock"]|int <= 0 %}
-
-                                        <span class="lh-out-of-stock">
-                                            OUT OF STOCK
-                                        </span>
-
-                                    {% endif %}
-
-
-                                    {% if product["image"] %}
-
-                                        <img
-                                            src="{% if product['image'].startswith('http://') or product['image'].startswith('https://') %}{{ product['image'] }}{% else %}{{ url_for('static', filename='uploads/' + product['image']) }}{% endif %}"
-                                            alt="{{ product['name'] }}"
-                                            loading="lazy"
-                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
-                                        >
-
-                                        <div
-                                            class="lh-image-placeholder"
-                                            style="display:none;"
-                                        >
-                                            <i class="bi bi-image"></i>
-                                        </div>
-
-                                    {% else %}
-
-                                        <div class="lh-image-placeholder">
-                                            <i class="bi bi-box-seam"></i>
-                                        </div>
-
-                                    {% endif %}
-
-                                </div>
-
-                            </a>
-
-
-                            <div class="lh-product-info">
-
-                                <div class="lh-product-name">
-                                    {{ product["name"] }}
-                                </div>
-
-
-                                <div class="lh-product-category">
-                                    {{ product["category"] }}
-                                </div>
-
-
-                                <div class="lh-product-brand">
-
-                                    {% if product["brand"] %}
-    {{ product["brand"] }}
-{% endif %}
-{% if product["model"] %}
-    {% if product["brand"] %}
-        •
-    {% endif %}
-    {{ product["model"] }}
-{% endif %}
-                                </div>
-
-
-                                <div class="lh-product-price">
-                                    &#8358;{{ "{:,.2f}".format(product["price"]|float) }}
-                                </div>
-
-
-                                {% if product["stock"]|int > 0 %}
-
-                                    <div class="lh-stock-row">
-
-                                        <i class="bi bi-box-seam"></i>
-
-                                        <span>
-                                            {{ product["stock"] }} in stock
-                                        </span>
-
-                                    </div>
-
-                                {% else %}
-
-                                    <div class="lh-stock-row out">
-
-                                        <i class="bi bi-dash-circle"></i>
-
-                                        <span>
-                                            Out of stock
-                                        </span>
-
-                                    </div>
+                                    <span class="lh-out-of-stock">
+                                        OUT OF STOCK
+                                    </span>
 
                                 {% endif %}
 
 
-                                <form
-                                    method="POST"
-                                    action="{{ url_for(
-                                        'add_to_cart',
-                                        product_id=product['id']
-                                    ) }}"
-                                    class="lh-cart-form"
-                                >
+                                {% if product["image"] %}
 
-                                    {% if product["stock"]|int > 0 %}
+                                    <img
+                                        src="{% if product['image'].startswith('http://') or product['image'].startswith('https://') %}{{ product['image'] }}{% else %}{{ url_for('static', filename='uploads/' + product['image']) }}{% endif %}"
+                                        alt="{{ product['name'] }}"
+                                        loading="lazy"
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                                    >
 
-                                        <button
-                                            type="submit"
-                                            class="lh-add-cart"
-                                        >
-                                            <i class="bi bi-cart-plus"></i>
-                                            Add to Cart
-                                        </button>
+                                    <div
+                                        class="lh-image-placeholder"
+                                        style="display:none;"
+                                    >
+                                        <i class="bi bi-image"></i>
+                                    </div>
 
-                                    {% else %}
+                                {% else %}
 
-                                        <button
-                                            type="button"
-                                            class="lh-add-cart"
-                                            disabled
-                                        >
-                                            <i class="bi bi-cart-x"></i>
-                                            Out of Stock
-                                        </button>
+                                    <div class="lh-image-placeholder">
+                                        <i class="bi bi-box-seam"></i>
+                                    </div>
 
-                                    {% endif %}
-
-                                </form>
+                                {% endif %}
 
                             </div>
 
-                        </div>
-
-                    {% endfor %}
-
-                {% else %}
-
-                    <div
-                        class="lh-empty-state"
-                        style="grid-column: 1 / -1;"
-                    >
-
-                        <i class="bi bi-search"></i>
-
-                        <h3>
-                            No products found
-                        </h3>
-
-                        <p>
-                            Try another search or category.
-                        </p>
-
-                        <a
-                            href="{{ url_for('shop') }}"
-                            class="lh-clear-filters"
-                        >
-                            Browse Products
                         </a>
+
+
+                        <div class="lh-product-info">
+
+                            <div class="lh-product-name">
+                                {{ product["name"] }}
+                            </div>
+
+                            <div class="lh-product-category">
+                                {{ product["category"] }}
+                            </div>
+
+                            <div class="lh-product-brand">
+
+                                {% if product["brand"] %}
+                                    {{ product["brand"] }}
+                                {% endif %}
+
+                                {% if product["model"] %}
+
+                                    {% if product["brand"] %}
+                                        •
+                                    {% endif %}
+
+                                    {{ product["model"] }}
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="lh-product-price">
+                                &#8358;{{ "{:,.2f}".format(product["price"]|float) }}
+                            </div>
+
+
+                            {% if product["stock"]|int > 0 %}
+
+                                <div class="lh-stock-row">
+
+                                    <i class="bi bi-box-seam"></i>
+
+                                    <span>
+                                        {{ product["stock"] }} in stock
+                                    </span>
+
+                                </div>
+
+                            {% else %}
+
+                                <div class="lh-stock-row out">
+
+                                    <i class="bi bi-dash-circle"></i>
+
+                                    <span>
+                                        Out of stock
+                                    </span>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'add_to_cart',
+                                    product_id=product['id']
+                                ) }}"
+                                class="lh-cart-form"
+                            >
+
+                                {% if product["stock"]|int > 0 %}
+
+                                    <button
+                                        type="submit"
+                                        class="lh-add-cart"
+                                    >
+                                        <i class="bi bi-cart-plus"></i>
+                                        Add to Cart
+                                    </button>
+
+                                {% else %}
+
+                                    <button
+                                        type="button"
+                                        class="lh-add-cart"
+                                        disabled
+                                    >
+                                        <i class="bi bi-cart-x"></i>
+                                        Out of Stock
+                                    </button>
+
+                                {% endif %}
+
+                            </form>
+
+                        </div>
 
                     </div>
 
-                {% endif %}
+                {% endfor %}
 
-            </div>
+            {% else %}
 
-
-            <!-- =================================================
-                 DYNAMIC EMPTY SEARCH STATE
-                 ================================================= -->
-
-            <div
-                id="lhSearchEmpty"
-                class="lh-empty-state"
-                style="display:none;"
-            >
-
-                <i class="bi bi-search"></i>
-
-                <h3>
-                    No products found
-                </h3>
-
-                <p>
-                    Try another search or category.
-                </p>
-
-                <button
-                    type="button"
-                    id="lhClearFilters"
-                    class="lh-clear-filters"
+                <div
+                    class="lh-empty-state"
+                    style="grid-column: 1 / -1;"
                 >
-                    Clear Filters
-                </button>
 
-            </div>
+                    <i class="bi bi-search"></i>
 
+                    <h3>
+                        No products found
+                    </h3>
 
-        </div>
-
-    </section>
-
-</div>
-<!-- =========================================================
-     ABOUT US
-========================================================= -->
-<section id="about" class="lh-info-section">
-    <div class="container">
-        <div class="lh-info-card">
-            <div class="lh-info-icon">
-                <i class="bi bi-info-circle-fill"></i>
-            </div>
-
-            <div>
-                <h2>About Levetor Hub</h2>
-
-                <p>
-                    Levetor Hub is your one-stop destination for gadgets,
-                    electronics and tech products. We make it simple to
-                    discover the gadgets you love and place your order from
-                    one convenient platform.
-                </p>
-
-                <p>
-                    Our goal is to provide customers with a simple,
-                    convenient and reliable shopping experience.
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<!-- =========================================================
-     CONTACT
-========================================================= -->
-<section id="contact" class="lh-info-section">
-    <div class="container">
-        <div class="lh-info-card">
-
-            <div class="lh-info-icon">
-                <i class="bi bi-headset"></i>
-            </div>
-
-            <div>
-                <h2>Contact Us</h2>
-
-                <p>
-                    Need help with an order, product or payment?
-                    Our support team is available to assist you.
-                </p>
-
-                <div class="lh-contact-actions">
+                    <p>
+                        Try another search or category.
+                    </p>
 
                     <a
-                        href="https://wa.me/2349131542208"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="btn btn-success"
+                        href="{{ url_for('shop') }}"
+                        class="lh-clear-filters"
                     >
-                        <i class="bi bi-whatsapp"></i>
-                        WhatsApp Us
-                    </a>
-
-                    <a
-                        href="tel:+2349131542208"
-                        class="btn btn-outline-dark"
-                    >
-                        <i class="bi bi-telephone"></i>
-                        Call Us
+                        Browse Products
                     </a>
 
                 </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- DYNAMIC EMPTY SEARCH STATE -->
+
+        <div
+            id="lhSearchEmpty"
+            class="lh-empty-state"
+            style="display:none;"
+        >
+
+            <i class="bi bi-search"></i>
+
+            <h3>
+                No products found
+            </h3>
+
+            <p>
+                Try another search or category.
+            </p>
+
+            <button
+                type="button"
+                id="lhClearFilters"
+                class="lh-clear-filters"
+            >
+                Clear Filters
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+</div>
+
+<!-- =========================================================
+     AI ASSISTANT SCREEN
+     ========================================================= -->
+
+<div
+    id="lhAIScreen"
+    class="lh-ai-screen"
+    aria-hidden="true"
+>
+
+
+<!-- AI HEADER -->
+
+<div class="lh-ai-header">
+
+    <button
+        type="button"
+        id="lhCloseAI"
+        class="lh-ai-back"
+        aria-label="Close AI Assistant"
+    >
+        <i class="bi bi-arrow-left"></i>
+    </button>
+
+    <div class="lh-ai-header-icon">
+        <i class="bi bi-stars"></i>
+    </div>
+
+    <div class="lh-ai-header-text">
+
+        <div class="lh-ai-header-title">
+            AI Assistant
+        </div>
+
+        <div class="lh-ai-header-subtitle">
+            Levetor Hub
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- AI MESSAGES -->
+
+<div
+    class="lh-ai-messages"
+    id="lhAIMessages"
+>
+
+    <div class="lh-ai-content">
+
+        <!-- SUGGESTIONS -->
+
+        <div
+            class="lh-ai-suggestions"
+            id="lhAISuggestions"
+        >
+
+            <button
+                type="button"
+                class="lh-ai-suggestion"
+                data-prompt="Phones under ₦300,000"
+            >
+                <i class="bi bi-stars"></i>
+                Phones under ₦300,000
+            </button>
+
+            <button
+                type="button"
+                class="lh-ai-suggestion"
+                data-prompt="Recommend a computer"
+            >
+                <i class="bi bi-stars"></i>
+                Recommend a computer
+            </button>
+
+            <button
+                type="button"
+                class="lh-ai-suggestion"
+                data-prompt="What is in stock?"
+            >
+                <i class="bi bi-stars"></i>
+                What is in stock?
+            </button>
+
+            <button
+                type="button"
+                class="lh-ai-suggestion"
+                data-prompt="Compare two gadgets"
+            >
+                <i class="bi bi-stars"></i>
+                Compare two gadgets
+            </button>
+
+            <button
+                type="button"
+                class="lh-ai-suggestion"
+                data-prompt="Find a tablet"
+            >
+                <i class="bi bi-stars"></i>
+                Find a tablet
+            </button>
+
+            <button
+                type="button"
+                class="lh-ai-suggestion"
+                data-prompt="What are the latest smartphones?"
+            >
+                <i class="bi bi-stars"></i>
+                Latest smartphones
+            </button>
+
+            <button
+                type="button"
+                class="lh-ai-suggestion"
+                data-prompt="What is the best laptop for programming?"
+            >
+                <i class="bi bi-stars"></i>
+                Laptop for programming
+            </button>
+
+            <button
+                type="button"
+                class="lh-ai-suggestion"
+                data-prompt="What is the best computer for gaming?"
+            >
+                <i class="bi bi-stars"></i>
+                Computer for gaming
+            </button>
+
+            <button
+                type="button"
+                class="lh-ai-suggestion"
+                data-prompt="What is the best computer for graphics design?"
+            >
+                <i class="bi bi-stars"></i>
+                Computer for graphics design
+            </button>
+
+            <button
+                type="button"
+                class="lh-ai-suggestion"
+                data-prompt="What is the best computer for students?"
+            >
+                <i class="bi bi-stars"></i>
+                Computer for students
+            </button>
+
+        </div>
+
+
+        <!-- INITIAL AI MESSAGE -->
+
+        <div class="lh-ai-message assistant">
+
+            <div class="lh-ai-message-row">
+
+                <div class="lh-ai-avatar">
+                    <i class="bi bi-stars"></i>
+                </div>
+
+                <div class="lh-ai-bubble">
+
+                    Hello! 👋 I’m Levetor Hub AI Assistant.
+                    I can help you find products, compare gadgets,
+                    check availability and choose products based on
+                    your needs and budget.
+
+                </div>
+
             </div>
 
         </div>
+
     </div>
+
+</div>
+
+
+<!-- AI INPUT -->
+
+<div class="lh-ai-input-area">
+
+    <div class="lh-ai-input-inner">
+
+        <textarea
+            id="lhAIInput"
+            class="lh-ai-input"
+            rows="1"
+            maxlength="2000"
+            placeholder="Ask about phones, computers, gadgets..."
+        ></textarea>
+
+        <button
+            type="button"
+            id="lhAISend"
+            class="lh-ai-send"
+            aria-label="Send message"
+        >
+            <i class="bi bi-send-fill"></i>
+        </button>
+
+    </div>
+
+</div>
+
+
+</div>
+
+<!-- =========================================================
+     ABOUT US
+     ========================================================= -->
+
+<section
+    id="about"
+    class="lh-info-section"
+>
+
+
+<div class="container">
+
+    <div class="lh-info-card">
+
+        <div class="lh-info-icon">
+            <i class="bi bi-info-circle-fill"></i>
+        </div>
+
+        <div>
+
+            <h2>
+                About Levetor Hub
+            </h2>
+
+            <p>
+                Levetor Hub is your one-stop destination for gadgets,
+                electronics and tech products. We make it simple to
+                discover the gadgets you love and place your order from
+                one convenient platform.
+            </p>
+
+            <p>
+                Our goal is to provide customers with a simple,
+                convenient and reliable shopping experience.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</section>
+
+<!-- =========================================================
+     CONTACT
+     ========================================================= -->
+
+<section
+    id="contact"
+    class="lh-info-section"
+>
+
+
+<div class="container">
+
+    <div class="lh-info-card">
+
+        <div class="lh-info-icon">
+            <i class="bi bi-headset"></i>
+        </div>
+
+        <div>
+
+            <h2>
+                Contact Us
+            </h2>
+
+            <p>
+                Need help with an order, product or payment?
+                Our support team is available to assist you.
+            </p>
+
+            <div class="lh-contact-actions">
+
+                <a
+                    href="https://wa.me/2349131542208"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn btn-success"
+                >
+                    <i class="bi bi-whatsapp"></i>
+                    WhatsApp Us
+                </a>
+
+                <a
+                    href="tel:+2349131542208"
+                    class="btn btn-outline-dark"
+                >
+                    <i class="bi bi-telephone"></i>
+                    Call Us
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 </section>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    /* =========================================================
+       TELEGRAM / MOBILE APP ALERT
+       ========================================================= */
+
+    const telegramAlert =
+        document.getElementById(
+            "lhTelegramAlert"
+        );
+
+    const telegramAlertClose =
+        document.getElementById(
+            "lhTelegramAlertClose"
+        );
+
+
+    if (telegramAlertClose) {
+
+        telegramAlertClose.addEventListener(
+            "click",
+            function () {
+
+                if (telegramAlert) {
+                    telegramAlert.remove();
+                }
+
+            }
+        );
+
+    }
+
+    /* =========================================================
+       NORMAL HOMEPAGE SEARCH
+       ========================================================= */
 
     const searchInput =
         document.getElementById("lhSearch");
@@ -1283,14 +2152,15 @@ document.addEventListener("DOMContentLoaded", function () {
             "lhSelectedCategoryText"
         );
 
-
     let activeCategory = "All";
 
 
     function normalize(value) {
+
         return String(value || "")
             .toLowerCase()
             .trim();
+
     }
 
 
@@ -1338,11 +2208,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             card.style.display =
-                visible ? "" : "block";
+                visible ? "" : "none";
 
-            if (!visible) {
-                card.style.display = "none";
-            }
 
             if (visible) {
                 visibleCount++;
@@ -1371,26 +2238,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        if (query) {
-            clearSearch.style.display =
-                "block";
-        } else {
-            clearSearch.style.display =
-                "none";
-        }
+        clearSearch.style.display =
+            query ? "block" : "none";
 
 
-        if (visibleCount === 0) {
-
-            searchEmpty.style.display =
-                "block";
-
-        } else {
-
-            searchEmpty.style.display =
-                "none";
-
-        }
+        searchEmpty.style.display =
+            visibleCount === 0
+                ? "block"
+                : "none";
 
     }
 
@@ -1425,57 +2280,28 @@ document.addEventListener("DOMContentLoaded", function () {
                     const category =
                         chip.dataset.category;
 
-                    /*
-                     * Keep normal Flask navigation
-                     * for real category pages.
-                     * "All" stays on the homepage.
-                     */
-
-                    if (category === "All") {
-
-                        event.preventDefault();
-
-                        activeCategory = "All";
-
-                        categoryChips.forEach(
-                            function (item) {
-                                item.classList.remove(
-                                    "active"
-                                );
-                            }
-                        );
-
-                        chip.classList.add(
-                            "active"
-                        );
-
-                        filterProducts();
-
-                        return;
-
-                    }
-
-                    /*
-                     * On the homepage, prevent
-                     * navigation and filter locally.
-                     */
 
                     event.preventDefault();
 
                     activeCategory =
                         category;
 
+
                     categoryChips.forEach(
                         function (item) {
+
                             item.classList.remove(
                                 "active"
                             );
+
                         }
                     );
+
 
                     chip.classList.add(
                         "active"
                     );
+
 
                     filterProducts();
 
@@ -1494,6 +2320,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             activeCategory = "All";
 
+
             categoryChips.forEach(
                 function (item) {
 
@@ -1501,17 +2328,21 @@ document.addEventListener("DOMContentLoaded", function () {
                         "active"
                     );
 
+
                     if (
                         item.dataset.category ===
                         "All"
                     ) {
+
                         item.classList.add(
                             "active"
                         );
+
                     }
 
                 }
             );
+
 
             filterProducts();
 
@@ -1521,8 +2352,781 @@ document.addEventListener("DOMContentLoaded", function () {
 
     filterProducts();
 
+
+    /* =========================================================
+       AI ASSISTANT
+       ========================================================= */
+
+    const aiScreen =
+        document.getElementById("lhAIScreen");
+
+    const openAI =
+        document.getElementById("lhOpenAI");
+
+    const closeAI =
+        document.getElementById("lhCloseAI");
+
+    const aiMessages =
+        document.getElementById("lhAIMessages");
+
+    const aiInput =
+        document.getElementById("lhAIInput");
+
+    const aiSend =
+        document.getElementById("lhAISend");
+
+    const aiSuggestions =
+        Array.from(
+            document.querySelectorAll(
+                ".lh-ai-suggestion"
+            )
+        );
+
+
+    let aiLoading = false;
+
+
+    function openAIAssistant() {
+
+        aiScreen.classList.add("active");
+
+        aiScreen.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        document.body.style.overflow = "hidden";
+
+        setTimeout(function () {
+            aiInput.focus();
+        }, 100);
+
+    }
+
+
+    function closeAIAssistant() {
+
+        aiScreen.classList.remove("active");
+
+        aiScreen.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        document.body.style.overflow = "";
+
+    }
+
+
+    openAI.addEventListener(
+        "click",
+        openAIAssistant
+    );
+
+
+    openAI.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Enter" ||
+                event.key === " "
+            ) {
+
+                event.preventDefault();
+
+                openAIAssistant();
+
+            }
+
+        }
+    );
+
+
+    closeAI.addEventListener(
+        "click",
+        closeAIAssistant
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Escape" &&
+                aiScreen.classList.contains("active")
+            ) {
+
+                closeAIAssistant();
+
+            }
+
+        }
+    );
+
+
+    function scrollAIToBottom() {
+
+        setTimeout(function () {
+
+            aiMessages.scrollTop =
+                aiMessages.scrollHeight;
+
+        }, 50);
+
+    }
+
+
+    function addUserMessage(message) {
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            "lh-ai-message user";
+
+
+        wrapper.innerHTML = `
+            <div class="lh-ai-message-row">
+
+                <div class="lh-ai-bubble">
+                    ${escapeHTML(message)}
+                </div>
+
+                <div class="lh-ai-avatar lh-ai-user-avatar">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+
+            </div>
+        `;
+
+
+        const content =
+            aiMessages.querySelector(
+                ".lh-ai-content"
+            );
+
+        content.appendChild(wrapper);
+
+        scrollAIToBottom();
+
+    }
+
+
+    function addAssistantMessage(
+        message,
+        productIds
+    ) {
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            "lh-ai-message assistant";
+
+
+        wrapper.innerHTML = `
+            <div class="lh-ai-message-row">
+
+                <div class="lh-ai-avatar">
+                    <i class="bi bi-stars"></i>
+                </div>
+
+                <div class="lh-ai-bubble">
+                    ${formatAIMessage(message)}
+                </div>
+
+            </div>
+        `;
+
+
+        const content =
+            aiMessages.querySelector(
+                ".lh-ai-content"
+            );
+
+        content.appendChild(wrapper);
+
+
+        if (
+            Array.isArray(productIds) &&
+            productIds.length > 0
+        ) {
+
+            addRecommendedProducts(
+                productIds
+            );
+
+        }
+
+
+        scrollAIToBottom();
+
+    }
+
+
+    function addErrorMessage(message) {
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            "lh-ai-message assistant lh-ai-error";
+
+
+        wrapper.innerHTML = `
+            <div class="lh-ai-message-row">
+
+                <div class="lh-ai-avatar">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+
+                <div class="lh-ai-bubble">
+                    ${escapeHTML(message)}
+                </div>
+
+            </div>
+        `;
+
+
+        const content =
+            aiMessages.querySelector(
+                ".lh-ai-content"
+            );
+
+        content.appendChild(wrapper);
+
+        scrollAIToBottom();
+
+    }
+
+
+    function addLoadingMessage() {
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.id =
+            "lhAILoadingMessage";
+
+        wrapper.className =
+            "lh-ai-message assistant";
+
+
+        wrapper.innerHTML = `
+            <div class="lh-ai-message-row">
+
+                <div class="lh-ai-avatar">
+                    <i class="bi bi-stars"></i>
+                </div>
+
+                <div class="lh-ai-bubble">
+
+                    <div class="lh-ai-loading">
+
+                        <span class="lh-ai-dot"></span>
+                        <span class="lh-ai-dot"></span>
+                        <span class="lh-ai-dot"></span>
+
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+
+        const content =
+            aiMessages.querySelector(
+                ".lh-ai-content"
+            );
+
+        content.appendChild(wrapper);
+
+        scrollAIToBottom();
+
+    }
+
+
+    function removeLoadingMessage() {
+
+        const loading =
+            document.getElementById(
+                "lhAILoadingMessage"
+            );
+
+        if (loading) {
+            loading.remove();
+        }
+
+    }
+
+
+    /* =========================================================
+       AI PRODUCT RECOMMENDATIONS
+       ========================================================= */
+
+    function addRecommendedProducts(productIds) {
+
+        const uniqueIds =
+            [...new Set(
+                productIds
+                    .map(Number)
+                    .filter(
+                        id =>
+                            Number.isInteger(id) &&
+                            id > 0
+                    )
+            )];
+
+
+        if (!uniqueIds.length) {
+            return;
+        }
+
+
+        const productsWrapper =
+            document.createElement("div");
+
+        productsWrapper.className =
+            "lh-ai-products";
+
+
+        uniqueIds.forEach(function (productId) {
+
+            const productCard =
+                document.querySelector(
+                    `.lh-product-card[data-product-id="${productId}"]`
+                );
+
+
+            if (!productCard) {
+                return;
+            }
+
+
+            const name =
+                getOriginalProductName(
+                    productCard
+                );
+
+
+            const price =
+                parseFloat(
+                    productCard.dataset.productPrice || "0"
+                );
+
+
+            const stock =
+                parseInt(
+                    productCard.dataset.productStock || "0",
+                    10
+                );
+
+
+            const image =
+                productCard.querySelector(
+                    ".lh-product-image img"
+                );
+
+
+            const imageSrc =
+                image
+                    ? image.getAttribute("src")
+                    : "";
+
+
+            const productLink =
+                productCard.querySelector(
+                    ".lh-product-image"
+                )?.closest("a")?.getAttribute("href");
+
+
+            const addCartUrl =
+                productCard.dataset.addCartUrl || "";
+
+
+            if (!productLink || !addCartUrl) {
+                return;
+            }
+
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "lh-ai-product-card";
+
+
+            const addButtonHTML =
+                stock > 0
+                    ? `
+                        <form
+                            method="POST"
+                            action="${escapeAttribute(addCartUrl)}"
+                        >
+                            <button
+                                type="submit"
+                                class="lh-ai-add-product"
+                            >
+                                Add
+                            </button>
+                        </form>
+                      `
+                    : `
+                        <form>
+                            <button
+                                type="button"
+                                class="lh-ai-add-product"
+                                disabled
+                            >
+                                Out of Stock
+                            </button>
+                        </form>
+                      `;
+
+
+            card.innerHTML = `
+
+                <div class="lh-ai-product-image">
+
+                    ${
+                        imageSrc
+                            ? `
+                                <img
+                                    src="${escapeAttribute(imageSrc)}"
+                                    alt="${escapeAttribute(name)}"
+                                >
+                              `
+                            : `
+                                <div class="lh-ai-product-placeholder">
+                                    <i class="bi bi-box-seam"></i>
+                                </div>
+                              `
+                    }
+
+                </div>
+
+
+                <div class="lh-ai-product-info">
+
+                    <div class="lh-ai-product-name">
+                        ${escapeHTML(name)}
+                    </div>
+
+                    <div class="lh-ai-product-price">
+                        ₦${price.toLocaleString(
+                            "en-NG",
+                            {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }
+                        )}
+                    </div>
+
+
+                    <div class="lh-ai-product-actions">
+
+                        <a
+                            href="${escapeAttribute(productLink)}"
+                            class="lh-ai-view-product"
+                        >
+                            View
+                        </a>
+
+                        ${addButtonHTML}
+
+                    </div>
+
+                </div>
+            `;
+
+
+            productsWrapper.appendChild(card);
+
+        });
+
+
+        if (
+            productsWrapper.children.length === 0
+        ) {
+            return;
+        }
+
+
+        const content =
+            aiMessages.querySelector(
+                ".lh-ai-content"
+            );
+
+        content.appendChild(
+            productsWrapper
+        );
+
+        scrollAIToBottom();
+
+    }
+
+
+    function getOriginalProductName(card) {
+
+        const nameElement =
+            card.querySelector(
+                ".lh-product-name"
+            );
+
+        return nameElement
+            ? nameElement.textContent.trim()
+            : "Product";
+
+    }
+
+
+    function escapeHTML(value) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent =
+            String(value || "");
+
+        return div.innerHTML;
+
+    }
+
+
+    function escapeAttribute(value) {
+
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+    }
+
+
+    function formatAIMessage(message) {
+
+        const safe =
+            escapeHTML(message);
+
+
+        return safe
+            .replace(/\n/g, "<br>")
+            .replace(
+                /\*\*(.*?)\*\*/g,
+                "<strong>$1</strong>"
+            );
+
+    }
+
+
+    /* =========================================================
+       SEND AI MESSAGE
+       ========================================================= */
+
+    async function sendAIMessage(
+        customMessage = null
+    ) {
+
+        if (aiLoading) {
+            return;
+        }
+
+
+        const message =
+            String(
+                customMessage !== null
+                    ? customMessage
+                    : aiInput.value
+            ).trim();
+
+
+        if (!message) {
+            return;
+        }
+
+
+        addUserMessage(message);
+
+
+        aiInput.value = "";
+
+        aiInput.style.height = "48px";
+
+        aiLoading = true;
+
+        aiSend.disabled = true;
+
+        addLoadingMessage();
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/ai/assistant",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            message: message
+                        })
+                    }
+                );
+
+
+            let result = null;
+
+
+            try {
+
+                result =
+                    await response.json();
+
+            } catch (jsonError) {
+
+                throw new Error(
+                    "The AI service returned an invalid response."
+                );
+
+            }
+
+
+            removeLoadingMessage();
+
+
+            if (
+                !response.ok ||
+                !result ||
+                !result.success
+            ) {
+
+                throw new Error(
+                    result?.message ||
+                    "Unable to contact Levetor Hub AI Assistant."
+                );
+
+            }
+
+
+            const aiMessage =
+                result.message ||
+                "I’m here to help you find the right product.";
+
+
+            const productIds =
+                Array.isArray(
+                    result.product_ids
+                )
+                    ? result.product_ids
+                    : [];
+
+
+            addAssistantMessage(
+                aiMessage,
+                productIds
+            );
+
+
+        } catch (error) {
+
+            removeLoadingMessage();
+
+
+            console.error(
+                "Levetor Hub AI error:",
+                error
+            );
+
+
+            addErrorMessage(
+                error.message ||
+                "Sorry, something went wrong. Please try again."
+            );
+
+        } finally {
+
+            aiLoading = false;
+
+            aiSend.disabled = false;
+
+            aiInput.focus();
+
+        }
+
+    }
+
+
+    aiSend.addEventListener(
+        "click",
+        function () {
+            sendAIMessage();
+        }
+    );
+
+
+    aiInput.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendAIMessage();
+
+            }
+
+        }
+    );
+
+
+    aiInput.addEventListener(
+        "input",
+        function () {
+
+            this.style.height = "48px";
+
+            this.style.height =
+                Math.min(
+                    this.scrollHeight,
+                    120
+                ) + "px";
+
+        }
+    );
+
+
+    aiSuggestions.forEach(
+        function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    const prompt =
+                        button.dataset.prompt;
+
+                    sendAIMessage(prompt);
+
+                }
+            );
+
+        }
+    );
+
 });
 </script>
 
 {% endblock %}
-

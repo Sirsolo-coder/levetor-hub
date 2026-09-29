@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 # =========================================================
 # DATABASE CONFIGURATION
 # =========================================================
@@ -282,6 +283,33 @@ def init_db():
         """)
 
         # =================================================
+        # CUSTOMER REFERRAL + STORE CREDIT MIGRATION
+        # =================================================
+        #
+        # These ALTER TABLE statements are safe for the
+        # existing PostgreSQL database because of
+        # IF NOT EXISTS.
+        #
+        # Existing customers will receive:
+        #
+        #   referral_code = NULL
+        #   store_credit_balance = 0
+        #
+        # Referral codes can later be generated for them.
+        # =================================================
+
+        conn.execute("""
+            ALTER TABLE customers
+            ADD COLUMN IF NOT EXISTS referral_code TEXT
+        """)
+
+        conn.execute("""
+            ALTER TABLE customers
+            ADD COLUMN IF NOT EXISTS store_credit_balance
+            DOUBLE PRECISION NOT NULL DEFAULT 0
+        """)
+
+        # =================================================
         # PRODUCTS
         # =================================================
 
@@ -334,6 +362,84 @@ def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
                 paystack_reference TEXT
+            )
+        """)
+
+        # =================================================
+        # REFERRALS
+        #
+        # One referrer can refer multiple customers.
+        #
+        # A referee can only belong to ONE referral
+        # relationship.
+        #
+        # The UNIQUE constraint on referee_customer_id
+        # prevents:
+        #
+        #   Customer A -> Customer B
+        #   Customer A -> Customer B again
+        #
+        # and also prevents:
+        #
+        #   Customer A -> Customer B
+        #   Customer C -> Customer B
+        #
+        # This rule is enforced by PostgreSQL itself,
+        # not only by the Flutter application.
+        # =================================================
+
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS referrals (
+
+                id SERIAL PRIMARY KEY,
+
+                referrer_customer_id INTEGER NOT NULL,
+
+                referee_customer_id INTEGER NOT NULL UNIQUE,
+
+                referral_code TEXT NOT NULL,
+
+                status TEXT DEFAULT 'Pending',
+
+                qualifying_amount DOUBLE PRECISION DEFAULT 0,
+
+                referrer_reward DOUBLE PRECISION DEFAULT 1000,
+
+                referee_reward DOUBLE PRECISION DEFAULT 1000,
+
+                rewarded_at TIMESTAMP,
+
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+
+        # =================================================
+        # STORE CREDIT TRANSACTIONS
+        #
+        # Every credit movement is recorded here.
+        #
+        # This gives us an audit trail instead of relying
+        # only on the balance stored on customers.
+        # =================================================
+
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS store_credit_transactions (
+
+                id SERIAL PRIMARY KEY,
+
+                customer_id INTEGER NOT NULL,
+
+                amount DOUBLE PRECISION NOT NULL,
+
+                transaction_type TEXT NOT NULL,
+
+                reference_type TEXT,
+
+                reference_id INTEGER,
+
+                description TEXT,
+
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
 
@@ -391,7 +497,7 @@ def init_db():
         """)
 
         # =================================================
-        # INDEXES
+        # CUSTOMER INDEXES
         # =================================================
 
         conn.execute("""
@@ -403,6 +509,26 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_customers_google_id
             ON customers(google_id)
         """)
+
+        # =================================================
+        # REFERRAL CODE INDEX
+        #
+        # Each active referral code must belong to only
+        # one customer.
+        #
+        # NULL values are ignored by this partial index.
+        # =================================================
+
+        conn.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS
+            idx_customers_referral_code
+            ON customers(referral_code)
+            WHERE referral_code IS NOT NULL
+        """)
+
+        # =================================================
+        # ORDER INDEXES
+        # =================================================
 
         conn.execute("""
             CREATE INDEX IF NOT EXISTS idx_orders_customer_id
@@ -419,10 +545,76 @@ def init_db():
             ON order_items(product_id)
         """)
 
+        # =================================================
+        # NOTIFICATION INDEX
+        # =================================================
+
         conn.execute("""
             CREATE INDEX IF NOT EXISTS idx_notifications_customer_id
             ON notifications(customer_id)
         """)
+
+        # =================================================
+        # REFERRAL INDEXES
+        # =================================================
+
+        conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_referrals_referrer
+            ON referrals(referrer_customer_id)
+        """)
+
+        conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_referrals_code
+            ON referrals(referral_code)
+        """)
+
+        conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_referrals_status
+            ON referrals(status)
+        """)
+
+        # =================================================
+        # STORE CREDIT INDEX
+        # =================================================
+
+        conn.execute("""
+            CREATE INDEX IF NOT EXISTS
+            idx_store_credit_customer
+            ON store_credit_transactions(customer_id)
+        """)
+
+        # =================================================
+        # REFERRAL REWARD IDEMPOTENCY INDEX
+        #
+        # Prevents the same referral reward from being
+        # credited twice to the same customer.
+        #
+        # Example:
+        #
+        # referral ID = 15
+        # customer ID = 22
+        #
+        # Only one:
+        #
+        #   referral_reward / referral / 15
+        #
+        # transaction can exist for that customer.
+        # =================================================
+
+        conn.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS
+            idx_store_credit_referral_reward
+            ON store_credit_transactions(
+                customer_id,
+                transaction_type,
+                reference_type,
+                reference_id
+            )
+        """)
+
+        # =================================================
+        # COMMIT
+        # =================================================
 
         conn.commit()
 

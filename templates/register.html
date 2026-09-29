@@ -8,204 +8,234 @@ Create Account | Levetor Hub
 
 <section class="auth-section">
 
-    <div class="auth-container">
-
-        <div class="auth-header">
-
-            <span class="auth-label">
-                LEVETOR HUB
-            </span>
-
-            <h1>
-                Create Your Account
-            </h1>
-
-            <p>
-                Join Levetor Hub and manage your gadgets,
-                orders and account in one place.
-            </p>
-
-        </div>
-
-
-        <!-- FLASH MESSAGES -->
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-
-            {% if messages %}
-
-                {% for category, message in messages %}
-
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-
-                {% endfor %}
-
-            {% endif %}
-
-        {% endwith %}
-
-
-        <!-- REGISTRATION FORM -->
-
-        <form
-            method="POST"
-            action="{{ url_for('customer_register') }}"
-            class="auth-form"
-        >
-
-            <!-- FULL NAME -->
-
-            <div class="form-group">
-
-                <label for="fullname">
-                    Full Name
-                </label>
-
-                <input
-                    type="text"
-                    id="fullname"
-                    name="fullname"
-                    placeholder="Enter your full name"
-                    required
-                    value="{{ request.form.get('fullname', '') }}"
-                >
-
-            </div>
-
-
-            <!-- EMAIL -->
-
-            <div class="form-group">
-
-                <label for="email">
-                    Email Address
-                </label>
-
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="example@email.com"
-                    required
-                    value="{{ request.form.get('email', '') }}"
-                >
-
-            </div>
-
-
-            <!-- PHONE -->
-
-            <div class="form-group">
-
-                <label for="phone">
-                    Phone Number
-                </label>
-
-                <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    placeholder="08012345678"
-                    required
-                    value="{{ request.form.get('phone', '') }}"
-                >
-
-            </div>
-
-
-            <!-- ADDRESS -->
-
-            <div class="form-group">
-
-                <label for="address">
-                    Delivery Address
-                </label>
-
-                <textarea
-                    id="address"
-                    name="address"
-                    rows="3"
-                    placeholder="Enter your delivery address"
-                >{{ request.form.get('address', '') }}</textarea>
-
-            </div>
-
-
-            <!-- PASSWORD -->
-
-            <div class="form-group">
-
-                <label for="password">
-                    Password
-                </label>
-
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="At least 8 characters"
-                    required
-                    minlength="8"
-                >
-
-            </div>
-
-
-            <!-- CONFIRM PASSWORD -->
-
-            <div class="form-group">
-
-                <label for="confirm_password">
-                    Confirm Password
-                </label>
-
-                <input
-                    type="password"
-                    id="confirm_password"
-                    name="confirm_password"
-                    placeholder="Confirm your password"
-                    required
-                    minlength="8"
-                >
-
-            </div>
-
-
-            <!-- SUBMIT -->
-
-            <button
-                type="submit"
-                class="auth-button"
-            >
-
-                Create Account
-
-            </button>
-
-        </form>
-
-
-        <!-- LOGIN LINK -->
-
-        <div class="auth-footer">
-
-            <p>
-                Already have an account?
-
-                <a href="{{ url_for('customer_login') }}">
-    Login
-</a>
-
-            </p>
-
-        </div>
+```
+<div class="auth-container">
+
+    <div class="auth-header">
+
+        <span class="auth-label">
+            LEVETOR HUB
+        </span>
+
+        <h1>
+            Create Your Account
+        </h1>
+
+        <p>
+            Join Levetor Hub and manage your gadgets,
+            orders and account in one place.
+        </p>
 
     </div>
 
-</section>
 
+    <!-- FLASH MESSAGES -->
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            {% for category, message in messages %}
+
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- REGISTRATION FORM -->
+
+    <form
+        method="POST"
+        action="{{ url_for('customer_register') }}"
+        class="auth-form"
+    >
+
+        <!-- FULL NAME -->
+
+        <div class="form-group">
+
+            <label for="fullname">
+                Full Name
+            </label>
+
+            <input
+                type="text"
+                id="fullname"
+                name="fullname"
+                placeholder="Enter your full name"
+                required
+                value="{{ request.form.get('fullname', '') }}"
+            >
+
+        </div>
+
+
+        <!-- EMAIL -->
+
+        <div class="form-group">
+
+            <label for="email">
+                Email Address
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="example@email.com"
+                required
+                value="{{ request.form.get('email', '') }}"
+            >
+
+        </div>
+
+
+        <!-- PHONE -->
+
+        <div class="form-group">
+
+            <label for="phone">
+                Phone Number
+            </label>
+
+            <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="08012345678"
+                required
+                value="{{ request.form.get('phone', '') }}"
+            >
+
+        </div>
+
+
+        <!-- ADDRESS -->
+
+        <div class="form-group">
+
+            <label for="address">
+                Delivery Address
+            </label>
+
+            <textarea
+                id="address"
+                name="address"
+                rows="3"
+                placeholder="Enter your delivery address"
+            >{{ request.form.get('address', '') }}</textarea>
+
+        </div>
+
+
+        <!-- REFERRAL CODE -->
+
+        <div class="form-group">
+
+            <label for="referral_code">
+                Referral Code
+                <span class="optional-label">
+                    (Optional)
+                </span>
+            </label>
+
+            <input
+                type="text"
+                id="referral_code"
+                name="referral_code"
+                placeholder="e.g. LEV-B5DE9B05"
+                value="{{ request.form.get('referral_code', '') }}"
+                style="text-transform: uppercase;"
+                autocomplete="off"
+            >
+
+            <small class="referral-help">
+                Have a referral code? Enter it to connect your account
+                to the person who invited you.
+            </small>
+
+        </div>
+
+
+        <!-- PASSWORD -->
+
+        <div class="form-group">
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="At least 8 characters"
+                required
+                minlength="8"
+            >
+
+        </div>
+
+
+        <!-- CONFIRM PASSWORD -->
+
+        <div class="form-group">
+
+            <label for="confirm_password">
+                Confirm Password
+            </label>
+
+            <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                placeholder="Confirm your password"
+                required
+                minlength="8"
+            >
+
+        </div>
+
+
+        <!-- SUBMIT -->
+
+        <button
+            type="submit"
+            class="auth-button"
+        >
+
+            Create Account
+
+        </button>
+
+    </form>
+
+
+    <!-- LOGIN LINK -->
+
+    <div class="auth-footer">
+
+        <p>
+            Already have an account?
+
+            <a href="{{ url_for('customer_login') }}">
+                Login
+            </a>
+
+        </p>
+
+    </div>
+
+</div>
+```
+
+</section>
 
 <style>
 
@@ -310,6 +340,8 @@ Create Account | Levetor Hub
 
     font-size: 15px;
 
+    box-sizing: border-box;
+
 }
 
 
@@ -317,6 +349,30 @@ Create Account | Levetor Hub
 .form-group textarea:focus {
 
     border-color: #0878c9;
+
+}
+
+
+.optional-label {
+
+    font-weight: 400;
+
+    color: #687386;
+
+}
+
+
+.referral-help {
+
+    display: block;
+
+    margin-top: 7px;
+
+    color: #687386;
+
+    font-size: 13px;
+
+    line-height: 1.5;
 
 }
 
