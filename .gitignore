@@ -1,23 +1,82 @@
-# Environment variables
+# =========================================================
+# ENVIRONMENT / SECRETS
+# =========================================================
+
 .env
 .env.*
+!.env.example
 
-# Firebase / private credentials
-*.json
 
-# Local databases
+# =========================================================
+# CREDENTIALS / TOKENS / COOKIES
+# =========================================================
+
+*_cookie.txt
+admin_cookie.txt
+test_cookie.txt
+
+google-services.json
+*firebase-adminsdk*.json
+firebase-service-account*.json
+
+
+# =========================================================
+# LOGS
+# =========================================================
+
+*.log
+
+
+# =========================================================
+# PYTHON
+# =========================================================
+
+__pycache__/
+*.py[cod]
+
+
+# =========================================================
+# LOCAL DATABASES
+# =========================================================
+
 *.db
 *.sqlite
 *.sqlite3
 
-# Python
-__pycache__/
-*.pyc
 
-# Local uploads
+# =========================================================
+# BACKUPS
+# =========================================================
+
+*.backup
+*.bak
+*.backup-ai
+app_backup_*.py
+*.backup-*
+
+
+# =========================================================
+# LOCAL TEST / MIGRATION SCRIPTS
+# =========================================================
+
+check_db.py
+inspect_db.py
+migrate_product_image_urls.py
+migrate_sqlite_to_postgres.py
+referral_reward_test.py
+referral_test.py
+
+
+# =========================================================
+# LOCAL UPLOADS
+# =========================================================
+
 static/uploads/
 
-# IDE / OS
-.vscode/
-.idea/
-.DS_Store
+
+# =========================================================
+# TEMPLATE BACKUPS
+# =========================================================
+
+templates/*.backup
+templates/*.backup-*
