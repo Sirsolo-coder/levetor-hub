@@ -3415,6 +3415,19 @@ def customer_register():
             url_for("customer_account")
         )
 
+    # -----------------------------------------------------
+    # GET REFERRAL CODE FROM SHARED REFERRAL LINK
+    # Example:
+    # /register?ref=LEV-B5DE9B05
+    # -----------------------------------------------------
+
+    referral_code = str(
+        request.args.get(
+            "ref",
+            ""
+        )
+    ).strip().upper()
+
     if request.method == "POST":
 
         fullname = str(
@@ -3459,10 +3472,14 @@ def customer_register():
             )
         )
 
+        # -------------------------------------------------
+        # FORM REFERRAL CODE OVERRIDES URL VALUE
+        # -------------------------------------------------
+
         referral_code = str(
             request.form.get(
                 "referral_code",
-                ""
+                referral_code
             )
         ).strip().upper()
 
@@ -3474,7 +3491,8 @@ def customer_register():
             )
 
             return render_template(
-                "register.html"
+                "register.html",
+                referral_code=referral_code
             )
 
         if len(password) < 8:
@@ -3485,7 +3503,8 @@ def customer_register():
             )
 
             return render_template(
-                "register.html"
+                "register.html",
+                referral_code=referral_code
             )
 
         if password != confirm_password:
@@ -3496,7 +3515,8 @@ def customer_register():
             )
 
             return render_template(
-                "register.html"
+                "register.html",
+                referral_code=referral_code
             )
 
         conn = get_db()
@@ -3533,7 +3553,8 @@ def customer_register():
                 )
 
                 return render_template(
-                    "register.html"
+                    "register.html",
+                    referral_code=referral_code
                 )
 
         # -------------------------------------------------
@@ -3562,7 +3583,8 @@ def customer_register():
             )
 
             return render_template(
-                "register.html"
+                "register.html",
+                referral_code=referral_code
             )
 
         # -------------------------------------------------
@@ -3639,7 +3661,8 @@ def customer_register():
                 )
 
                 return render_template(
-                    "register.html"
+                    "register.html",
+                    referral_code=referral_code
                 )
 
         # -------------------------------------------------
@@ -3688,8 +3711,13 @@ def customer_register():
             url_for("customer_account")
         )
 
+    # -----------------------------------------------------
+    # NORMAL REGISTRATION PAGE
+    # -----------------------------------------------------
+
     return render_template(
-        "register.html"
+        "register.html",
+        referral_code=referral_code
     )
 
 

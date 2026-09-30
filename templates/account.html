@@ -219,9 +219,12 @@ My Account | Levetor Hub
                     </h3>
 
                     <p>
-                        Share your referral code with friends and earn
+                        Invite your friends to Levetor Hub and earn
                         store credit when they complete a qualifying order.
                     </p>
+
+
+                    <!-- REFERRAL CODE -->
 
                     <div class="referral-code-box">
 
@@ -235,9 +238,81 @@ My Account | Levetor Hub
 
                     </div>
 
+
+                    <!-- REFERRAL ACTIONS -->
+
+                    <div class="referral-actions">
+
+                        <a
+                            href="https://wa.me/?text={{ (
+                                '🎁 Join me on Levetor Hub!%0A%0A'
+                                ~ 'Use my referral code: '
+                                ~ customer['referral_code']
+                                ~ '%0A%0A'
+                                ~ 'Register here:%0A'
+                                ~ url_for(
+                                    'customer_register',
+                                    ref=customer['referral_code'],
+                                    _external=True
+                                )
+                                ~ '%0A%0A'
+                                ~ 'Complete a qualifying order of ₦50,000 or more '
+                                ~ 'to receive your ₦1,000 store credit.'
+                            ) | urlencode }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="referral-share-btn"
+                        >
+                            <span>
+                                💬
+                            </span>
+
+                            Share on WhatsApp
+
+                        </a>
+
+
+                        <button
+                            type="button"
+                            class="referral-copy-btn"
+                            onclick="copyReferralLink()"
+                        >
+                            <span>
+                                🔗
+                            </span>
+
+                            Copy Referral Link
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- REFERRAL LINK -->
+
+                    <div class="referral-link-box">
+
+                        <span>
+                            Your Referral Link
+                        </span>
+
+                        <code id="referralLink">
+                            {{ url_for(
+                                'customer_register',
+                                ref=customer['referral_code'],
+                                _external=True
+                            ) }}
+                        </code>
+
+                    </div>
+
+
+                    <!-- REFERRAL REWARD INFORMATION -->
+
                     <div class="referral-info">
 
                         <div>
+
                             <span>
                                 Qualifying Order
                             </span>
@@ -245,9 +320,12 @@ My Account | Levetor Hub
                             <strong>
                                 ₦50,000+
                             </strong>
+
                         </div>
 
+
                         <div>
+
                             <span>
                                 Your Reward
                             </span>
@@ -255,9 +333,12 @@ My Account | Levetor Hub
                             <strong>
                                 ₦1,000
                             </strong>
+
                         </div>
 
+
                         <div>
+
                             <span>
                                 Friend's Reward
                             </span>
@@ -265,6 +346,7 @@ My Account | Levetor Hub
                             <strong>
                                 ₦1,000
                             </strong>
+
                         </div>
 
                     </div>
@@ -466,6 +548,7 @@ My Account | Levetor Hub
                     <div class="received-referral-info">
 
                         <div>
+
                             <span>
                                 Status
                             </span>
@@ -492,7 +575,9 @@ My Account | Levetor Hub
 
                         </div>
 
+
                         <div>
+
                             <span>
                                 Required Order
                             </span>
@@ -500,9 +585,12 @@ My Account | Levetor Hub
                             <strong>
                                 ₦{{ "{:,.0f}".format(received_referral["qualifying_amount"] or 0) }}
                             </strong>
+
                         </div>
 
+
                         <div>
+
                             <span>
                                 Your Reward
                             </span>
@@ -510,6 +598,7 @@ My Account | Levetor Hub
                             <strong>
                                 ₦{{ "{:,.0f}".format(received_referral["referee_reward"] or 0) }}
                             </strong>
+
                         </div>
 
                     </div>
@@ -909,6 +998,140 @@ My Account | Levetor Hub
 }
 
 
+/* =========================
+   REFERRAL ACTIONS
+   ========================= */
+
+.referral-actions {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 12px;
+
+    margin: 20px 0;
+
+}
+
+
+.referral-share-btn,
+.referral-copy-btn {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height: 48px;
+
+    padding: 12px 16px;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+
+}
+
+
+.referral-share-btn {
+
+    background: #25D366;
+
+    color: white;
+
+    border: 1px solid #25D366;
+
+}
+
+
+.referral-share-btn:hover {
+
+    background: #1ebe5d;
+
+    color: white;
+
+}
+
+
+.referral-copy-btn {
+
+    background: #063f9e;
+
+    color: white;
+
+    border: 1px solid #063f9e;
+
+}
+
+
+.referral-copy-btn:hover {
+
+    background: #0878c9;
+
+    border-color: #0878c9;
+
+}
+
+
+/* =========================
+   REFERRAL LINK
+   ========================= */
+
+.referral-link-box {
+
+    margin: 15px 0 20px;
+
+    padding: 14px;
+
+    background: #f7f9fc;
+
+    border: 1px solid #e1e6ed;
+
+    border-radius: 9px;
+
+}
+
+
+.referral-link-box span {
+
+    display: block;
+
+    color: #687386;
+
+    font-size: 12px;
+
+    margin-bottom: 7px;
+
+}
+
+
+.referral-link-box code {
+
+    display: block;
+
+    color: #063f9e;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+    word-break: break-all;
+
+}
+
+
 .referral-info {
 
     display: grid;
@@ -1186,6 +1409,13 @@ My Account | Levetor Hub
     }
 
 
+    .referral-actions {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
     .referral-info {
 
         grid-template-columns: 1fr;
@@ -1216,5 +1446,89 @@ My Account | Levetor Hub
 }
 
 </style>
+
+
+<script>
+
+function copyReferralLink() {
+
+    const referralLink =
+        document.getElementById("referralLink");
+
+    if (!referralLink) {
+        return;
+    }
+
+    const link =
+        referralLink.textContent.trim();
+
+    if (!link) {
+        return;
+    }
+
+
+    if (navigator.clipboard) {
+
+        navigator.clipboard.writeText(link)
+            .then(function () {
+
+                alert(
+                    "Referral link copied successfully!"
+                );
+
+            })
+            .catch(function () {
+
+                fallbackCopyReferralLink(link);
+
+            });
+
+    } else {
+
+        fallbackCopyReferralLink(link);
+
+    }
+
+}
+
+
+function fallbackCopyReferralLink(link) {
+
+    const textArea =
+        document.createElement("textarea");
+
+    textArea.value = link;
+
+    textArea.style.position = "fixed";
+
+    textArea.style.left = "-999999px";
+
+    document.body.appendChild(textArea);
+
+    textArea.focus();
+
+    textArea.select();
+
+    try {
+
+        document.execCommand("copy");
+
+        alert(
+            "Referral link copied successfully!"
+        );
+
+    } catch (error) {
+
+        alert(
+            "Unable to copy the referral link. Please copy it manually."
+        );
+
+    }
+
+    document.body.removeChild(textArea);
+
+}
+
+</script>
 
 {% endblock %}

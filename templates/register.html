@@ -8,7 +8,6 @@ Create Account | Levetor Hub
 
 <section class="auth-section">
 
-```
 <div class="auth-container">
 
     <div class="auth-header">
@@ -150,7 +149,7 @@ Create Account | Levetor Hub
                 id="referral_code"
                 name="referral_code"
                 placeholder="e.g. LEV-B5DE9B05"
-                value="{{ request.form.get('referral_code', '') }}"
+                value="{{ request.form.get('referral_code', referral_code or '') }}"
                 style="text-transform: uppercase;"
                 autocomplete="off"
             >
@@ -233,7 +232,7 @@ Create Account | Levetor Hub
     </div>
 
 </div>
-```
+
 
 </section>
 

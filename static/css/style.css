@@ -403,10 +403,19 @@ img {
 
 
 /* =========================================================
-   HOME PAGE PRODUCT CARDS
+   HOME / FEATURED PRODUCTS
    ========================================================= */
 
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 25px;
+    width: 100%;
+    margin-top: 30px;
+}
+
 .product-card {
+    width: 100%;
     background: white;
 
     border: 1px solid #e5e7eb;
@@ -416,7 +425,9 @@ img {
 
     height: 100%;
 
-    transition: all 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 
     box-shadow:
         0 5px 18px rgba(0, 0, 0, 0.04);
@@ -427,6 +438,13 @@ img {
 
     box-shadow:
         0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+.product-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: contain;
+    display: block;
 }
 
 .product-placeholder {
@@ -466,6 +484,8 @@ img {
 
 .product-btn {
     display: block;
+    width: 100%;
+
     text-align: center;
 
     padding: 10px;
@@ -553,12 +573,14 @@ img {
 
 .shop-section {
     padding: 70px 0;
-    background: #f8fafc;
+    background: #f7f9fc;
     min-height: 70vh;
 }
 
 
-/* SHOP HEADER */
+/* =========================================================
+   SHOP HEADER
+   ========================================================= */
 
 .shop-header {
     text-align: center;
@@ -568,11 +590,10 @@ img {
 .shop-label {
     display: inline-block;
 
+    color: #0d6efd;
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 2px;
-
-    color: #0d6efd;
 
     margin-bottom: 10px;
 }
@@ -580,20 +601,15 @@ img {
 .shop-header h1 {
     font-size: 42px;
     font-weight: 700;
-
-    color: #111827;
-
     margin: 10px 0 12px;
+    color: #111827;
 }
 
 .shop-header p {
     color: #6b7280;
-
     font-size: 16px;
-
     max-width: 700px;
-
-    margin: auto;
+    margin: 0 auto;
 }
 
 
@@ -605,27 +621,29 @@ img {
     display: flex;
     justify-content: center;
 
-    margin-bottom: 25px;
-}
-
-.search-box {
     width: 100%;
     max-width: 650px;
+
+    margin: 0 auto 25px;
+}
+
+.shop-search form {
+    width: 100%;
 
     display: flex;
 
     background: white;
 
-    border: 1px solid #e5e7eb;
     border-radius: 10px;
-
     overflow: hidden;
+
+    border: 1px solid #e5e7eb;
 
     box-shadow:
         0 5px 20px rgba(0, 0, 0, 0.05);
 }
 
-.search-box input {
+.shop-search input {
     flex: 1;
 
     border: none;
@@ -636,22 +654,22 @@ img {
     font-size: 15px;
 }
 
-.search-box button {
-    width: 55px;
+.shop-search button {
+    width: 60px;
 
     border: none;
 
     background: #0d6efd;
     color: white;
 
-    font-size: 20px;
+    font-size: 18px;
 
     cursor: pointer;
 
     transition: 0.3s;
 }
 
-.search-box button:hover {
+.shop-search button:hover {
     background: #06185c;
 }
 
@@ -660,7 +678,8 @@ img {
    SHOP CATEGORY FILTERS
    ========================================================= */
 
-.category-filters {
+.category-filters,
+.category-filter {
     display: flex;
 
     justify-content: center;
@@ -716,7 +735,9 @@ img {
 
     height: 100%;
 
-    transition: all 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 
     box-shadow:
         0 5px 18px rgba(0, 0, 0, 0.04);
@@ -735,6 +756,7 @@ img {
    ========================================================= */
 
 .product-image {
+    width: 100%;
     height: 230px;
 
     background: #f1f5f9;
@@ -755,6 +777,8 @@ img {
     object-fit: contain;
 
     padding: 15px;
+
+    display: block;
 
     transition: transform 0.4s ease;
 }
@@ -855,7 +879,7 @@ img {
 
     text-decoration: none;
 
-    background: #071952;
+    background: #061a4f;
 
     color: white;
 
@@ -878,11 +902,12 @@ img {
 
 
 /* =========================================================
-   NO / EMPTY PRODUCTS
+   EMPTY PRODUCTS
    ========================================================= */
 
 .no-products,
-.empty-products {
+.empty-products,
+.shop-empty {
     text-align: center;
 
     background: white;
@@ -897,14 +922,16 @@ img {
 }
 
 .no-products h3,
-.empty-products h3 {
+.empty-products h3,
+.shop-empty h3 {
     color: #111827;
 
     margin-bottom: 10px;
 }
 
 .empty-products p,
-.no-products p {
+.no-products p,
+.shop-empty p {
     color: #6b7280;
 
     margin-bottom: 20px;
@@ -920,6 +947,327 @@ img {
     font-size: 60px;
 
     opacity: 0.5;
+}
+
+
+/* =========================================================
+   CUSTOMER NAVBAR - NOTIFICATIONS
+   ========================================================= */
+
+.notification-nav-icon {
+    position: relative;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-badge {
+    position: absolute;
+
+    top: -8px;
+    right: -10px;
+
+    min-width: 18px;
+    height: 18px;
+
+    padding: 0 5px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #dc3545;
+    color: white;
+
+    border-radius: 50px;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    border: 2px solid #ffffff;
+}
+
+
+/* =========================================================
+   REFERRAL - ACCOUNT PAGE
+   ========================================================= */
+
+.referral-actions {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 12px;
+
+    margin: 20px 0;
+}
+
+.referral-share-btn,
+.referral-copy-btn {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height: 48px;
+
+    padding: 12px 16px;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.referral-share-btn {
+    background: #25d366;
+
+    color: white;
+
+    border: 1px solid #25d366;
+}
+
+.referral-share-btn:hover {
+    background: #1ebe5d;
+
+    color: white;
+
+    transform: translateY(-1px);
+}
+
+.referral-copy-btn {
+    background: #063f9e;
+
+    color: white;
+
+    border: 1px solid #063f9e;
+}
+
+.referral-copy-btn:hover {
+    background: #0878c9;
+
+    border-color: #0878c9;
+
+    color: white;
+
+    transform: translateY(-1px);
+}
+
+.referral-link-box {
+    margin: 15px 0 20px;
+
+    padding: 14px;
+
+    background: #f7f9fc;
+
+    border: 1px solid #e1e6ed;
+
+    border-radius: 9px;
+}
+
+.referral-link-box span {
+    display: block;
+
+    color: #687386;
+
+    font-size: 12px;
+
+    margin-bottom: 7px;
+}
+
+.referral-link-box code {
+    display: block;
+
+    color: #063f9e;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+    word-break: break-all;
+}
+
+
+/* =========================================================
+   TELEGRAM / MOBILE APP ALERT
+   ========================================================= */
+
+.lh-telegram-alert {
+    width: 100%;
+
+    padding: 0 16px 16px;
+
+    background: #ffffff;
+}
+
+.lh-telegram-alert-card {
+    width: 100%;
+    max-width: 1000px;
+
+    margin: 0 auto;
+
+    padding: 15px 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(41, 182, 246, 0.10),
+            #ffffff
+        );
+
+    border: 1px solid rgba(41, 182, 246, 0.22);
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+
+/* TELEGRAM ICON */
+
+.lh-telegram-alert-icon {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+
+    border-radius: 14px;
+
+    background: #10b7e8;
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 22px;
+}
+
+
+/* ALERT CONTENT */
+
+.lh-telegram-alert-content {
+    flex: 1;
+
+    min-width: 0;
+}
+
+.lh-telegram-alert-title {
+    color: #06185c;
+
+    font-size: 15px;
+    font-weight: 800;
+
+    margin-bottom: 3px;
+}
+
+.lh-telegram-alert-text {
+    color: #616161;
+
+    font-size: 12px;
+
+    line-height: 1.45;
+
+    margin: 0;
+}
+
+
+/* JOIN TELEGRAM BUTTON */
+
+.lh-telegram-alert-button {
+    flex-shrink: 0;
+
+    min-height: 36px;
+
+    padding: 0 13px;
+
+    border-radius: 9px;
+
+    background: #10b7e8;
+    color: #ffffff;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    text-decoration: none;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    transition: 0.2s ease;
+}
+
+.lh-telegram-alert-button:hover {
+    background: #06185c;
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    transform: translateY(-1px);
+}
+
+
+/* CLOSE BUTTON */
+
+.lh-telegram-alert-close {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+
+    border: 0;
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #9e9e9e;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    transition: 0.2s ease;
+}
+
+.lh-telegram-alert-close:hover {
+    background: #f5f5f5;
+
+    color: #424242;
 }
 
 
@@ -1020,6 +1368,9 @@ img {
         align-items: flex-start;
     }
 
+    .products-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
 }
 
 
@@ -1045,15 +1396,30 @@ img {
         height: 200px;
     }
 
-    .category-filters {
+    .category-filters,
+    .category-filter {
         justify-content: flex-start;
     }
 
     .category-btn {
         font-size: 13px;
+
         padding: 8px 13px;
     }
 
+    .products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lh-telegram-alert {
+        padding: 0 15px 15px;
+    }
+
+    .lh-telegram-alert-card {
+        padding: 14px;
+
+        gap: 11px;
+    }
 }
 
 
@@ -1090,6 +1456,7 @@ img {
 
     .floating-card {
         font-size: 12px;
+
         padding: 10px;
     }
 
@@ -1119,504 +1486,27 @@ img {
         padding: 16px;
     }
 
-}
-/* =========================================
-   SHOP PAGE
-========================================= */
-
-.shop-section {
-    padding: 70px 0;
-    background: #f7f9fc;
-    min-height: 70vh;
-}
-
-
-/* SHOP HEADER */
-
-.shop-header {
-    text-align: center;
-    margin-bottom: 35px;
-}
-
-.shop-label {
-    color: #0d6efd;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 2px;
-}
-
-.shop-header h1 {
-    font-size: 42px;
-    font-weight: 700;
-    margin: 10px 0;
-    color: #111827;
-}
-
-.shop-header p {
-    color: #6b7280;
-    font-size: 17px;
-}
-
-
-/* SEARCH */
-
-.shop-search {
-    max-width: 650px;
-    margin: 0 auto 25px;
-}
-
-.shop-search form {
-    display: flex;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid #ddd;
-}
-
-.shop-search input {
-    flex: 1;
-    border: none;
-    outline: none;
-    padding: 15px 18px;
-    font-size: 15px;
-}
-
-.shop-search button {
-    width: 60px;
-    border: none;
-    background: #0d6efd;
-    color: white;
-    font-size: 18px;
-}
-
-
-/* CATEGORY FILTER */
-
-.category-filter {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 40px;
-}
-
-.category-btn {
-    text-decoration: none;
-    padding: 10px 18px;
-    border-radius: 25px;
-    background: white;
-    border: 1px solid #dce1e8;
-    color: #333;
-    font-size: 14px;
-    transition: 0.3s;
-}
-
-.category-btn:hover {
-    background: #0d6efd;
-    color: white;
-    border-color: #0d6efd;
-}
-
-
-/* PRODUCT CARD */
-
-.product-card {
-    background: white;
-    border-radius: 15px;
-    overflow: hidden;
-    height: 100%;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
-    transition: 0.3s ease;
-}
-
-.product-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-}
-
-
-/* PRODUCT IMAGE */
-
-.product-image {
-    width: 100%;
-    height: 230px;
-    background: #f1f3f6;
-    overflow: hidden;
-}
-
-.product-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: 0.3s;
-}
-
-.product-card:hover .product-image img {
-    transform: scale(1.05);
-}
-
-
-/* PRODUCT INFORMATION */
-
-.product-info {
-    padding: 20px;
-}
-
-.product-category {
-    font-size: 13px;
-    color: #0d6efd;
-    font-weight: 600;
-}
-
-.product-info h3 {
-    font-size: 20px;
-    margin: 8px 0;
-    color: #111827;
-}
-
-.product-price {
-    font-size: 20px;
-    font-weight: 700;
-    color: #111827;
-    margin-bottom: 18px;
-}
-
-
-/* VIEW PRODUCT */
-
-.view-product-btn {
-    display: block;
-    text-align: center;
-    text-decoration: none;
-    background: #061a4f;
-    color: white;
-    padding: 12px;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: 0.3s;
-}
-
-.view-product-btn:hover {
-    background: #0d6efd;
-    color: white;
-}
-
-
-/* EMPTY */
-
-.shop-empty {
-    text-align: center;
-    margin-top: 70px;
-    padding: 40px;
-    background: white;
-    border-radius: 15px;
-}
-
-.shop-empty h3 {
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-.shop-empty p {
-    color: #6b7280;
-}
-
-
-/* MOBILE */
-
-@media (max-width: 768px) {
-
-    .shop-section {
-        padding: 45px 15px;
-    }
-
-    .shop-header h1 {
-        font-size: 32px;
-    }
-
-    .shop-header p {
-        font-size: 15px;
-    }
-
-    .product-image {
-        height: 200px;
-    }
-
-}
-/* =========================================================
-   FEATURED GADGETS GRID
-   ========================================================= */
-
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 25px;
-    width: 100%;
-    margin-top: 30px;
-}
-
-/* Product Card */
-
-.product-card {
-    width: 100%;
-    overflow: hidden;
-    border-radius: 15px;
-    background: #ffffff;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-}
-
-/* Product Image */
-
-.product-card img {
-    width: 100%;
-    height: 220px;
-    object-fit: contain;
-    display: block;
-}
-
-/* Responsive */
-
-@media (max-width: 1000px) {
-    .products-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
-@media (max-width: 750px) {
-    .products-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-@media (max-width: 500px) {
     .products-grid {
         grid-template-columns: 1fr;
     }
-}
-/* =========================================================
-   CUSTOMER NAVBAR - NOTIFICATIONS
-   ========================================================= */
 
-.notification-nav-icon {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.notification-badge {
-    position: absolute;
-    top: -8px;
-    right: -10px;
-
-    min-width: 18px;
-    height: 18px;
-
-    padding: 0 5px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #dc3545;
-    color: white;
-
-    border-radius: 50px;
-
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 1;
-
-    border: 2px solid #ffffff;
-}
-/* =========================================================
-   TELEGRAM / MOBILE APP ALERT
-   ========================================================= */
-
-.lh-telegram-alert {
-    width: 100%;
-    padding: 0 16px 16px;
-    background: #ffffff;
-}
-
-.lh-telegram-alert-card {
-    width: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
-
-    padding: 15px 16px;
-
-    display: flex;
-    align-items: center;
-    gap: 13px;
-
-    background: linear-gradient(
-        135deg,
-        rgba(41, 182, 246, 0.10),
-        #ffffff
-    );
-
-    border: 1px solid rgba(41, 182, 246, 0.22);
-    border-radius: 16px;
-
-    box-shadow:
-        0 3px 10px rgba(0, 0, 0, 0.04);
-}
-
-
-/* TELEGRAM ICON */
-
-.lh-telegram-alert-icon {
-    width: 46px;
-    height: 46px;
-    min-width: 46px;
-
-    border-radius: 14px;
-
-    background: #10b7e8;
-    color: #ffffff;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 22px;
-}
-
-
-/* ALERT CONTENT */
-
-.lh-telegram-alert-content {
-    flex: 1;
-    min-width: 0;
-}
-
-.lh-telegram-alert-title {
-    color: #06185c;
-
-    font-size: 15px;
-    font-weight: 800;
-
-    margin-bottom: 3px;
-}
-
-.lh-telegram-alert-text {
-    color: #616161;
-
-    font-size: 12px;
-    line-height: 1.45;
-
-    margin: 0;
-}
-
-
-/* JOIN TELEGRAM BUTTON */
-
-.lh-telegram-alert-button {
-    flex-shrink: 0;
-
-    min-height: 36px;
-
-    padding: 0 13px;
-
-    border-radius: 9px;
-
-    background: #10b7e8;
-    color: #ffffff;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 6px;
-
-    text-decoration: none;
-
-    font-size: 11px;
-    font-weight: 700;
-
-    transition: 0.2s ease;
-}
-
-.lh-telegram-alert-button:hover {
-    background: #06185c;
-    color: #ffffff;
-
-    text-decoration: none;
-
-    transform: translateY(-1px);
-}
-
-
-/* CLOSE BUTTON */
-
-.lh-telegram-alert-close {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
-
-    border: 0;
-    border-radius: 8px;
-
-    background: transparent;
-    color: #9e9e9e;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    cursor: pointer;
-
-    font-size: 15px;
-
-    transition: 0.2s ease;
-}
-
-.lh-telegram-alert-close:hover {
-    background: #f5f5f5;
-    color: #424242;
-}
-
-
-/* =========================================================
-   TELEGRAM ALERT - TABLET
-   ========================================================= */
-
-@media (max-width: 768px) {
-
-    .lh-telegram-alert {
-        padding: 0 15px 15px;
+    /* Referral buttons stack on small screens */
+    .referral-actions {
+        grid-template-columns: 1fr;
     }
 
-    .lh-telegram-alert-card {
-        padding: 14px;
-        gap: 11px;
-    }
-
-}
-
-
-/* =========================================================
-   TELEGRAM ALERT - SMALL MOBILE
-   ========================================================= */
-
-@media (max-width: 576px) {
-
+    /* Telegram alert */
     .lh-telegram-alert {
         padding: 0 12px 14px;
     }
 
     .lh-telegram-alert-card {
         align-items: flex-start;
+
         padding: 13px;
+
         gap: 10px;
+
         border-radius: 14px;
     }
 
@@ -1630,16 +1520,19 @@ img {
 
     .lh-telegram-alert-title {
         font-size: 13px;
+
         line-height: 1.35;
     }
 
     .lh-telegram-alert-text {
         font-size: 11px;
+
         line-height: 1.45;
     }
 
     .lh-telegram-alert-button {
         min-height: 34px;
+
         padding: 0 10px;
 
         font-size: 10px;
@@ -1652,5 +1545,33 @@ img {
 
         font-size: 13px;
     }
+}
 
+
+/* =========================================================
+   EXTRA SMALL DEVICES
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+    .hero-section h1 {
+        font-size: 36px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .btn-primary-custom,
+    .btn-outline-custom {
+        text-align: center;
+
+        width: 100%;
+    }
+
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
 }
