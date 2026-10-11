@@ -244,21 +244,7 @@ My Account | Levetor Hub
                     <div class="referral-actions">
 
                         <a
-                            href="https://wa.me/?text={{ (
-                                '🎁 Join me on Levetor Hub!%0A%0A'
-                                ~ 'Use my referral code: '
-                                ~ customer['referral_code']
-                                ~ '%0A%0A'
-                                ~ 'Register here:%0A'
-                                ~ url_for(
-                                    'customer_register',
-                                    ref=customer['referral_code'],
-                                    _external=True
-                                )
-                                ~ '%0A%0A'
-                                ~ 'Complete a qualifying order of ₦50,000 or more '
-                                ~ 'to receive your ₦1,000 store credit.'
-                            ) | urlencode }}"
+                            href="{{ whatsapp_referral_url }}"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="referral-share-btn"

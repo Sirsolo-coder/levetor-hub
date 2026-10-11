@@ -1,4 +1,4 @@
-﻿from flask import ( # type: ignore
+from flask import ( # type: ignore
     Flask,
     render_template,
     request,
@@ -15,6 +15,7 @@ import os
 import uuid
 import secrets
 import json
+from urllib.parse import quote
 import requests # type: ignore
 from dotenv import load_dotenv # type: ignore
 from datetime import datetime, timedelta
@@ -4458,9 +4459,21 @@ def customer_account():
 
     conn.close()
 
+    referral_message = (
+        "🎁 Join me on Levetor Hub!\n\n"
+        f"Use my referral code: {customer['referral_code']}\n\n"
+        "Register here:\n"
+        f"https://levetor-hub.onrender.com/register?ref={customer['referral_code']}\n\n"
+        "Complete a qualifying order of ₦50,000 or more "
+        "to receive your ₦1,000 store credit reward."
+    )
+
+    whatsapp_referral_url = "https://wa.me/?text=" + quote(referral_message)
+
     return render_template(
         "account.html",
         customer=customer,
+        whatsapp_referral_url=whatsapp_referral_url,
         orders=orders,
         unread_count=unread_count,
         referrals=referrals,
