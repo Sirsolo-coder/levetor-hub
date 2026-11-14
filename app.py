@@ -8441,6 +8441,11 @@ def update_order_status(order_id):
     )
 
 
+@app.route("/privacy-policy")
+def privacy_policy():
+    return render_template("privacy_policy.html")
+
+
 # =========================================================
 # RUN APPLICATION
 # =========================================================
